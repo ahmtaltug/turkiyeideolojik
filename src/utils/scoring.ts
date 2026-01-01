@@ -12,15 +12,16 @@ export const calculateScores = (responses: UserResponses) => {
         kemalist: 0,
         sosyal_demokrat: 0,
         muhafazakar: 0,
-        milliyetci: 0,
+        ulkucu: 0,
         liberal: 0,
         sosyalist: 0,
-        kurt_siyasi: 0,
+        boluculuk: 0,
         islamci: 0,
         avrasyaci: 0,
         ulusalci: 0,
         merkez_sag: 0,
         yesil: 0,
+        turkculuk: 0,
     };
 
     // Calculate potential maximum and minimum for normalization

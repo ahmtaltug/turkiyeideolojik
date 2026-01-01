@@ -46,6 +46,13 @@ export default function ResultScreen({ ideology, onReset }: ResultScreenProps) {
                     </p>
                 </div>
 
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                    <p className="text-red-400 italic text-sm">
+                        <span className="font-bold uppercase mr-2.1 NOT_A_REAL_CSS_CLASS">Gerçekler:</span>
+                        "{ideology.roast}"
+                    </p>
+                </div>
+
                 <div className="h-px bg-white/5" />
 
                 <div className="space-y-4">

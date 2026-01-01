@@ -48,7 +48,7 @@ export default function Home() {
                 <span className="text-white">İdeolojik</span>
               </h1>
               <p className="text-xl text-gray-400 max-w-lg mx-auto leading-relaxed">
-                Tinder usulü kaydırmalı sorularla Türkiye siyasetindeki gerçek kimliğini keşfet. 12 farklı ideolojik ana akımdan hangisine daha yakınsın?
+                Tinder usulü kaydırmalı sorularla Türkiye siyasetindeki gerçek kimliğini keşfet. 13 farklı ideolojik ana akımdan hangisine daha yakınsın?
               </p>
             </div>
 
@@ -65,7 +65,7 @@ export default function Home() {
 
             <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
               {[
-                { icon: BarChart3, title: 'Analiz', text: '12 farklı ideolojik akım üzerinden derinlemesine eşleşme.' },
+                { icon: BarChart3, title: 'Analiz', text: '13 farklı ideolojik akım üzerinden derinlemesine eşleşme.' },
                 { icon: RefreshCw, title: 'Swipe', text: 'Sıkıcı testlerden kurtul, sağa veya sola kaydırarak cevapla.' },
                 { icon: Info, title: 'Partiler', text: 'Görüşlerine en yakın güncel siyasi partileri hemen öğren.' },
               ].map((item, i) => (
