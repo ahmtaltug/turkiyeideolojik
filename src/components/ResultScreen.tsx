@@ -1,17 +1,29 @@
-'use client';
-
 import { motion } from 'framer-motion';
-import { RefreshCcw, Share2, PartyPopper } from 'lucide-react';
-import { Ideology } from '@/data/ideologies';
+import { RefreshCcw, PartyPopper, UserCheck, BarChart2 } from 'lucide-react';
+import { Ideology, IdeologyId, ideologies } from '@/data/ideologies';
+import {
+    Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip
+} from 'recharts';
 
 interface ResultScreenProps {
     ideology: Ideology;
+    allScores: Record<IdeologyId, number>;
     onReset: () => void;
 }
 
-export default function ResultScreen({ ideology, onReset }: ResultScreenProps) {
+export default function ResultScreen({ ideology, allScores, onReset }: ResultScreenProps) {
+    // Prepare data for Radar Chart
+    const radarData = Object.entries(allScores).map(([id, score]) => ({
+        subject: ideologies[id as IdeologyId].name,
+        A: score,
+        fullMark: 100,
+    }));
+
+    // Find leader matches (top ideology leaders)
+    const leaderMatches = ideology.leaders;
+
     return (
-        <div className="max-w-2xl w-full text-center space-y-8 py-8">
+        <div className="max-w-4xl w-full text-center space-y-8 py-8 px-4">
             <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -33,67 +45,95 @@ export default function ResultScreen({ ideology, onReset }: ResultScreenProps) {
                 </motion.h1>
             </div>
 
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="glass p-8 rounded-3xl text-left space-y-6"
-            >
-                <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-white">İdeoloji Özeti</h3>
-                    <p className="text-gray-400 leading-relaxed">
-                        {ideology.description}
-                    </p>
-                </div>
-
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-                    <p className="text-red-400 italic text-sm">
-                        <span className="font-bold uppercase mr-2.1 NOT_A_REAL_CSS_CLASS">Gerçekler:</span>
-                        "{ideology.roast}"
-                    </p>
-                </div>
-
-                <div className="h-px bg-white/5" />
-
-                <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-white">Bu görüşe en yakın partiler:</h3>
-                    <div className="flex flex-wrap gap-3">
-                        {ideology.parties.map((party, i) => (
-                            <span
-                                key={i}
-                                className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-medium hover:bg-white/10 transition-colors"
-                            >
-                                {party}
-                            </span>
-                        ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column: Summary and Roast */}
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="glass p-8 rounded-3xl text-left space-y-6 flex flex-col h-full"
+                >
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-white mb-2">
+                            <BarChart2 className="w-5 h-5" />
+                            <h3 className="text-xl font-bold">İdeoloji Özeti</h3>
+                        </div>
+                        <p className="text-gray-400 leading-relaxed">
+                            {ideology.description}
+                        </p>
                     </div>
-                </div>
-            </motion.div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                        <p className="text-red-400 italic text-sm">
+                            <span className="font-bold uppercase mr-2.1">Gerçekler:</span>
+                            "{ideology.roast}"
+                        </p>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 text-white mb-2">
+                            <UserCheck className="w-5 h-5" />
+                            <h3 className="text-lg font-bold">Lider Eşleşmesi</h3>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {leaderMatches.map((leader, i) => (
+                                <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-medium">
+                                    {leader}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-auto pt-6 border-t border-white/5">
+                        <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">İlgili Partiler</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {ideology.parties.map((party, i) => (
+                                <span key={i} className="text-xs px-3 py-1 bg-white/5 rounded-lg text-gray-400 border border-white/10">
+                                    {party}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Right Column: Radar Chart */}
+                <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="glass p-8 rounded-3xl flex flex-col items-center justify-center min-h-[400px]"
+                >
+                    <h3 className="text-xl font-bold text-white mb-6">Detaylı Analiz</h3>
+                    <div className="w-full h-[350px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                <PolarGrid stroke="#ffffff10" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#9ca3af', fontSize: 10 }} />
+                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                <Radar
+                                    name="Uyum"
+                                    dataKey="A"
+                                    stroke={ideology.color}
+                                    fill={ideology.color}
+                                    fillOpacity={0.5}
+                                />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', color: '#fff' }}
+                                    itemStyle={{ color: ideology.color }}
+                                />
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </motion.div>
+            </div>
+
+            <div className="flex items-center justify-center pt-4">
                 <button
                     onClick={onReset}
-                    className="px-8 py-4 bg-white text-black font-bold rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center"
+                    className="px-12 py-4 bg-white text-black font-bold rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center shadow-lg shadow-white/10"
                 >
                     <RefreshCcw className="w-5 h-5" />
                     Yeniden Çöz
-                </button>
-                <button
-                    onClick={() => {
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'Türkiyeİdeolojik',
-                                text: `Benim siyasi kimliğim: ${ideology.name}. Seninki ne?`,
-                                url: window.location.href,
-                            });
-                        } else {
-                            alert('Sonuç: ' + ideology.name);
-                        }
-                    }}
-                    className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-full flex items-center gap-2 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center"
-                >
-                    <Share2 className="w-5 h-5" />
-                    Paylaş
                 </button>
             </div>
         </div>

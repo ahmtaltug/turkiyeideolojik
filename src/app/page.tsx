@@ -5,21 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, RefreshCw, BarChart3, Info } from 'lucide-react';
 import QuizEngine from '@/components/QuizEngine';
 import ResultScreen from '@/components/ResultScreen';
-import { Ideology } from '@/data/ideologies';
+import { Ideology, IdeologyId } from '@/data/ideologies';
 
 export default function Home() {
   const [view, setView] = useState<'home' | 'quiz' | 'result'>('home');
   const [result, setResult] = useState<Ideology | null>(null);
+  const [resultScores, setResultScores] = useState<Record<IdeologyId, number> | null>(null);
 
   const startQuiz = () => setView('quiz');
 
-  const finishQuiz = (ideology: Ideology) => {
+  const finishQuiz = (ideology: Ideology, scores: Record<IdeologyId, number>) => {
     setResult(ideology);
+    setResultScores(scores);
     setView('result');
   };
 
   const reset = () => {
     setResult(null);
+    setResultScores(null);
     setView('home');
   };
 
@@ -87,8 +90,8 @@ export default function Home() {
           <QuizEngine key="quiz" onFinish={finishQuiz} onReset={reset} />
         )}
 
-        {view === 'result' && result && (
-          <ResultScreen key="result" ideology={result} onReset={reset} />
+        {view === 'result' && result && resultScores && (
+          <ResultScreen key="result" ideology={result} allScores={resultScores} onReset={reset} />
         )}
       </AnimatePresence>
     </main>

@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { questions } from '@/data/questions';
-import { Ideology } from '@/data/ideologies';
+import { Ideology, IdeologyId } from '@/data/ideologies';
 import { Answer, UserResponses, calculateScores } from '@/utils/scoring';
 import SwipeCard from './SwipeCard';
 
 interface QuizEngineProps {
-    onFinish: (ideology: Ideology) => void;
+    onFinish: (ideology: Ideology, allScores: Record<IdeologyId, number>) => void;
     onReset: () => void;
 }
 
@@ -28,7 +28,7 @@ export default function QuizEngine({ onFinish, onReset }: QuizEngineProps) {
             setCurrentIndex(prev => prev + 1);
         } else {
             const result = calculateScores(newResponses);
-            onFinish(result.topIdeology);
+            onFinish(result.topIdeology, result.allScores);
         }
     };
 
