@@ -78,7 +78,7 @@ export default function Home() {
             </div>
 
             <footer className="pt-12 text-gray-600 text-xs uppercase tracking-widest font-medium">
-              &copy; 2024 Türkiyeİdeolojik &bull; Bilimsel Değildir
+              &copy; 2026 Türkiyeİdeolojik &bull; Bilimsel Değildir
             </footer>
           </motion.div>
         )}
