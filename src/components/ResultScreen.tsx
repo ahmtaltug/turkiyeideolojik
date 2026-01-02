@@ -78,8 +78,8 @@ export default function ResultScreen({
                         style={{ backgroundColor: ideology.color }}
                     />
 
-                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                        <div className="lg:col-span-7 space-y-8">
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                        <div className="lg:col-span-8 space-y-8">
                             <div className="space-y-4">
                                 <motion.div
                                     initial={{ x: -20, opacity: 0 }}
@@ -96,16 +96,16 @@ export default function ResultScreen({
                                     <motion.h1
                                         initial={{ y: 20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
-                                        className="text-6xl md:text-8xl font-black italic uppercase leading-none tracking-tighter"
+                                        className="text-5xl md:text-7xl font-black italic uppercase leading-none tracking-tighter break-words max-w-full"
                                         style={{ color: ideology.color }}
                                     >
                                         {ideology.name}
                                     </motion.h1>
-                                    <div className="flex items-center gap-4">
-                                        <div className="px-4 py-2 bg-white text-black font-black italic rounded-xl text-2xl">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                        <div className="inline-block px-4 py-2 bg-white text-black font-black italic rounded-xl text-2xl shrink-0">
                                             %{matchPercentage} UYUM
                                         </div>
-                                        <p className="text-gray-400 font-medium max-w-xs text-sm leading-tight">
+                                        <p className="text-gray-400 font-medium max-w-sm text-sm leading-tight">
                                             {ideology.description}
                                         </p>
                                     </div>
@@ -139,7 +139,7 @@ export default function ResultScreen({
                             </div>
                         </div>
 
-                        <div className="lg:col-span-5 h-[300px] md:h-[400px] relative">
+                        <div className="lg:col-span-4 h-[300px] md:h-[400px] relative">
                             <ResponsiveContainer width="100%" height="100%">
                                 <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                                     <PolarGrid stroke="#ffffff10" />
