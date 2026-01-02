@@ -17,7 +17,8 @@ interface QuizEngineProps {
         axisScores: AxisScore[],
         matchPercentage: number,
         leaders: LeaderMatch[],
-        breakdown: BreakdownItem[]
+        breakdown: BreakdownItem[],
+        consistencyScore: number
     ) => void;
     onReset: () => void;
 }
@@ -59,7 +60,8 @@ export default function QuizEngine({ mode, onFinish, onReset }: QuizEngineProps)
                 result.axisScores,
                 result.matchPercentage,
                 result.leaderMatches,
-                result.breakdown
+                result.breakdown,
+                result.consistencyScore
             );
         }
     };

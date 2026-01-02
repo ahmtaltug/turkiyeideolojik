@@ -22,6 +22,7 @@ interface ResultScreenProps {
     matchPercentage: number;
     leaderMatches: LeaderMatch[];
     breakdown: BreakdownItem[];
+    consistencyScore: number;
     onReset: () => void;
 }
 
@@ -33,6 +34,7 @@ export default function ResultScreen({
     matchPercentage,
     leaderMatches,
     breakdown,
+    consistencyScore,
     onReset
 }: ResultScreenProps) {
     const cardRef = useRef<HTMLDivElement>(null);
@@ -119,9 +121,17 @@ export default function ResultScreen({
                                         <div className="inline-block px-4 py-2 bg-white text-black font-black italic rounded-xl text-2xl shrink-0">
                                             %{matchPercentage} UYUM
                                         </div>
-                                        <p className="text-gray-400 font-medium max-w-sm text-sm leading-tight">
-                                            {ideology.description}
-                                        </p>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Tutarlılık: %{consistencyScore}</span>
+                                                <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter ${consistencyScore > 70 ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
+                                                    {consistencyScore > 70 ? 'Net Çizgili' : 'Hibrit Zihin'}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-400 font-medium max-w-sm text-sm leading-tight mt-1">
+                                                {ideology.description}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

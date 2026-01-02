@@ -45,6 +45,29 @@ export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = 
     }
 };
 
+const AXIS_IMPORTANCE: Record<AxisId, number> = {
+    milliyetcilik: 1.3,
+    toplum: 1.2,
+    ekonomi: 0.9,
+    yonetim: 0.7
+};
+
+const IDEOLOGY_RIGIDITY: Record<IdeologyId, number> = {
+    islamci: 1.4,
+    sosyalist: 1.3,
+    boluculuk: 1.5,
+    turkculuk: 1.3,
+    avrasyaci: 1.2,
+    ulusalci: 1.2,
+    kemalist: 1.1,
+    ulkucu: 1.1,
+    muhafazakar: 1.0,
+    sosyal_demokrat: 0.9,
+    merkez_sag: 0.8,
+    liberal: 0.9,
+    yesil: 1.0
+};
+
 export const calculateScores = (responses: UserResponses) => {
     const ideologyScores: Record<IdeologyId, number> = {} as Record<IdeologyId, number>;
     const ideologyMaxPossible: Record<IdeologyId, number> = {} as Record<IdeologyId, number>;
@@ -59,14 +82,12 @@ export const calculateScores = (responses: UserResponses) => {
     const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
     const questionImpacts: Record<number, Record<string, number>> = {};
 
+    // For consistency check
+    const axisResponseVectors: Record<AxisId, number[]> = { ekonomi: [], toplum: [], milliyetcilik: [], yonetim: [] };
+
     // Helper to get weight for an ideology, fallback to dot product if not defined
     const getEffectiveWeight = (q: Question, ideologyId: IdeologyId): number => {
-        // Use manual weight if exists
-        if (q.weights[ideologyId] !== undefined) {
-            return q.weights[ideologyId] as number;
-        }
-
-        // Dynamic weight based on Axis Projection (Dot Product)
+        if (q.weights[ideologyId] !== undefined) return q.weights[ideologyId] as number;
         const ideology = ideologies[ideologyId];
         let projection = 0;
         Object.entries(q.axisWeights).forEach(([axis, weight]) => {
@@ -98,18 +119,36 @@ export const calculateScores = (responses: UserResponses) => {
         Object.keys(ideologies).forEach(id => {
             const ideologyId = id as IdeologyId;
             const weight = getEffectiveWeight(question, ideologyId);
-            const impact = weight * multiplier;
+            let impact = weight * multiplier;
+
+            // RED LINE PENALTY: Extra penalty if opposing a core value
+            if (Math.abs(weight) >= 8 && Math.sign(weight) !== Math.sign(multiplier)) {
+                impact *= 1.5;
+            }
 
             ideologyScores[ideologyId] += impact;
             questionImpacts[question.id][ideologyId] = impact;
         });
 
         Object.entries(question.axisWeights).forEach(([axisId, weight]) => {
-            axisRawScores[axisId as AxisId] += (weight as number) * multiplier;
+            const val = (weight as number) * multiplier;
+            axisRawScores[axisId as AxisId] += val;
+            axisResponseVectors[axisId as AxisId].push(val);
         });
     });
 
-    // Normalize Axis Scores (-100 to 100)
+    // Consistency Score: High variance in same-axis responses indicates low consistency
+    let consistencyScore = 100;
+    let totalConflict = 0;
+    Object.values(axisResponseVectors).forEach(vectors => {
+        if (vectors.length < 2) return;
+        const signs = vectors.map(v => Math.sign(v)).filter(s => s !== 0);
+        const conflicts = signs.filter(s => s !== signs[0]).length;
+        totalConflict += conflicts / vectors.length;
+    });
+    consistencyScore = Math.max(0, Math.round(100 - (totalConflict * 25)));
+
+    // Normalize Axis Scores
     const normalizedAxes: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
     const axisScores: AxisScore[] = (Object.keys(axisRawScores) as AxisId[]).map(axisId => {
         const raw = axisRawScores[axisId];
@@ -119,21 +158,28 @@ export const calculateScores = (responses: UserResponses) => {
         return { id: axisId, name: AXES[axisId].name, value, labels: AXES[axisId].labels };
     });
 
-    // Final Scoring (Gaussian)
+    // Final Scoring (Gaussian with weights and rigidity)
     const finalScores = {} as Record<IdeologyId, number>;
     Object.entries(ideologies).forEach(([id, ideology]) => {
         const ideologyId = id as IdeologyId;
         const maxW = ideologyMaxPossible[ideologyId];
         const weightScore = maxW === 0 ? 50 : ((ideologyScores[ideologyId] + maxW) / (2 * maxW)) * 100;
 
-        let distanceSum = 0;
+        let weightedDistanceSum = 0;
+        let importanceSum = 0;
         (Object.keys(AXES) as AxisId[]).forEach(axisId => {
+            const importance = AXIS_IMPORTANCE[axisId];
             const delta = (normalizedAxes[axisId] - ideology.idealAxes[axisId]) / 120;
-            distanceSum += Math.pow(delta, 2);
+            weightedDistanceSum += Math.pow(delta, 2) * importance;
+            importanceSum += importance;
         });
-        const distanceMatch = Math.exp(-distanceSum / 2) * 100;
 
-        finalScores[ideologyId] = Math.round((weightScore * 0.3) + (distanceMatch * 0.7));
+        // DYNAMIC SIGMA (Rigidity): High rigidity means the "bell" is narrower
+        const rigidity = IDEOLOGY_RIGIDITY[ideologyId] || 1.0;
+        const distanceMatch = Math.exp(-(weightedDistanceSum * rigidity) / (importanceSum / 2)) * 100;
+
+        // Final combine: Distance is more authoritative (75%) than raw weight
+        finalScores[ideologyId] = Math.round((weightScore * 0.25) + (distanceMatch * 0.75));
     });
 
     const sortedResult = Object.entries(finalScores).sort(([, a], [, b]) => b - a);
@@ -143,7 +189,7 @@ export const calculateScores = (responses: UserResponses) => {
 
     const topScore = sortedResult[0][1];
     const secondScore = sortedResult[1][1];
-    const isHybrid = (topScore - secondScore) <= 5 && topScore > 40; // Only hybridize if they are close and legitimate
+    const isHybrid = (topScore - secondScore) <= 5 && topScore > 40;
 
     let resultIdeology: Ideology & { isHybrid?: boolean; secondId?: IdeologyId } = { ...ideologies[topIdeologyId] };
 
@@ -156,7 +202,6 @@ export const calculateScores = (responses: UserResponses) => {
             name: `${resultIdeology.name} - ${second.name} Sentezi`,
             description: `${resultIdeology.name} ve ${second.name} görüşlerinin ortak paydada buluştuğu hibrit bir siyasi kimlik.`,
             parties: [...new Set([...resultIdeology.parties, ...second.parties])],
-            // Color can be the first one, the UI will handle gradient if isHybrid is true
         };
     }
 
@@ -164,9 +209,9 @@ export const calculateScores = (responses: UserResponses) => {
         let dSum = 0;
         (Object.keys(AXES) as AxisId[]).forEach(axisId => {
             const delta = (normalizedAxes[axisId] - leader.coordinates[axisId]) / 150;
-            dSum += Math.pow(delta, 2);
+            dSum += Math.pow(delta, 2) * AXIS_IMPORTANCE[axisId];
         });
-        const match = Math.exp(-dSum / 2) * 100;
+        const match = Math.exp(-dSum / 2.5) * 100;
         return { leader, matchPercentage: Math.round(match) };
     }).sort((a, b) => b.matchPercentage - a.matchPercentage);
 
@@ -191,6 +236,7 @@ export const calculateScores = (responses: UserResponses) => {
         axisScores,
         matchPercentage: topScore,
         leaderMatches,
-        breakdown
+        breakdown,
+        consistencyScore
     };
 };

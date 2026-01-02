@@ -18,6 +18,7 @@ export default function Home() {
   const [matchPercentage, setMatchPercentage] = useState<number>(0);
   const [leaderMatches, setLeaderMatches] = useState<LeaderMatch[] | null>(null);
   const [breakdown, setBreakdown] = useState<BreakdownItem[] | null>(null);
+  const [consistencyScore, setConsistencyScore] = useState<number>(0);
 
   const startQuiz = (selectedMode: 'quick' | 'full') => {
     setMode(selectedMode);
@@ -31,7 +32,8 @@ export default function Home() {
     axes: AxisScore[],
     match: number,
     leaders: LeaderMatch[],
-    breakdownItems: BreakdownItem[]
+    breakdownItems: BreakdownItem[],
+    consistency: number
   ) => {
     setResult(ideology);
     setOppositeResult(opposite);
@@ -40,6 +42,7 @@ export default function Home() {
     setMatchPercentage(match);
     setLeaderMatches(leaders);
     setBreakdown(breakdownItems);
+    setConsistencyScore(consistency);
     setView('result');
   };
 
@@ -51,6 +54,7 @@ export default function Home() {
     setMatchPercentage(0);
     setLeaderMatches(null);
     setBreakdown(null);
+    setConsistencyScore(0);
     setView('home');
   };
 
@@ -83,7 +87,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
                 <button
                   onClick={() => startQuiz('full')}
@@ -146,6 +150,7 @@ export default function Home() {
             matchPercentage={matchPercentage}
             leaderMatches={leaderMatches}
             breakdown={breakdown}
+            consistencyScore={consistencyScore}
             onReset={reset}
           />
         )}
