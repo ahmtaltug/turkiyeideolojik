@@ -50,31 +50,31 @@ export const ideologies: Record<IdeologyId, Ideology> = {
     sosyal_demokrat: {
         id: 'sosyal_demokrat',
         name: 'Sosyal Demokrat',
-        description: 'Sosyal adalet, emek hakları and demokratik hukuk devletini önceleyen merkez sol görüş.',
-        parties: ['CHP', 'DSP'],
-        leaders: ['Bülent Ecevit', 'Özgür Özel'],
-        color: '#0056b3',
-        roast: "Halkın sesisin ama halkla en yakın temasın latte beklerken kurduğun kısa diyaloglar.",
-        idealAxes: { ekonomi: -60, toplum: -60, milliyetcilik: -20, yonetim: -50 },
+        description: 'Sosyal adalet, halkçılık ve liyakati önceleyen, 2024 sonrası yerel yönetim gücüyle yükselen demokratik sol çizgi.',
+        parties: ['CHP'],
+        leaders: ['Mustafa Kemal Atatürk', 'Bülent Ecevit', 'Özgür Özel', 'Ekrem İmamoğlu'],
+        color: '#EE1C25',
+        roast: "Her seçim sonrası 'bu sefer tamam' diyorsun ama genel merkezde koltuk kavgası başlayınca Twitter'da taziye mesajı yayınlayan bir hesap gibi kalıyorsun.",
+        idealAxes: { ekonomi: -60, toplum: -70, milliyetcilik: -10, yonetim: -60 },
         details: {
-            history: "1960'larda 'Ortanın Solu' hareketiyle güçlenmiş, sosyal refah devletini savunan akımdır.",
-            principles: ["Sosyal Adalet", "Emek Hakları", "Eşitlik", "Evrensel İnsan Hakları"],
-            motto: "Toprak İşleyenin, Su Kullananın!"
+            history: "1960'lardan bugüne evrilen, 2024 yerel seçimleriyle Türkiye'nin birinci partisi konumuna gelen siyasi akım.",
+            principles: ["Sosyal Adalet", "Demokratik Yönetim", "Liyakat", "Halkçı Ekonomi"],
+            motto: "Türkiye İttifakı!"
         }
     },
     muhafazakar: {
         id: 'muhafazakar',
         name: 'Muhafazakar',
-        description: 'Geleneksel değerleri, aile yapısını ve dini hassasiyetleri korumayı hedefleyen sağ siyaset.',
-        parties: ['AK Parti', 'Saadet Partisi', 'Gelecek Partisi'],
-        leaders: ['Recep Tayyip Erdoğan', 'Ahmet Davutoğlu'],
-        color: '#008000',
-        roast: "Dış güçler diye diye içindeki 'yerli ve milli' kredi kartı borçlarını çoktan unutmuşsun.",
-        idealAxes: { ekonomi: 50, toplum: 70, milliyetcilik: 40, yonetim: 60 },
+        description: 'Geleneklere bağlı, kalkınmacı ve dini-milli değerleri sentezleyen iktidar bloku çizgisi.',
+        parties: ['AK Parti', 'Gelecek Partisi'],
+        leaders: ['Recep Tayyip Erdoğan'],
+        color: '#FFCC00',
+        roast: "Mülakat kalkacak diye sevinirken, aslında mülakatın artık bir 'yaşam tarzı' olduğunu fark edemeyecek kadar optimistsin.",
+        idealAxes: { ekonomi: 60, toplum: 80, milliyetcilik: 60, yonetim: 80 },
         details: {
-            history: "Türkiye'nin sağ-muhafazakar damarı, Demokrat Parti'den günümüze aile ve din değerlerini koruma temelinde gelişmiştir.",
-            principles: ["Geleneğe Bağlılık", "Aile Yapısı", "Dini Değerler", "Yerlilik"],
-            motto: "Halka Hizmet, Hakka Hizmettir."
+            history: "2000'lerden bu yana Türkiye siyasetini domine eden, Yeni Anayasa ve Türkiye Yüzyılı vizyonuna odaklanmış sağ akım.",
+            principles: ["Dini-Milli Değerler", "Hizmet Siyaseti", "Yeni Anayasa", "Güçlü Liderlik"],
+            motto: "Durmak Yok, Yola Devam."
         }
     },
     ulkucu: {
@@ -185,16 +185,16 @@ export const ideologies: Record<IdeologyId, Ideology> = {
     merkez_sag: {
         id: 'merkez_sag',
         name: 'Merkez Sağ',
-        description: 'Demokratik değerler ile serbest piyasayı birleştiren, kalkınmacı ve ılımlı muhafazakar çizgi.',
+        description: 'Demokratik değerler ile serbest piyasayı birleştiren, ılımlı ve kurumsal milliyetçi çizgi.',
         parties: ['İYİ Parti', 'Demokrat Parti'],
-        leaders: ['Süleyman Demirel', 'Turgut Özal', 'Meral Akşener'],
+        leaders: ['Süleyman Demirel', 'Musavat Dervişoğlu', 'Mansur Yavaş'],
         color: '#4169E1',
-        roast: "Kimin kazandığı önemli değil, senin kimin yanında durduğun önemli... yani hep kazananın.",
-        idealAxes: { ekonomi: 60, toplum: 30, milliyetcilik: 50, yonetim: 20 },
+        roast: "Üçüncü yol dedin, dördüncü yol dedin, sonunda navigasyonu bozulan turistler gibi yolun ortasında kaldın.",
+        idealAxes: { ekonomi: 70, toplum: 20, milliyetcilik: 60, yonetim: 20 },
         details: {
-            history: "Demokrat Parti ile başlayan, ANAP ve DYP ile zirveye ulaşan kalkınmacı sağ gelenektir.",
-            principles: ["Kalkınmacılık", "Sivil Toplum", "Ilımlı Muhafazakarlık"],
-            motto: "Büyük Türkiye, Güçlü Millet."
+            history: "Demokrat Parti'den İYİ Parti'ye uzanan, 2024 sonrası yeniden yapılanma sürecine giren merkez sağ gelenek.",
+            principles: ["Hukukun Üstünlüğü", "Kurumsal Milliyetçilik", "Serbest Piyasa", "Liyakat"],
+            motto: "Bizim Yolumuz, Milletin Yoludur."
         }
     },
     yesil: {

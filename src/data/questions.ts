@@ -562,6 +562,103 @@ export const questions: Question[] = [
             yonetim: -6,
         }
     },
+    {
+        id: 31,
+        text: 'Sahipsiz sokak köpekleri, toplum güvenliği için gerekirse uyutulmalı veya kapalı barınaklara hapsedilmelidir.',
+        weights: {
+            muhafazakar: 10,
+            ulkucu: 8,
+            turkculuk: 6,
+            merkez_sag: 5,
+            yesil: -10,
+            sosyalist: -8,
+            sosyal_demokrat: -6,
+        },
+        axisWeights: {
+            ekonomi: 2,
+            toplum: 8,
+            milliyetcilik: 4,
+            yonetim: 6,
+        }
+    },
+    {
+        id: 32,
+        text: 'Siyasetteki "normalleşme" veya "yumuşama" adımları Türkiye demokrasisi için olumludur; sert kutuplaşmadan vazgeçilmelidir.',
+        weights: {
+            sosyal_demokrat: 10,
+            muhafazakar: 8,
+            merkez_sag: 8,
+            liberal: 6,
+            ulusalci: -10,
+            turkculuk: -8,
+            avrasyaci: -6,
+            sosyalist: -4,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -4,
+            milliyetcilik: -6,
+            yonetim: -8,
+        }
+    },
+    {
+        id: 33,
+        text: 'Mevcut Cumhurbaşkanlığı Hükümet Sistemi revize edilmeli, güçlendirilmiş parlamenter sisteme geri dönülmelidir.',
+        weights: {
+            sosyal_demokrat: 10,
+            merkez_sag: 9,
+            liberal: 8,
+            boluculuk: 7,
+            yesil: 6,
+            muhafazakar: -10,
+            ulkucu: -10,
+            avrasyaci: -8,
+        },
+        axisWeights: {
+            ekonomi: -2,
+            toplum: -5,
+            milliyetcilik: -5,
+            yonetim: -10,
+        }
+    },
+    {
+        id: 34,
+        text: 'En düşük emekli maaşı, asgari ücretten düşük olmamalıdır; bütçe önceliği emeklilere ve dar gelirliye verilmelidir.',
+        weights: {
+            sosyal_demokrat: 10,
+            sosyalist: 10,
+            muhafazakar: 4,
+            liberal: -8,
+            merkez_sag: 2,
+        },
+        axisWeights: {
+            ekonomi: -10,
+            toplum: -2,
+            milliyetcilik: 0,
+            yonetim: 2,
+        }
+    },
+    {
+        id: 35,
+        text: 'Eğitimde "Türkiye Yüzyılı Maarif Modeli" gibi yeni müfredat düzenlemeleri milli ve manevi değerleri korumak için gereklidir.',
+        weights: {
+            muhafazakar: 10,
+            islamci: 10,
+            ulkucu: 6,
+            kemalist: -10,
+            ulusalci: -10,
+            sosyalist: -8,
+            sosyal_demokrat: -8,
+            liberal: -5,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: 10,
+            milliyetcilik: 6,
+            yonetim: 8,
+        }
+    },
 ];
+
 
 
