@@ -5,11 +5,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { questions } from '@/data/questions';
 import { Ideology, IdeologyId } from '@/data/ideologies';
-import { Answer, UserResponses, calculateScores } from '@/utils/scoring';
+import { Answer, UserResponses, calculateScores, AxisScore } from '@/utils/scoring';
 import SwipeCard from './SwipeCard';
 
 interface QuizEngineProps {
-    onFinish: (ideology: Ideology, allScores: Record<IdeologyId, number>) => void;
+
+    onFinish: (ideology: Ideology, allScores: Record<IdeologyId, number>, axisScores: AxisScore[], matchPercentage: number) => void;
     onReset: () => void;
 }
 
@@ -28,9 +29,10 @@ export default function QuizEngine({ onFinish, onReset }: QuizEngineProps) {
             setCurrentIndex(prev => prev + 1);
         } else {
             const result = calculateScores(newResponses);
-            onFinish(result.topIdeology, result.allScores);
+            onFinish(result.topIdeology, result.allScores, result.axisScores, result.matchPercentage);
         }
     };
+
 
     const progress = ((currentIndex + 1) / questions.length) * 100;
 

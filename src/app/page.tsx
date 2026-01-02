@@ -6,25 +6,38 @@ import { ChevronRight, RefreshCw, BarChart3, Info } from 'lucide-react';
 import QuizEngine from '@/components/QuizEngine';
 import ResultScreen from '@/components/ResultScreen';
 import { Ideology, IdeologyId } from '@/data/ideologies';
+import { AxisScore } from '@/utils/scoring';
 
 export default function Home() {
   const [view, setView] = useState<'home' | 'quiz' | 'result'>('home');
   const [result, setResult] = useState<Ideology | null>(null);
   const [resultScores, setResultScores] = useState<Record<IdeologyId, number> | null>(null);
+  const [axisScores, setAxisScores] = useState<AxisScore[] | null>(null);
+  const [matchPercentage, setMatchPercentage] = useState<number>(0);
 
   const startQuiz = () => setView('quiz');
 
-  const finishQuiz = (ideology: Ideology, scores: Record<IdeologyId, number>) => {
+  const finishQuiz = (
+    ideology: Ideology,
+    scores: Record<IdeologyId, number>,
+    axes: AxisScore[],
+    match: number
+  ) => {
     setResult(ideology);
     setResultScores(scores);
+    setAxisScores(axes);
+    setMatchPercentage(match);
     setView('result');
   };
 
   const reset = () => {
     setResult(null);
     setResultScores(null);
+    setAxisScores(null);
+    setMatchPercentage(0);
     setView('home');
   };
+
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
@@ -90,9 +103,17 @@ export default function Home() {
           <QuizEngine key="quiz" onFinish={finishQuiz} onReset={reset} />
         )}
 
-        {view === 'result' && result && resultScores && (
-          <ResultScreen key="result" ideology={result} allScores={resultScores} onReset={reset} />
+        {view === 'result' && result && resultScores && axisScores && (
+          <ResultScreen
+            key="result"
+            ideology={result}
+            allScores={resultScores}
+            axisScores={axisScores}
+            matchPercentage={matchPercentage}
+            onReset={reset}
+          />
         )}
+
       </AnimatePresence>
     </main>
   );

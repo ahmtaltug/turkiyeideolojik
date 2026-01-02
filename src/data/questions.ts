@@ -1,9 +1,12 @@
 import { IdeologyId } from './ideologies';
 
+export type AxisId = 'ekonomi' | 'toplum' | 'milliyetcilik' | 'yonetim';
+
 export interface Question {
     id: number;
     text: string;
     weights: Partial<Record<IdeologyId, number>>;
+    axisWeights: Record<AxisId, number>;
 }
 
 export const questions: Question[] = [
@@ -18,6 +21,12 @@ export const questions: Question[] = [
             merkez_sag: -5,
             avrasyaci: 6,
         },
+        axisWeights: {
+            ekonomi: -10,
+            toplum: 0,
+            milliyetcilik: 2,
+            yonetim: 5,
+        }
     },
     {
         id: 2,
@@ -31,6 +40,12 @@ export const questions: Question[] = [
             ulkucu: -5,
             kemalist: 2,
         },
+        axisWeights: {
+            ekonomi: 5,
+            toplum: -5,
+            milliyetcilik: -10,
+            yonetim: -2,
+        }
     },
     {
         id: 3,
@@ -45,6 +60,12 @@ export const questions: Question[] = [
             muhafazakar: -5,
             liberal: -3,
         },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: 5,
+            milliyetcilik: 10,
+            yonetim: 6,
+        }
     },
     {
         id: 4,
@@ -59,6 +80,12 @@ export const questions: Question[] = [
             islamci: -10,
             kemalist: -2,
         },
+        axisWeights: {
+            ekonomi: 4,
+            toplum: -10,
+            milliyetcilik: -2,
+            yonetim: -5,
+        }
     },
     {
         id: 5,
@@ -72,6 +99,12 @@ export const questions: Question[] = [
             boluculuk: -10,
             liberal: -5,
         },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: 5,
+            milliyetcilik: 10,
+            yonetim: 8,
+        }
     },
     {
         id: 6,
@@ -84,6 +117,12 @@ export const questions: Question[] = [
             liberal: -10,
             kemalist: -3,
         },
+        axisWeights: {
+            ekonomi: -5,
+            toplum: 2,
+            milliyetcilik: 8,
+            yonetim: 6,
+        }
     },
     {
         id: 7,
@@ -96,6 +135,12 @@ export const questions: Question[] = [
             muhafazakar: -10,
             islamci: -10,
         },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -10,
+            milliyetcilik: 2,
+            yonetim: 4,
+        }
     },
     {
         id: 8,
@@ -107,6 +152,12 @@ export const questions: Question[] = [
             sosyalist: -10,
             ulusalci: -6,
         },
+        axisWeights: {
+            ekonomi: 10,
+            toplum: 0,
+            milliyetcilik: -2,
+            yonetim: -8,
+        }
     },
     {
         id: 9,
@@ -121,6 +172,12 @@ export const questions: Question[] = [
             kemalist: -8,
             merkez_sag: -5,
         },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -3,
+            milliyetcilik: -10,
+            yonetim: -6,
+        }
     },
     {
         id: 10,
@@ -133,6 +190,12 @@ export const questions: Question[] = [
             merkez_sag: -5,
             muhafazakar: -5,
         },
+        axisWeights: {
+            ekonomi: -8,
+            toplum: -4,
+            milliyetcilik: -2,
+            yonetim: -5,
+        }
     },
     {
         id: 11,
@@ -144,6 +207,12 @@ export const questions: Question[] = [
             kemalist: 4,
             liberal: -6,
         },
+        axisWeights: {
+            ekonomi: -10,
+            toplum: -2,
+            milliyetcilik: 0,
+            yonetim: -2,
+        }
     },
     {
         id: 12,
@@ -155,6 +224,12 @@ export const questions: Question[] = [
             sosyalist: -8,
             yesil: -5,
         },
+        axisWeights: {
+            ekonomi: 2,
+            toplum: 10,
+            milliyetcilik: 5,
+            yonetim: 8,
+        }
     },
     {
         id: 13,
@@ -169,6 +244,12 @@ export const questions: Question[] = [
             muhafazakar: -10,
             islamci: -10,
         },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -10,
+            milliyetcilik: -2,
+            yonetim: -5,
+        }
     },
     {
         id: 14,
@@ -181,6 +262,12 @@ export const questions: Question[] = [
             sosyalist: -8,
             avrasyaci: -6,
         },
+        axisWeights: {
+            ekonomi: 10,
+            toplum: -2,
+            milliyetcilik: -10,
+            yonetim: -5,
+        }
     },
     {
         id: 15,
@@ -196,5 +283,12 @@ export const questions: Question[] = [
             ulkucu: -5,
             muhafazakar: -3,
         },
+        axisWeights: {
+            ekonomi: 2,
+            toplum: -4,
+            milliyetcilik: -5,
+            yonetim: -10,
+        }
     },
 ];
+

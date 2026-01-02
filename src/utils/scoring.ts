@@ -1,5 +1,5 @@
-import { IdeologyId, ideologies } from '../data/ideologies';
-import { questions } from '../data/questions';
+import { IdeologyId, ideologies, Ideology } from '../data/ideologies';
+import { questions, AxisId } from '../data/questions';
 
 export type Answer = 'agree' | 'disagree' | 'neutral';
 
@@ -7,65 +7,128 @@ export interface UserResponses {
     [questionId: number]: Answer;
 }
 
+export interface AxisScore {
+    id: AxisId;
+    name: string;
+    value: number; // -100 to 100
+    labels: [string, string]; // [Negative label, Positive label]
+}
+
+export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = {
+    ekonomi: {
+        name: 'Ekonomi',
+        labels: ['Devletçi / Sosyalist', 'Serbest Piyasa / Liberal']
+    },
+    toplum: {
+        name: 'Toplumsal',
+        labels: ['İlerici / Seküler', 'Muhafazakar / Dindar']
+    },
+    milliyetcilik: {
+        name: 'Milliyetçilik',
+        labels: ['Küreselci / Kozmopolit', 'Milliyetçi / Ulusalcı']
+    },
+    yonetim: {
+        name: 'Yönetim',
+        labels: ['Özgürlükçü / Demokratik', 'Otoriter / Devletçi']
+    }
+};
+
 export const calculateScores = (responses: UserResponses) => {
-    const rawScores: Record<IdeologyId, number> = {
-        kemalist: 0,
-        sosyal_demokrat: 0,
-        muhafazakar: 0,
-        ulkucu: 0,
-        liberal: 0,
-        sosyalist: 0,
-        boluculuk: 0,
-        islamci: 0,
-        avrasyaci: 0,
-        ulusalci: 0,
-        merkez_sag: 0,
-        yesil: 0,
-        turkculuk: 0,
-    };
+    const rawWeights: Record<IdeologyId, number> = {} as any;
+    const axisRawScores: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
 
-    // Calculate potential maximum and minimum for normalization
-    const maxPossible: Record<IdeologyId, number> = { ...rawScores };
+    // Initialize ideology weights
+    Object.keys(ideologies).forEach(id => {
+        rawWeights[id as IdeologyId] = 0;
+    });
 
+    const ideologyMaxPossible: Record<IdeologyId, number> = { ...rawWeights };
+
+    // Calculate maximums
     questions.forEach(q => {
         Object.entries(q.weights).forEach(([ideologyId, weight]) => {
-            maxPossible[ideologyId as IdeologyId] += Math.abs(weight as number);
+            ideologyMaxPossible[ideologyId as IdeologyId] += Math.abs(weight as number);
+        });
+        Object.entries(q.axisWeights).forEach(([axisId, weight]) => {
+            axisMaxPossible[axisId as AxisId] += Math.abs(weight as number);
         });
     });
 
+    // Process responses
     Object.entries(responses).forEach(([qId, answer]) => {
         const question = questions.find((q) => q.id === Number(qId));
         if (!question) return;
-
         if (answer === 'neutral') return;
 
         const multiplier = answer === 'agree' ? 1 : -1;
 
         Object.entries(question.weights).forEach(([ideologyId, weight]) => {
-            rawScores[ideologyId as IdeologyId] += (weight as number) * multiplier;
+            rawWeights[ideologyId as IdeologyId] += (weight as number) * multiplier;
+        });
+
+        Object.entries(question.axisWeights).forEach(([axisId, weight]) => {
+            axisRawScores[axisId as AxisId] += (weight as number) * multiplier;
         });
     });
 
-    // Normalize scores to 0-100 range based on maximum possible alignment
-    const normalizedScores: Record<IdeologyId, number> = { ...rawScores };
-    Object.keys(normalizedScores).forEach((id) => {
-        const ideologyId = id as IdeologyId;
-        const max = maxPossible[ideologyId];
-        if (max === 0) {
-            normalizedScores[ideologyId] = 0;
-        } else {
-            // (Raw + Max) / (2 * Max) * 100 
-            // This maps -Max to 0, 0 to 50, and +Max to 100
-            normalizedScores[ideologyId] = Math.round(((rawScores[ideologyId] + max) / (2 * max)) * 100);
-        }
+    // Normalize Axis Scores to -100..100
+    const normalizedAxes: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const axisScores: AxisScore[] = (Object.keys(axisRawScores) as AxisId[]).map(axisId => {
+        const raw = axisRawScores[axisId];
+        const max = axisMaxPossible[axisId];
+        const value = max === 0 ? 0 : Math.round((raw / max) * 100);
+        normalizedAxes[axisId] = value;
+
+        return {
+            id: axisId,
+            name: AXES[axisId].name,
+            value,
+            labels: AXES[axisId].labels
+        };
     });
 
-    // Get the highest scoring ideology
-    const sortedIdeologies = Object.entries(normalizedScores).sort(([, a], [, b]) => b - a);
-    const topIdeologyId = sortedIdeologies[0][0] as IdeologyId;
+    // Calculate Similarity for each ideology
+    const finalScores: Record<IdeologyId, number> = {} as any;
+
+    Object.entries(ideologies).forEach(([id, ideology]) => {
+        const ideologyId = id as IdeologyId;
+
+        // 1. Weight-based Score (0-100)
+        const maxW = ideologyMaxPossible[ideologyId];
+        const weightScore = maxW === 0 ? 0 : ((rawWeights[ideologyId] + maxW) / (2 * maxW)) * 100;
+
+        // 2. Axis Distance-based Score (0-100)
+        // Calculate Euclidean distance between user axes and ideology ideal axes
+        let distanceSum = 0;
+        let maxDistanceSum = 0;
+
+        (Object.keys(AXES) as AxisId[]).forEach(axisId => {
+            const userVal = normalizedAxes[axisId];
+            const idealVal = ideology.idealAxes[axisId];
+            distanceSum += Math.pow(userVal - idealVal, 2);
+            // Max possible distance for one axis is 200 (from -100 to 100)
+            maxDistanceSum += Math.pow(200, 2);
+        });
+
+        const distance = Math.sqrt(distanceSum);
+        const maxPossibleDistance = Math.sqrt(maxDistanceSum);
+        const distanceScore = ((maxPossibleDistance - distance) / maxPossibleDistance) * 100;
+
+        // Hybrid Score: 40% Weights, 60% Axis Distance
+        finalScores[ideologyId] = Math.round((weightScore * 0.4) + (distanceScore * 0.6));
+    });
+
+    // Sort result
+    const sortedResult = Object.entries(finalScores)
+        .sort(([, a], [, b]) => b - a);
+
+    const topIdeologyId = sortedResult[0][0] as IdeologyId;
 
     return {
         topIdeology: ideologies[topIdeologyId],
-        allScores: normalizedScores,
+        allScores: finalScores,
+        axisScores,
+        matchPercentage: finalScores[topIdeologyId]
     };
 };
