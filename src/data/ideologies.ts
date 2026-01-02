@@ -29,6 +29,7 @@ export interface Ideology {
         principles: string[];
         motto: string;
     };
+    actionPlan: string[];
 }
 
 export const ideologies: Record<IdeologyId, Ideology> = {
@@ -45,7 +46,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "Cumhuriyetin kuruluş felsefesidir. 1920'lerden günümüze Türkiye'nin modernleşme sürecinin temelidir.",
             principles: ["Cumhuriyetçilik", "Milliyetçilik", "Halkçılık", "Devletçilik", "Laiklik", "İnkılapçılık"],
             motto: "Ne Mutlu Türküm Diyene!"
-        }
+        },
+        actionPlan: [
+            "Kamuda liyakat sistemini geri getirip mülakatları tamamen kaldırmak.",
+            "Eğitim müfredatını bilimsel ve laik temellere göre baştan aşağı yenilemek.",
+            "Stratejik kurumların özelleştirilmesini durdurup devlet kontrolünü artırmak."
+        ]
     },
     sosyal_demokrat: {
         id: 'sosyal_demokrat',
@@ -60,7 +66,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "1960'lardan bugüne evrilen, 2024 yerel seçimleriyle Türkiye'nin birinci partisi konumuna gelen siyasi akım.",
             principles: ["Sosyal Adalet", "Demokratik Yönetim", "Liyakat", "Halkçı Ekonomi"],
             motto: "Türkiye İttifakı!"
-        }
+        },
+        actionPlan: [
+            "Kent lokantaları ve sosyal yardım ağlarını ulusal seviyeye taşımak.",
+            "Yargı bağımsızlığını sağlayıp Avrupa İnsan Hakları Sözleşmesi'ne tam uyum.",
+            "Asgari ücreti insani yaşam sınırına çekip vergi yükünü zenginden almak."
+        ]
     },
     muhafazakar: {
         id: 'muhafazakar',
@@ -75,7 +86,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "2000'lerden bu yana Türkiye siyasetini domine eden, Yeni Anayasa ve Türkiye Yüzyılı vizyonuna odaklanmış sağ akım.",
             principles: ["Dini-Milli Değerler", "Hizmet Siyaseti", "Yeni Anayasa", "Güçlü Liderlik"],
             motto: "Durmak Yok, Yola Devam."
-        }
+        },
+        actionPlan: [
+            "Savunma sanayi projelerine (KAAN, TOGG vb.) hız kesmeden devam etmek.",
+            "Yeni, sivil ve kapsayıcı bir anayasa için referanduma gitmek.",
+            "Bölgesel güç odaklı aktif bir dış politika izlemek."
+        ]
     },
     ulkucu: {
         id: 'ulkucu',
@@ -90,7 +106,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "CKMP ve MHP ile kurumsallaşmış, Türk milliyetçiliğini İslami hassasiyetlerle birleştirmiş bir harekettir.",
             principles: ["Türk-İslam Ülküsü", "Devletin Bekası", "Dokuz Işık Öğretisi"],
             motto: "Tanrı Türk'ü Korusun ve Yüceltsin!"
-        }
+        },
+        actionPlan: [
+            "Terörle mücadelede tavizsiz bir güvenlik politikası uygulamak.",
+            "Türk Devletleri Teşkilatı'nı askeri ve ekonomik bir birliğe dönüştürmek.",
+            "Devlet kadrolarında milli hassasiyeti yüksek kadrolaşmaya gitmek."
+        ]
     },
     liberal: {
         id: 'liberal',
@@ -102,10 +123,15 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         roast: "Her şey özelleşsin istiyorsun ama sevgilin 'başkasıyla da görüşelim' dese hemen devletçi olup kural koyarsın.",
         idealAxes: { ekonomi: 90, toplum: -40, milliyetcilik: -60, yonetim: -90 },
         details: {
-            history: "Osmanlı'nın son döneminden bu yana bireysel özgürlük and serbest teşebbüs ilkeleri etrafında toplanan gruptur.",
+            history: "Osmanlı'nın son döneminden bu yana bireysel özgürlük ve serbest teşebbüs ilkeleri etrafında toplanan gruptur.",
             principles: ["Birey Hakları", "Serbest Piyasa", "Hukuk Devleti", "Mülkiyet Hakkı"],
             motto: "Özgürlük, Herkese ve Daima!"
-        }
+        },
+        actionPlan: [
+            "TRT dahil tüm kamu iktisadi teşebbüslerini acilen özelleştirmek.",
+            "Merkez Bankası'nı tam bağımsız yapıp vergi oranlarını radikal düşürmek.",
+            "Vize serbestisi ve serbest ticaret anlaşmalarıyla dünyayla entegrasyon."
+        ]
     },
     sosyalist: {
         id: 'sosyalist',
@@ -120,7 +146,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "1960'larda Türkiye İşçi Partisi ile hız kazanan, toplumsal mülkiyet ve sınıf mücadelesi odaklı sol akımdır.",
             principles: ["Sınıfsız Toplum", "Eşitlik", "Anti-Emperyalizm", "Kamulaştırma"],
             motto: "Dünyanın Bütün İşçileri Birleşin!"
-        }
+        },
+        actionPlan: [
+            "Tüm temel hizmetlerin (eğitim, sağlık, ulaşım) tamamen ücretsiz yapılması.",
+            "Haftalık çalışma süresini 35 saate indirip işten çıkarmaları yasaklamak.",
+            "NATO'dan çıkıp tam bağımsız, emekten yana bir dış politika kurmak."
+        ]
     },
     boluculuk: {
         id: 'boluculuk',
@@ -135,7 +166,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "Bölgesel özyönetim ve etnik temelli siyaset güden, üniter devlet yapısını sorgulayan akımdır.",
             principles: ["Yerinden Yönetim", "Etnik Siyaset", "Anayasal Kimlik"],
             motto: "Özgür Yaşam, Demokratik Toplum."
-        }
+        },
+        actionPlan: [
+            "Yerinden yönetim ve özerklik şartlarını hayata geçirmek.",
+            "Anadilde eğitimi tüm kademelerde zorunlu/seçmeli hale getirmek.",
+            "Kayyum atamalarını yasaklayıp geniş bir genel af ilan etmek."
+        ]
     },
     islamci: {
         id: 'islamci',
@@ -150,7 +186,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "Milli Görüş hareketiyle şekillenmiş, dini prensipleri siyasetin merkezine koyan akımdır.",
             principles: ["Şer'i Referans", "Ümmetçilik", "Adil Düzen"],
             motto: "Hakkın Hakimiyeti İçin Çalışmak İbadettir."
-        }
+        },
+        actionPlan: [
+            "Faizsiz ekonomi sistemine (Adil Düzen) geçişi hızlandırmak.",
+            "D8 Teşkilatı'nı canlandırıp İslam Birliği'ni kurmak.",
+            "Eğitim müfredatını manevi ve ahlaki değerler ekseninde yenilemek."
+        ]
     },
     avrasyaci: {
         id: 'avrasyaci',
@@ -165,7 +206,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "Aydınlık hareketi ve sonrasında Batı karşıtlığı temelinde gelişen, Avrasya ittifakını öneren stratejik görüştür.",
             principles: ["Anti-NATO", "Jeopolitik Değişim", "Otoriter Devlet Yapısı"],
             motto: "Yükselen Asya, Bağımsız Türkiye!"
-        }
+        },
+        actionPlan: [
+            "NATO'dan çıkıp BRICS ve Şanghay İşbirliği Örgütü'ne üye olmak.",
+            "Üretim devrimi için planlı ekonomi ve kamulaştırma hamlesi.",
+            "Eskişehir-Pekin İpek Yolu hattını stratejik merkez yapmak."
+        ]
     },
     ulusalci: {
         id: 'ulusalci',
@@ -180,7 +226,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "2000'lerin başında AB ve ABD karşıtlığıyla kitleselleşen seküler milliyetçi çizgidir.",
             principles: ["Tam Bağımsızlık", "Seküler Milliyetçilik", "Milli Ekonomi"],
             motto: "Türkiye Türklerindir!"
-        }
+        },
+        actionPlan: [
+            "Sığınmacıların tamamını bir yıl içinde ülkelerine geri göndermek.",
+            "AB ve Gümrük Birliği anlaşmalarını milli çıkarlarca revize etmek.",
+            "Mavi Vatan ve Kıbrıs konusunda tavizsiz, sert dış politika."
+        ]
     },
     merkez_sag: {
         id: 'merkez_sag',
@@ -195,7 +246,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "Demokrat Parti'den İYİ Parti'ye uzanan, 2024 sonrası yeniden yapılanma sürecine giren merkez sağ gelenek.",
             principles: ["Hukukun Üstünlüğü", "Kurumsal Milliyetçilik", "Serbest Piyasa", "Liyakat"],
             motto: "Bizim Yolumuz, Milletin Yoludur."
-        }
+        },
+        actionPlan: [
+            "Güçlendirilmiş parlamenter sisteme acil geri dönüş hamlesi.",
+            "Merkez Bankası ve TÜİK gibi kurumlara liyakatli atamalar.",
+            "Küçük esnaf ve sanayiciyi koruyan vergi reformları."
+        ]
     },
     yesil: {
         id: 'yesil',
@@ -207,10 +263,15 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         roast: "Plastik pipet kullanmıyorsun diye dünya kurtuldu sanıyorsun ama 45 numara ekolojik ayak izin seni ele veriyor.",
         idealAxes: { ekonomi: -70, toplum: -80, milliyetcilik: -60, yonetim: -80 },
         details: {
-            history: "Global yeşil hareketin Türkiye'deki uzantısıdır. Çevre and sürdürülebilirlik odaklıdır.",
+            history: "Global yeşil hareketin Türkiye'deki uzantısıdır. Çevre ve sürdürülebilirlik odaklıdır.",
             principles: ["Ekolojik Adalet", "Doğa Hakları", "Sürdürülebilirlik"],
             motto: "Doğa ile Uyum İçinde Bir Gelecek."
-        }
+        },
+        actionPlan: [
+            "Fosil yakıt kullanımını sonlandırıp %100 yenilenebilir enerjiye geçiş.",
+            "Hayvan hakları kanununu en sert şekilde revize etmek.",
+            "Tüm maden projelerini ekolojik denetimden geçirip riskli olanları kapatmak."
+        ]
     },
     turkculuk: {
         id: 'turkculuk',
@@ -225,7 +286,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             history: "Asala ve mülteci krizi gibi dönemlerle şekillenmiş, seküler ve net milliyetçi bir çizgidir.",
             principles: ["Türklük Bilinci", "Demografik Koruma", "Seküler Devlet"],
             motto: "Vatan Ne Türkiye'dir Türklere, Ne Türkistan; Vatan Büyük ve Müebbet Bir Ülkedir: Turan."
-        }
+        },
+        actionPlan: [
+            "Sınır güvenliği için 'Duvar' ve 'Sensör' projelerini tamamlamak.",
+            "Vatandaşlık alan sığınmacıların vatandaşlık incelemesini başlatmak.",
+            "Milli Savunma Bakanlığı yapısını 15 Temmuz öncesine döndürmek."
+        ]
     },
 };
 

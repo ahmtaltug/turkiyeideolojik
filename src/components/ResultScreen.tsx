@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     RefreshCcw, PartyPopper, UserCheck, BarChart2, Compass,
     Share2, Download, Info, Zap, AlertTriangle, X, ExternalLink,
-    Quote, Target
+    Quote, Target, Sparkles
 } from 'lucide-react';
 import { Ideology, IdeologyId, ideologies } from '@/data/ideologies';
 import { AxisScore, LeaderMatch, BreakdownItem } from '@/utils/scoring';
@@ -297,6 +297,44 @@ export default function ResultScreen({
                         className="absolute -bottom-12 -right-12 w-32 h-32 blur-3xl opacity-10 rounded-full"
                         style={{ backgroundColor: oppositeIdeology.color }}
                     />
+                </motion.div>
+
+                {/* 4. Sen Olsan Ne Yapardın? */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="lg:col-span-3 glass p-8 rounded-[2.5rem] border-white/5 space-y-6 relative overflow-hidden group"
+                >
+                    <div className="absolute -top-12 -right-12 p-8 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+                        <Sparkles className="w-48 h-48 text-yellow-500" />
+                    </div>
+
+                    <div className="flex items-center gap-4 border-b border-white/5 pb-6">
+                        <div className="p-3 bg-yellow-500/10 rounded-2xl">
+                            <Sparkles className="w-6 h-6 text-yellow-500" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-white uppercase tracking-wider text-xl">Sen Olsan Ne Yapardın?</h3>
+                            <p className="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">İdeolojine Göre Gelecek Vizyonun</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                        {ideology.actionPlan.map((action, i) => (
+                            <div key={i} className="space-y-4 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-yellow-500/20 transition-all hover:scale-[1.02] cursor-default">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-sm font-black text-black shadow-lg shadow-yellow-500/20">
+                                        0{i + 1}
+                                    </div>
+                                    <div className="h-px flex-1 bg-white/5" />
+                                </div>
+                                <p className="text-sm text-gray-300 font-bold leading-relaxed">
+                                    {action}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 </motion.div>
             </div>
 
