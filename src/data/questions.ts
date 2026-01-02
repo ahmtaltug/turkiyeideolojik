@@ -270,6 +270,24 @@ export const questions: Question[] = [
         }
     },
     {
+        id: 15,
+        text: 'Merkez Bankası faiz kararlarında tamamen serbest olmalı; enflasyonla mücadele için gerekirse yüksek faiz politikası uygulanmalıdır.',
+        weights: {
+            liberal: 10,
+            merkez_sag: 8,
+            sosyal_demokrat: 5,
+            muhafazakar: -5,
+            islamci: -10,
+            sosyalist: -4,
+        },
+        axisWeights: {
+            ekonomi: 8,
+            toplum: 0,
+            milliyetcilik: -2,
+            yonetim: -8,
+        }
+    },
+    {
         id: 16,
         text: 'Basın özgürlüğü ve ifade hürriyeti, devlet güvenliği gerekçesiyle dahi olsa kısıtlanamaz.',
         weights: {
