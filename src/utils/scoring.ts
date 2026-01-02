@@ -58,7 +58,7 @@ export const calculateScores = (responses: UserResponses) => {
     const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
 
     // Track per-question impact for breakdown
-    const questionImpacts: Record<number, Record<IdeologyId, number>> = {};
+    const questionImpacts: Record<number, Partial<Record<IdeologyId, number>>> = {};
 
     // Calculate maximums
     questions.forEach(q => {
