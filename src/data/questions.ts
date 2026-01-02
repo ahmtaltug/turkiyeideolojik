@@ -270,25 +270,298 @@ export const questions: Question[] = [
         }
     },
     {
-        id: 15,
-        text: 'Yargı bağımsızlığı ve hukukun üstünlüğü, her türlü siyasi otoritenin ve güvenlik kaygısının üstündedir.',
+        id: 16,
+        text: 'Basın özgürlüğü ve ifade hürriyeti, devlet güvenliği gerekçesiyle dahi olsa kısıtlanamaz.',
         weights: {
-            liberal: 8,
+            liberal: 10,
+            sosyalist: 8,
             sosyal_demokrat: 8,
-            merkez_sag: 6,
-            kemalist: 5,
-            boluculuk: 4,
-            yesil: 4,
-            turkculuk: -5,
-            ulkucu: -5,
-            muhafazakar: -3,
+            yesil: 7,
+            muhafazakar: -8,
+            islamci: -8,
+            ulkucu: -6,
         },
         axisWeights: {
-            ekonomi: 2,
-            toplum: -4,
+            ekonomi: 0,
+            toplum: -8,
             milliyetcilik: -5,
             yonetim: -10,
         }
     },
+    {
+        id: 17,
+        text: 'Zorunlu askerlik kaldırılmalı, tamamen profesyonel orduya geçilmelidir.',
+        weights: {
+            liberal: 10,
+            yesil: 8,
+            boluculuk: 7,
+            sosyal_demokrat: 4,
+            turkculuk: -10,
+            ulkucu: -10,
+            ulusalci: -10,
+            kemalist: -6,
+        },
+        axisWeights: {
+            ekonomi: 4,
+            toplum: -5,
+            milliyetcilik: -10,
+            yonetim: -8,
+        }
+    },
+    {
+        id: 18,
+        text: 'Eğitimde din dersleri tamamen seçmeli olmalı, devlet eliyle dini eğitim verilmemelidir.',
+        weights: {
+            kemalist: 10,
+            sosyalist: 10,
+            liberal: 8,
+            sosyal_demokrat: 7,
+            muhafazakar: -10,
+            islamci: -10,
+            ulkucu: -5,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -10,
+            milliyetcilik: 0,
+            yonetim: -4,
+        }
+    },
+    {
+        id: 19,
+        text: 'Üniversitelerin idari ve akademik özerkliği dokunulmaz olmalıdır; Rektörler atanmamalı, seçilmelidir.',
+        weights: {
+            liberal: 8,
+            sosyalist: 8,
+            sosyal_demokrat: 8,
+            yesil: 6,
+            kemalist: 5,
+            muhafazakar: -8,
+            islamci: -8,
+            ulkucu: -6,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -5,
+            milliyetcilik: -2,
+            yonetim: -10,
+        }
+    },
+    {
+        id: 20,
+        text: 'Merkez Bankası tamamen bağımsız olmalı, siyasetçiler para politikasına asla müdahale etmemelidir.',
+        weights: {
+            liberal: 10,
+            merkez_sag: 8,
+            sosyal_demokrat: 5,
+            muhafazakar: -8,
+            islamci: -6,
+            sosyalist: -5,
+        },
+        axisWeights: {
+            ekonomi: 10,
+            toplum: -2,
+            milliyetcilik: -4,
+            yonetim: -8,
+        }
+    },
+    {
+        id: 21,
+        text: 'İstanbul Sözleşmesi\'ne geri dönülmeli ve LGBT+ hakları yasal güvence altına alınmalıdır.',
+        weights: {
+            yesil: 10,
+            sosyalist: 9,
+            sosyal_demokrat: 9,
+            boluculuk: 7,
+            kemalist: 4,
+            muhafazakar: -10,
+            islamci: -10,
+            ulkucu: -8,
+            turkculuk: -4,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -10,
+            milliyetcilik: -4,
+            yonetim: -6,
+        }
+    },
+    {
+        id: 22,
+        text: 'Tarikat ve cemaatlerin devlet kadrolarındaki etkinliği Türkiye için bir ulusal güvenlik tehdididir.',
+        weights: {
+            kemalist: 10,
+            ulusalci: 10,
+            turkculuk: 8,
+            sosyalist: 8,
+            avrasyaci: 6,
+            muhafazakar: -10,
+            islamci: -10,
+            merkez_sag: -4,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -10,
+            milliyetcilik: 6,
+            yonetim: 5,
+        }
+    },
+    {
+        id: 23,
+        text: 'Seçilmiş yerel yöneticilerin (Belediye Baskanı vb.) yerine kayyum atanması hukuk dışıdır ve kabul edilemez.',
+        weights: {
+            boluculuk: 10,
+            sosyalist: 8,
+            sosyal_demokrat: 8,
+            liberal: 7,
+            yesil: 6,
+            kemalist: 2,
+            ulkucu: -10,
+            ulusalci: -10,
+            avrasyaci: -8,
+            turkculuk: -6,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -4,
+            milliyetcilik: -8,
+            yonetim: -10,
+        }
+    },
+    {
+        id: 24,
+        text: 'Devlet sanatı ve sanatçıyı doğrudan finanse etmemeli, kültür piyasası kendi dinamiklerine bırakılmalıdır.',
+        weights: {
+            liberal: 10,
+            merkez_sag: 3,
+            sosyalist: -10,
+            kemalist: -8,
+            ulusalci: -6,
+        },
+        axisWeights: {
+            ekonomi: 8,
+            toplum: -2,
+            milliyetcilik: -4,
+            yonetim: -6,
+        }
+    },
+    {
+        id: 25,
+        text: 'Türkiye\'nin bekası için gerekirse bazı temel hak ve özgürlükler askıya alınabilir.',
+        weights: {
+            avrasyaci: 10,
+            ulkucu: 9,
+            ulusalci: 8,
+            turkculuk: 6,
+            muhafazakar: 5,
+            kemalist: 2,
+            liberal: -10,
+            sosyalist: -8,
+            yesil: -8,
+            sosyal_demokrat: -8,
+        },
+        axisWeights: {
+            ekonomi: -2,
+            toplum: 5,
+            milliyetcilik: 8,
+            yonetim: 10,
+        }
+    },
+    {
+        id: 26,
+        text: 'Miras vergisi ve servet vergisi gibi uygulamalarla sosyal adaletsizlik azaltılmalıdır.',
+        weights: {
+            sosyalist: 10,
+            sosyal_demokrat: 7,
+            yesil: 5,
+            liberal: -10,
+            merkez_sag: -6,
+            muhafazakar: -4,
+        },
+        axisWeights: {
+            ekonomi: -10,
+            toplum: -2,
+            milliyetcilik: 0,
+            yonetim: 4,
+        }
+    },
+    {
+        id: 27,
+        text: 'Düşük gelirli vatandaşlara sosyal yardım yapmak, uzay araştırmaları veya büyük savunma sanayii yatırımlarından daha önceliklidir.',
+        weights: {
+            sosyalist: 10,
+            sosyal_demokrat: 8,
+            yesil: 6,
+            boluculuk: 4,
+            ulusalci: -8,
+            avrasyaci: -8,
+            turkculuk: -6,
+            kemalist: -4,
+        },
+        axisWeights: {
+            ekonomi: -8,
+            toplum: -4,
+            milliyetcilik: -8,
+            yonetim: -4,
+        }
+    },
+    {
+        id: 28,
+        text: 'Kamu kurumlarına personel alımında liyakat tek kriter olmalı, mülakat sistemi tamamen kaldırılmalıdır.',
+        weights: {
+            kemalist: 8,
+            liberal: 8,
+            sosyal_demokrat: 8,
+            ulkucu: 4,
+            turkculuk: 4,
+            merkez_sag: 4,
+            muhafazakar: -10,
+            islamci: -8,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -5,
+            milliyetcilik: 2,
+            yonetim: -10,
+        }
+    },
+    {
+        id: 29,
+        text: 'Hayvanlar üzerinde deney yapılması tamamen yasaklanmalı ve vegan yaşam biçimi teşvik edilmelidir.',
+        weights: {
+            yesil: 10,
+            sosyalist: 4,
+            liberal: -2,
+            muhafazakar: -6,
+            islamci: -6,
+        },
+        axisWeights: {
+            ekonomi: -4,
+            toplum: -6,
+            milliyetcilik: -2,
+            yonetim: -2,
+        }
+    },
+    {
+        id: 30,
+        text: 'Türkçe dışındaki diller (Kürtçe, Arapça vb.) kamu hizmetlerinde ve eğitimde resmi olarak kullanılabilmelidir.',
+        weights: {
+            boluculuk: 10,
+            liberal: 5,
+            yesil: 4,
+            turkculuk: -10,
+            ulusalci: -10,
+            ulkucu: -10,
+            kemalist: -8,
+            avrasyaci: -6,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -4,
+            milliyetcilik: -10,
+            yonetim: -6,
+        }
+    },
 ];
+
 

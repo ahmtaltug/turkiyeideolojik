@@ -1,24 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
-import { questions } from '@/data/questions';
+import { questions as allQuestions } from '@/data/questions';
 import { Ideology, IdeologyId } from '@/data/ideologies';
-import { Answer, UserResponses, calculateScores, AxisScore } from '@/utils/scoring';
+import { Answer, UserResponses, calculateScores, AxisScore, LeaderMatch, BreakdownItem } from '@/utils/scoring';
 import SwipeCard from './SwipeCard';
 
 interface QuizEngineProps {
-
-    onFinish: (ideology: Ideology, allScores: Record<IdeologyId, number>, axisScores: AxisScore[], matchPercentage: number) => void;
+    mode: 'quick' | 'full';
+    onFinish: (
+        ideology: Ideology,
+        opposite: Ideology,
+        allScores: Record<IdeologyId, number>,
+        axisScores: AxisScore[],
+        matchPercentage: number,
+        leaders: LeaderMatch[],
+        breakdown: BreakdownItem[]
+    ) => void;
     onReset: () => void;
 }
 
-export default function QuizEngine({ onFinish, onReset }: QuizEngineProps) {
+const SWIPE_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3';
+
+export default function QuizEngine({ mode, onFinish, onReset }: QuizEngineProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [responses, setResponses] = useState<UserResponses>({});
 
+    const questions = useMemo(() => {
+        if (mode === 'full') return allQuestions;
+        // Hızlı mod için 15 rasgele soru seç
+        return [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, 15);
+    }, [mode]);
+
+    const playSound = () => {
+        const audio = new Audio(SWIPE_SOUND);
+        audio.volume = 0.2;
+        audio.play().catch(() => { }); // Ignore interaction errors
+    };
+
     const handleSwipe = (direction: 'left' | 'right') => {
+        playSound();
         const question = questions[currentIndex];
         const answer: Answer = direction === 'right' ? 'agree' : 'disagree';
 
@@ -29,7 +52,15 @@ export default function QuizEngine({ onFinish, onReset }: QuizEngineProps) {
             setCurrentIndex(prev => prev + 1);
         } else {
             const result = calculateScores(newResponses);
-            onFinish(result.topIdeology, result.allScores, result.axisScores, result.matchPercentage);
+            onFinish(
+                result.topIdeology,
+                result.oppositeIdeology,
+                result.allScores,
+                result.axisScores,
+                result.matchPercentage,
+                result.leaderMatches,
+                result.breakdown
+            );
         }
     };
 
@@ -53,7 +84,7 @@ export default function QuizEngine({ onFinish, onReset }: QuizEngineProps) {
                     <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden">
                         <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: `${progress}%` }}
+                            animate={{ width: `${progress}% ` }}
                             className="h-full bg-gradient-to-r from-red-500 to-blue-500"
                         />
                     </div>

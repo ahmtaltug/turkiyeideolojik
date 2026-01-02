@@ -1,24 +1,66 @@
-import { motion } from 'framer-motion';
-import { RefreshCcw, PartyPopper, UserCheck, BarChart2, Compass } from 'lucide-react';
+'use client';
+
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    RefreshCcw, PartyPopper, UserCheck, BarChart2, Compass,
+    Share2, Download, Info, Zap, AlertTriangle, X, ExternalLink,
+    Quote, Target
+} from 'lucide-react';
 import { Ideology, IdeologyId, ideologies } from '@/data/ideologies';
-import { AxisScore } from '@/utils/scoring';
+import { AxisScore, LeaderMatch, BreakdownItem } from '@/utils/scoring';
+import { toPng } from 'html-to-image';
 import {
     Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip
 } from 'recharts';
 
 interface ResultScreenProps {
     ideology: Ideology;
+    oppositeIdeology: Ideology;
     allScores: Record<IdeologyId, number>;
     axisScores: AxisScore[];
     matchPercentage: number;
+    leaderMatches: LeaderMatch[];
+    breakdown: BreakdownItem[];
     onReset: () => void;
 }
 
-export default function ResultScreen({ ideology, allScores, axisScores, matchPercentage, onReset }: ResultScreenProps) {
-    // Prepare data for Radar Chart
+export default function ResultScreen({
+    ideology,
+    oppositeIdeology,
+    allScores,
+    axisScores,
+    matchPercentage,
+    leaderMatches,
+    breakdown,
+    onReset
+}: ResultScreenProps) {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [showDetails, setShowDetails] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+
+    const downloadCard = async () => {
+        if (!cardRef.current) return;
+        setIsExporting(true);
+        try {
+            const dataUrl = await toPng(cardRef.current, {
+                cacheBust: true,
+                style: { transform: 'scale(1)', transformOrigin: 'top left' }
+            });
+            const link = document.createElement('a');
+            link.download = `turkiye-ideolojik-${ideology.id}.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (err) {
+            console.error('Export failed', err);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
     const radarData = Object.entries(allScores)
         .sort(([, a], [, b]) => b - a)
-        .slice(0, 8) // Show top 8 for better readability
+        .slice(0, 5)
         .map(([id, score]) => ({
             subject: ideologies[id as IdeologyId].name,
             A: score,
@@ -26,194 +68,324 @@ export default function ResultScreen({ ideology, allScores, axisScores, matchPer
         }));
 
     return (
-        <div className="max-w-6xl w-full text-center space-y-8 py-8 px-4">
-            <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', damping: 15 }}
-                className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10"
-            >
-                <div className="relative">
-                    <PartyPopper className="w-12 h-12 text-white" />
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-black"
-                    >
-                        %{matchPercentage}
-                    </motion.div>
-                </div>
-            </motion.div>
+        <div className="max-w-6xl w-full space-y-8 py-8 px-4">
+            {/* Main Result Card (Exportable) */}
+            <div ref={cardRef} className="relative bg-black p-1">
+                <div className="glass p-8 md:p-12 rounded-[2.5rem] text-left border-white/10 overflow-hidden relative">
+                    {/* Background Glow */}
+                    <div
+                        className="absolute -top-24 -right-24 w-96 h-96 blur-[120px] opacity-20 rounded-full"
+                        style={{ backgroundColor: ideology.color }}
+                    />
 
-            <div className="space-y-2">
-                <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest">En Yakın Eşleşme</h2>
-                <motion.h1
-                    className="text-5xl md:text-7xl font-black italic uppercase leading-none"
-                    style={{ color: ideology.color }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    {ideology.name}
-                </motion.h1>
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div className="lg:col-span-7 space-y-8">
+                            <div className="space-y-4">
+                                <motion.div
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    className="flex items-center gap-3"
+                                >
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                        Analiz Tamamlandı
+                                    </span>
+                                    <div className="h-px flex-1 bg-white/10" />
+                                </motion.div>
+
+                                <div className="space-y-2">
+                                    <motion.h1
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        className="text-6xl md:text-8xl font-black italic uppercase leading-none tracking-tighter"
+                                        style={{ color: ideology.color }}
+                                    >
+                                        {ideology.name}
+                                    </motion.h1>
+                                    <div className="flex items-center gap-4">
+                                        <div className="px-4 py-2 bg-white text-black font-black italic rounded-xl text-2xl">
+                                            %{matchPercentage} UYUM
+                                        </div>
+                                        <p className="text-gray-400 font-medium max-w-xs text-sm leading-tight">
+                                            {ideology.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {axisScores.map((axis) => (
+                                    <div key={axis.id} className="space-y-2">
+                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${(axis.value + 100) / 2}%` }}
+                                                className="h-full"
+                                                style={{ backgroundColor: ideology.color }}
+                                            />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-gray-500 uppercase block truncate">
+                                            {axis.name}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                                {ideology.parties.map((p, i) => (
+                                    <span key={i} className="px-3 py-1 bg-white/5 border border-white/5 rounded-lg text-[10px] font-bold text-gray-500 uppercase">
+                                        {p}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="lg:col-span-5 h-[300px] md:h-[400px] relative">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                                    <PolarGrid stroke="#ffffff10" />
+                                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 10, fontWeight: 'bold' }} />
+                                    <Radar
+                                        name="Uyum"
+                                        dataKey="A"
+                                        stroke={ideology.color}
+                                        fill={ideology.color}
+                                        fillOpacity={0.5}
+                                    />
+                                </RadarChart>
+                            </ResponsiveContainer>
+                            <div className="absolute inset-x-0 bottom-0 text-center">
+                                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em]">Siyasi Kimlik Kartı • turkiyeideolojik.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column: Summary and Roast */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="glass p-8 rounded-3xl text-left space-y-6 flex flex-col"
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
+                <button
+                    onClick={downloadCard}
+                    disabled={isExporting}
+                    className="px-8 py-4 bg-white text-black font-black rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10"
                 >
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-white mb-2 font-bold opacity-50">
-                            <BarChart2 className="w-4 h-4" />
-                            <h3 className="text-sm uppercase tracking-wider">İdeoloji Tanımı</h3>
-                        </div>
-                        <p className="text-gray-300 leading-relaxed text-lg font-medium">
-                            {ideology.description}
-                        </p>
-                    </div>
+                    {isExporting ? <Zap className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+                    KARTI İNDİR
+                </button>
+                <button
+                    onClick={() => setShowDetails(true)}
+                    className="px-8 py-4 glass text-white font-black rounded-2xl flex items-center gap-3 hover:scale-105 active:scale-95 transition-all border-white/10"
+                >
+                    <Info className="w-5 h-5" />
+                    BİLGİ KARTI
+                </button>
+                <button
+                    onClick={onReset}
+                    className="p-4 glass text-gray-400 hover:text-white rounded-2xl border-white/10 transition-colors"
+                >
+                    <RefreshCcw className="w-6 h-6" />
+                </button>
+            </div>
 
-                    <div className="p-5 bg-red-500/10 border border-red-500/20 rounded-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <PartyPopper className="w-12 h-12" />
-                        </div>
-                        <p className="text-red-400 italic text-sm relative z-10 leading-snug">
-                            <span className="font-bold uppercase mr-2 text-xs bg-red-500 text-white px-1.5 py-0.5 rounded">Acı Gerçekler:</span>
-                            {ideology.roast}
-                        </p>
-                    </div>
-
-                    <div className="space-y-4 pt-4 border-t border-white/5">
-                        <div className="flex items-center gap-2 text-white mb-2 font-bold opacity-50 uppercase tracking-wider text-sm">
-                            <UserCheck className="w-4 h-4" />
-                            <h3>Liderler</h3>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {ideology.leaders.map((leader, i) => (
-                                <span key={i} className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-gray-300 text-sm font-medium">
-                                    {leader}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="mt-auto pt-6 border-t border-white/5">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Yakın Partiler</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {ideology.parties.map((party, i) => (
-                                <span key={i} className="text-[10px] px-2 py-1 bg-white/5 rounded-md text-gray-500 border border-white/5 font-bold">
-                                    {party}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* Middle Column: Axis Analysis */}
+            {/* In-depth Analysis Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* 1. Neden Bu Sonuç? */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="glass p-8 rounded-3xl text-left space-y-8"
+                    transition={{ delay: 0.1 }}
+                    className="glass p-6 rounded-[2rem] border-white/5 space-y-4"
                 >
-                    <div className="flex items-center gap-2 text-white font-bold opacity-50 uppercase tracking-wider text-sm border-b border-white/5 pb-4">
-                        <Compass className="w-4 h-4" />
-                        <h3>Eksen Analizi</h3>
+                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                        <Target className="w-5 h-5 text-blue-400" />
+                        <h3 className="font-bold text-white uppercase tracking-wider text-sm">Neden Bu Sonuç?</h3>
                     </div>
-
-                    <div className="space-y-10">
-                        {axisScores.map((axis) => (
-                            <div key={axis.id} className="space-y-3">
-                                <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter text-gray-500">
-                                    <span>{axis.labels[0]}</span>
-                                    <span>{axis.labels[1]}</span>
-                                </div>
-                                <div className="relative h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                                    {/* Middle line */}
-                                    <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/20 z-10" />
-
-                                    <motion.div
-                                        initial={{ width: '0%', left: '50%' }}
-                                        animate={{
-                                            width: `${Math.abs(axis.value) / 2}%`,
-                                            left: axis.value >= 0 ? '50%' : `${50 - Math.abs(axis.value) / 2}%`
-                                        }}
-                                        className={`absolute top-0 bottom-0 ${axis.value >= 0 ? 'bg-blue-500' : 'bg-red-500'} opacity-60`}
-                                    />
-
-                                    {/* Pointer */}
-                                    <motion.div
-                                        initial={{ left: '50%' }}
-                                        animate={{ left: `${(axis.value + 100) / 2}%` }}
-                                        className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] z-20"
-                                    />
-                                </div>
-                                <div className="text-center font-bold text-xs text-white uppercase italic">
-                                    {axis.name}
+                    <div className="space-y-3">
+                        {breakdown.map((item, i) => (
+                            <div key={i} className="p-3 bg-white/5 rounded-xl space-y-1">
+                                <p className="text-[11px] text-gray-400 leading-tight">"{item.questionText}"</p>
+                                <div className="flex items-center gap-2">
+                                    <div className={`text-[10px] font-black uppercase ${item.direction === 'positive' ? 'text-green-500' : 'text-red-500'}`}>
+                                        {item.direction === 'positive' ? '+ Destekledi' : '- Uzaklaştırdı'}
+                                    </div>
+                                    <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                                        <div
+                                            className={`h-full ${item.direction === 'positive' ? 'bg-green-500' : 'bg-red-500'}`}
+                                            style={{ width: `${item.impact * 10}%` }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-
-                    <div className="p-4 rounded-2xl bg-white/5 text-[11px] text-gray-500 italic leading-snug">
-                        * Bu analiz 4 ana siyasi eksen üzerinden yüzdelik diliminize göre hesaplanmıştır.
-                    </div>
                 </motion.div>
 
-                {/* Right Column: Radar Chart */}
+                {/* 2. Lider Eşleşmesi */}
                 <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="glass p-8 rounded-3xl flex flex-col h-full"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="glass p-6 rounded-[2rem] border-white/5 space-y-4"
                 >
-                    <div className="flex items-center gap-2 text-white font-bold opacity-50 uppercase tracking-wider text-sm border-b border-white/5 pb-4 mb-6">
-                        <BarChart2 className="w-4 h-4" />
-                        <h3>İdeolojik Spektrum</h3>
+                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                        <UserCheck className="w-5 h-5 text-yellow-500" />
+                        <h3 className="font-bold text-white uppercase tracking-wider text-sm">Lider Uyumu</h3>
                     </div>
+                    <div className="space-y-2">
+                        {leaderMatches.slice(0, 4).map((match, i) => (
+                            <div key={i} className="flex items-center gap-3 p-2 bg-white/5 rounded-xl border border-white/5">
+                                <div
+                                    className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs"
+                                    style={{ backgroundColor: `${match.leader.color}20`, color: match.leader.color, border: `1px solid ${match.leader.color}40` }}
+                                >
+                                    {match.leader.name.split(' ').map(n => n[0]).join('')}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-xs font-bold text-white">{match.leader.name}</div>
+                                    <div className="text-[9px] text-gray-500 uppercase">{match.leader.title}</div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-sm font-black text-white">%{match.matchPercentage}</div>
+                                    <div className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
+                                        <div className="h-full bg-white" style={{ width: `${match.matchPercentage}%` }} />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
 
-                    <div className="flex-1 w-full min-h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="55%" outerRadius="75%" data={radarData}>
-                                <PolarGrid stroke="#ffffff10" />
-                                <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 10, fontWeight: 'bold' }} />
-                                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                                <Radar
-                                    name="Uyum"
-                                    dataKey="A"
-                                    stroke={ideology.color}
-                                    fill={ideology.color}
-                                    fillOpacity={0.5}
-                                />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '12px', color: '#fff' }}
-                                    itemStyle={{ color: ideology.color }}
-                                />
-                            </RadarChart>
-                        </ResponsiveContainer>
+                {/* 3. Karşıt İdeoloji */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="glass p-6 rounded-[2rem] border-white/5 space-y-4 group overflow-hidden"
+                >
+                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                        <h3 className="font-bold text-white uppercase tracking-wider text-sm">En Uzak Görüş</h3>
                     </div>
-
-                    <div className="mt-4 text-xs text-gray-500 font-medium">
-                        En yüksek skor aldığınız ilk 8 ideoloji gösterilmektedir.
+                    <div className="relative z-10 space-y-3">
+                        <div className="text-4xl font-black italic uppercase text-red-500/50">
+                            {oppositeIdeology.name}
+                        </div>
+                        <p className="text-xs text-gray-500 leading-relaxed italic">
+                            Bu görüşe taban tabana zıtsın. Siyasi spektrumun tam diğer ucunda yer alıyor.
+                        </p>
+                        <div className="p-4 bg-red-500/5 border border-red-500/10 rounded-2xl">
+                            <Quote className="w-4 h-4 text-red-500/20 mb-1" />
+                            <p className="text-[10px] text-red-400 font-medium leading-tight">
+                                {oppositeIdeology.roast}
+                            </p>
+                        </div>
                     </div>
+                    <div
+                        className="absolute -bottom-12 -right-12 w-32 h-32 blur-3xl opacity-10 rounded-full"
+                        style={{ backgroundColor: oppositeIdeology.color }}
+                    />
                 </motion.div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                <button
-                    onClick={onReset}
-                    className="px-12 py-4 bg-white text-black font-bold rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center shadow-2xl shadow-white/5"
-                >
-                    <RefreshCcw className="w-5 h-5" />
-                    Analizi Sıfırla
-                </button>
-                <div className="text-gray-500 text-[10px] uppercase font-bold tracking-widest px-6 py-2 border border-white/5 rounded-full">
-                    Gidilecek Yol: Demokratik Türkiye
-                </div>
-            </div>
+            {/* Educational Info Modal */}
+            <AnimatePresence>
+                {showDetails && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowDetails(false)}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                            className="relative max-w-2xl w-full glass rounded-[3rem] border-white/10 overflow-hidden shadow-2xl"
+                        >
+                            <button
+                                onClick={() => setShowDetails(false)}
+                                className="absolute top-6 right-6 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-20 text-gray-400"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+
+                            <div
+                                className="h-48 relative overflow-hidden flex items-end p-8"
+                                style={{ backgroundColor: `${ideology.color}20` }}
+                            >
+                                <div
+                                    className="absolute inset-0 opacity-20"
+                                    style={{
+                                        backgroundImage: `linear-gradient(to bottom, transparent, ${ideology.color})`
+                                    }}
+                                />
+                                <div className="relative z-10">
+                                    <h2 className="text-5xl font-black italic uppercase mb-2" style={{ color: ideology.color }}>
+                                        {ideology.name}
+                                    </h2>
+                                    <p className="text-white/60 font-bold uppercase tracking-[0.3em] text-[10px]">
+                                        İdeolojik Bilgi Kartı
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 text-white font-bold uppercase text-xs opacity-50">
+                                        <Zap className="w-4 h-4" />
+                                        <h3>Temel Felsefe</h3>
+                                    </div>
+                                    <p className="text-gray-300 leading-relaxed font-medium">
+                                        {ideology.details?.history || ideology.description}
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-white font-bold uppercase text-xs opacity-50">
+                                            <Target className="w-4 h-4" />
+                                            <h3>Temel İlkeler</h3>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            {ideology.details?.principles.map((pr, i) => (
+                                                <div key={i} className="flex items-center gap-2 text-gray-400 text-sm">
+                                                    <div className="w-1 h-1 rounded-full bg-white opacity-30" />
+                                                    {pr}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-white font-bold uppercase text-xs opacity-50">
+                                            <Quote className="w-4 h-4" />
+                                            <h3>Siyasi Motto</h3>
+                                        </div>
+                                        <div
+                                            className="p-4 rounded-2xl border-l-4 font-bold italic text-white"
+                                            style={{ backgroundColor: `${ideology.color}10`, borderLeftColor: ideology.color }}
+                                        >
+                                            "{ideology.details?.motto || 'Halkın Gücü, Milletin Kararı.'}"
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+                                    <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-tight">
+                                        Bu bilgiler genel siyasi literatür temelinde hazırlanmıştır.<br />Bilimsel kesinlik taşımaz.
+                                    </div>
+                                    <div
+                                        className="px-6 py-2 rounded-full font-black text-[10px] uppercase border"
+                                        style={{ borderColor: `${ideology.color}30`, color: ideology.color }}
+                                    >
+                                        Görüş: {ideology.name}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
-

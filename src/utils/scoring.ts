@@ -1,5 +1,6 @@
 import { IdeologyId, ideologies, Ideology } from '../data/ideologies';
-import { questions, AxisId } from '../data/questions';
+import { questions, AxisId, Question } from '../data/questions';
+import { leaders, PoliticalLeader } from '../data/leaders';
 
 export type Answer = 'agree' | 'disagree' | 'neutral';
 
@@ -12,6 +13,17 @@ export interface AxisScore {
     name: string;
     value: number; // -100 to 100
     labels: [string, string]; // [Negative label, Positive label]
+}
+
+export interface LeaderMatch {
+    leader: PoliticalLeader;
+    matchPercentage: number;
+}
+
+export interface BreakdownItem {
+    questionText: string;
+    impact: number; // Percentage contribution
+    direction: 'positive' | 'negative';
 }
 
 export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = {
@@ -34,16 +46,19 @@ export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = 
 };
 
 export const calculateScores = (responses: UserResponses) => {
-    const rawWeights: Record<IdeologyId, number> = {} as any;
-    const axisRawScores: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const rawWeights: any = {};
 
     // Initialize ideology weights
     Object.keys(ideologies).forEach(id => {
         rawWeights[id as IdeologyId] = 0;
     });
 
-    const ideologyMaxPossible: Record<IdeologyId, number> = { ...rawWeights };
+    const ideologyMaxPossible: any = { ...rawWeights };
+    const axisRawScores: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+
+    // Track per-question impact for breakdown
+    const questionImpacts: Record<number, Record<IdeologyId, number>> = {};
 
     // Calculate maximums
     questions.forEach(q => {
@@ -62,9 +77,12 @@ export const calculateScores = (responses: UserResponses) => {
         if (answer === 'neutral') return;
 
         const multiplier = answer === 'agree' ? 1 : -1;
+        questionImpacts[question.id] = {};
 
         Object.entries(question.weights).forEach(([ideologyId, weight]) => {
-            rawWeights[ideologyId as IdeologyId] += (weight as number) * multiplier;
+            const impact = (weight as number) * multiplier;
+            rawWeights[ideologyId as IdeologyId] += impact;
+            questionImpacts[question.id][ideologyId as IdeologyId] = impact;
         });
 
         Object.entries(question.axisWeights).forEach(([axisId, weight]) => {
@@ -88,8 +106,9 @@ export const calculateScores = (responses: UserResponses) => {
         };
     });
 
-    // Calculate Similarity for each ideology
-    const finalScores: Record<IdeologyId, number> = {} as any;
+    // Calculate Hybrid Scores
+    const finalScores = {} as Record<IdeologyId, number>;
+
 
     Object.entries(ideologies).forEach(([id, ideology]) => {
         const ideologyId = id as IdeologyId;
@@ -124,11 +143,42 @@ export const calculateScores = (responses: UserResponses) => {
         .sort(([, a], [, b]) => b - a);
 
     const topIdeologyId = sortedResult[0][0] as IdeologyId;
+    const oppositeIdeologyId = sortedResult[sortedResult.length - 1][0] as IdeologyId;
+
+    // Leader Comparison
+    const leaderMatches: LeaderMatch[] = leaders.map(leader => {
+        let distanceSum = 0;
+        let maxDistanceSum = 0;
+        (Object.keys(AXES) as AxisId[]).forEach(axisId => {
+            distanceSum += Math.pow(normalizedAxes[axisId] - leader.coordinates[axisId], 2);
+            maxDistanceSum += Math.pow(200, 2);
+        });
+        const matchPercentage = Math.round(((Math.sqrt(maxDistanceSum) - Math.sqrt(distanceSum)) / Math.sqrt(maxDistanceSum)) * 100);
+        return { leader, matchPercentage };
+    }).sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+    // Breakdown (Top 3 questions for winning ideology)
+    const breakdown: BreakdownItem[] = Object.entries(questionImpacts)
+        .map(([qId, impacts]) => {
+            const question = questions.find(q => q.id === Number(qId))!;
+            const impactForTop = impacts[topIdeologyId] || 0;
+            return {
+                questionText: question.text,
+                impact: Math.abs(impactForTop),
+                direction: impactForTop >= 0 ? 'positive' : 'negative'
+            };
+        })
+        .filter(item => item.impact > 0)
+        .sort((a, b) => b.impact - a.impact)
+        .slice(0, 4) as BreakdownItem[];
 
     return {
         topIdeology: ideologies[topIdeologyId],
+        oppositeIdeology: ideologies[oppositeIdeologyId],
         allScores: finalScores,
         axisScores,
-        matchPercentage: finalScores[topIdeologyId]
+        matchPercentage: finalScores[topIdeologyId],
+        leaderMatches,
+        breakdown
     };
 };
