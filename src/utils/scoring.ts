@@ -2,7 +2,7 @@ import { IdeologyId, ideologies, Ideology } from '../data/ideologies';
 import { questions, AxisId, Question } from '../data/questions';
 import { leaders, PoliticalLeader } from '../data/leaders';
 
-export type Answer = 'agree' | 'disagree' | 'neutral';
+export type Answer = 'agree' | 'disagree';
 
 export interface UserResponses {
     [questionId: number]: Answer;
@@ -46,18 +46,18 @@ export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = 
 };
 
 export const calculateScores = (responses: UserResponses) => {
-    const ideologyScores: Record<IdeologyId, number> = {} as any;
-    const ideologyMaxPossible: Record<IdeologyId, number> = {} as any;
+    const ideologyScores: Record<IdeologyId, number> = {} as Record<IdeologyId, number>;
+    const ideologyMaxPossible: Record<IdeologyId, number> = {} as Record<IdeologyId, number>;
 
     // Initialize
-    Object.keys(ideologies).forEach(id => {
-        ideologyScores[id as IdeologyId] = 0;
-        ideologyMaxPossible[id as IdeologyId] = 0;
+    (Object.keys(ideologies) as IdeologyId[]).forEach(id => {
+        ideologyScores[id] = 0;
+        ideologyMaxPossible[id] = 0;
     });
 
     const axisRawScores: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
     const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    const questionImpacts: Record<number, Partial<Record<IdeologyId, number>>> = {};
+    const questionImpacts: Record<number, Record<string, number>> = {};
 
     // Helper to get weight for an ideology, fallback to dot product if not defined
     const getEffectiveWeight = (q: Question, ideologyId: IdeologyId): number => {
@@ -90,7 +90,7 @@ export const calculateScores = (responses: UserResponses) => {
     // Process responses
     Object.entries(responses).forEach(([qId, answer]) => {
         const question = questions.find((q) => q.id === Number(qId));
-        if (!question || answer === 'neutral') return;
+        if (!question) return;
 
         const multiplier = answer === 'agree' ? 1 : -1;
         questionImpacts[question.id] = {};

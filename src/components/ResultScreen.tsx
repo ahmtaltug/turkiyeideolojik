@@ -126,20 +126,37 @@ export default function ResultScreen({
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                                 {axisScores.map((axis) => (
-                                    <div key={axis.id} className="space-y-2">
-                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div key={axis.id} className="space-y-3">
+                                        <div className="flex justify-between items-end px-0.5 gap-2 min-h-[20px]">
+                                            <span className={`text-[7px] md:text-[9px] font-black uppercase tracking-tighter transition-colors leading-tight max-w-[48%] ${axis.value < -15 ? 'text-white' : 'text-gray-600'}`}>
+                                                {axis.labels[0].replace(' / ', '/')}
+                                            </span>
+                                            <span className={`text-[7px] md:text-[9px] font-black uppercase tracking-tighter transition-colors leading-tight max-w-[48%] text-right ${axis.value > 15 ? 'text-white' : 'text-gray-600'}`}>
+                                                {axis.labels[1].replace(' / ', '/')}
+                                            </span>
+                                        </div>
+                                        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden relative border border-white/5">
+                                            <div className="absolute inset-y-0 left-1/2 w-0.5 bg-white/20 -translate-x-1/2 z-10" />
                                             <motion.div
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${(axis.value + 100) / 2}%` }}
-                                                className="h-full"
-                                                style={{ backgroundColor: ideology.color }}
+                                                initial={{ width: 0, left: '50%' }}
+                                                animate={{
+                                                    width: `${Math.abs(axis.value) / 2}%`,
+                                                    left: axis.value < 0 ? `${50 - Math.abs(axis.value) / 2}%` : '50%'
+                                                }}
+                                                className="h-full absolute"
+                                                style={{
+                                                    backgroundColor: ideology.color,
+                                                    boxShadow: `0 0 15px ${ideology.color}40`
+                                                }}
                                             />
                                         </div>
-                                        <span className="text-[10px] font-bold text-gray-500 uppercase block truncate">
-                                            {axis.name}
-                                        </span>
+                                        <div className="pt-2 border-t border-white/10">
+                                            <span className="text-[10px] font-black text-gray-500 uppercase block text-center tracking-[0.2em] italic">
+                                                {axis.name}
+                                            </span>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

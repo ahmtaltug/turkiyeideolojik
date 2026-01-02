@@ -67,7 +67,7 @@ export const leaders: PoliticalLeader[] = [
         name: 'Erkan Baş',
         title: 'TİP Genel Başkanı',
         coordinates: { ekonomi: -100, toplum: -85, milliyetcilik: -60, yonetim: -30 },
-        color: '#D40000'
+        color: '#8B0000'
     }
 ];
 
