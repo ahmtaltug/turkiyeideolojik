@@ -138,7 +138,27 @@ export const calculateScores = (responses: UserResponses) => {
 
     const sortedResult = Object.entries(finalScores).sort(([, a], [, b]) => b - a);
     const topIdeologyId = sortedResult[0][0] as IdeologyId;
+    const secondIdeologyId = sortedResult[1][0] as IdeologyId;
     const oppositeIdeologyId = sortedResult[sortedResult.length - 1][0] as IdeologyId;
+
+    const topScore = sortedResult[0][1];
+    const secondScore = sortedResult[1][1];
+    const isHybrid = (topScore - secondScore) <= 5 && topScore > 40; // Only hybridize if they are close and legitimate
+
+    let resultIdeology: Ideology & { isHybrid?: boolean; secondId?: IdeologyId } = { ...ideologies[topIdeologyId] };
+
+    if (isHybrid) {
+        const second = ideologies[secondIdeologyId];
+        resultIdeology = {
+            ...resultIdeology,
+            isHybrid: true,
+            secondId: secondIdeologyId,
+            name: `${resultIdeology.name} - ${second.name} Sentezi`,
+            description: `${resultIdeology.name} ve ${second.name} görüşlerinin ortak paydada buluştuğu hibrit bir siyasi kimlik.`,
+            parties: [...new Set([...resultIdeology.parties, ...second.parties])],
+            // Color can be the first one, the UI will handle gradient if isHybrid is true
+        };
+    }
 
     const leaderMatches: LeaderMatch[] = leaders.map(leader => {
         let dSum = 0;
@@ -165,11 +185,11 @@ export const calculateScores = (responses: UserResponses) => {
         .slice(0, 4);
 
     return {
-        topIdeology: ideologies[topIdeologyId],
+        topIdeology: resultIdeology,
         oppositeIdeology: ideologies[oppositeIdeologyId],
         allScores: finalScores,
         axisScores,
-        matchPercentage: finalScores[topIdeologyId],
+        matchPercentage: topScore,
         leaderMatches,
         breakdown
     };

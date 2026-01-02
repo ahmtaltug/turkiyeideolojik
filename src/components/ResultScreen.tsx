@@ -75,7 +75,11 @@ export default function ResultScreen({
                     {/* Background Glow */}
                     <div
                         className="absolute -top-24 -right-24 w-96 h-96 blur-[120px] opacity-20 rounded-full"
-                        style={{ backgroundColor: ideology.color }}
+                        style={{
+                            background: (ideology as any).isHybrid
+                                ? `linear-gradient(to bottom right, ${ideology.color}, ${ideologies[(ideology as any).secondId as IdeologyId].color})`
+                                : ideology.color
+                        }}
                     />
 
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -89,6 +93,11 @@ export default function ResultScreen({
                                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">
                                         Analiz Tamamlandı
                                     </span>
+                                    {(ideology as any).isHybrid && (
+                                        <span className="px-3 py-1 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/20 rounded-full text-[10px] font-black uppercase tracking-widest text-yellow-500 animate-pulse">
+                                            Hibrit Sentez
+                                        </span>
+                                    )}
                                     <div className="h-px flex-1 bg-white/10" />
                                 </motion.div>
 
@@ -97,7 +106,12 @@ export default function ResultScreen({
                                         initial={{ y: 20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         className="text-5xl md:text-7xl font-black italic uppercase leading-none tracking-tighter break-words max-w-full"
-                                        style={{ color: ideology.color }}
+                                        style={{
+                                            color: ideology.color,
+                                            background: (ideology as any).isHybrid ? `linear-gradient(to right, ${ideology.color}, ${ideologies[(ideology as any).secondId as IdeologyId].color})` : 'none',
+                                            WebkitBackgroundClip: (ideology as any).isHybrid ? 'text' : 'none',
+                                            WebkitTextFillColor: (ideology as any).isHybrid ? 'transparent' : 'initial'
+                                        }}
                                     >
                                         {ideology.name}
                                     </motion.h1>
@@ -148,7 +162,7 @@ export default function ResultScreen({
                                         name="Uyum"
                                         dataKey="A"
                                         stroke={ideology.color}
-                                        fill={ideology.color}
+                                        fill={(ideology as any).isHybrid ? ideologies[(ideology as any).secondId as IdeologyId].color : ideology.color}
                                         fillOpacity={0.5}
                                     />
                                 </RadarChart>
