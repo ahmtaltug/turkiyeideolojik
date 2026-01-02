@@ -658,7 +658,105 @@ export const questions: Question[] = [
             yonetim: 8,
         }
     },
+    {
+        id: 36,
+        text: 'Terörün bitmesi için gerekirse Abdullah Öcalan TBMM\'de konuşmalı ve örgütün lağvedildiğini ilan etmelidir.',
+        weights: {
+            ulkucu: 10,
+            muhafazakar: 9,
+            boluculuk: 8,
+            merkez_sag: -10,
+            turkculuk: -10,
+            ulusalci: -10,
+            kemalist: -8,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -2,
+            milliyetcilik: -10,
+            yonetim: 5,
+        }
+    },
+    {
+        id: 37,
+        text: 'Belirli bir süre hapis yatan mahkumlar için "Umut Hakkı" yasallaşmalı; örgüt silah bıraktığı takdirde lider kadrosuna bu hak tanınmalıdır.',
+        weights: {
+            boluculuk: 10,
+            liberal: 8,
+            muhafazakar: 6,
+            ulkucu: 6,
+            turkculuk: -10,
+            ulusalci: -10,
+            kemalist: -8,
+            sosyalist: 5,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -5,
+            milliyetcilik: -10,
+            yonetim: -8,
+        }
+    },
+    {
+        id: 38,
+        text: 'Türkiye\'nin bekası için iktidar ve ana muhalefetin terörle mücadele ve Kürt meselesinde ortak bir strateji izlemesi zorunludur.',
+        weights: {
+            sosyal_demokrat: 10,
+            muhafazakar: 8,
+            merkez_sag: 8,
+            ulkucu: 6,
+            ulusalci: -8,
+            turkculuk: -6,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: 0,
+            milliyetcilik: 2,
+            yonetim: 5,
+        }
+    },
+    {
+        id: 39,
+        text: 'Kürt sorunu sadece asayiş politikalarıyla değil, meclis çatısı altında tam bir siyasi temsil ve uzlaşma ile çözülmelidir.',
+        weights: {
+            sosyal_demokrat: 10,
+            boluculuk: 10,
+            liberal: 8,
+            yesil: 8,
+            muhafazakar: 5,
+            ulkucu: 4,
+            turkculuk: -10,
+            ulusalci: -10,
+        },
+        axisWeights: {
+            ekonomi: 0,
+            toplum: -6,
+            milliyetcilik: -10,
+            yonetim: -8,
+        }
+    },
+    {
+        id: 40,
+        text: 'Türkiye, Suriye\'deki güvenliği için gerekirse oradaki Kürt gruplarla (SDG/PYD) doğrudan siyasi masaya oturup anlaşmalıdır.',
+        weights: {
+            boluculuk: 10,
+            liberal: 8,
+            sosyal_demokrat: 5,
+            muhafazakar: 2,
+            turkculuk: -10,
+            ulkucu: -10,
+            ulusalci: -10,
+            avrasyaci: -6,
+        },
+        axisWeights: {
+            ekonomi: 2,
+            toplum: -2,
+            milliyetcilik: -10,
+            yonetim: -5,
+        }
+    },
 ];
+
 
 
 

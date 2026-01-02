@@ -93,7 +93,7 @@ export default function Home() {
                     <span>Tam Analiz</span>
                     <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </div>
-                  <span className="text-[10px] uppercase opacity-50 font-bold">30 Soru • Derinlemesine</span>
+                  <span className="text-[10px] uppercase opacity-50 font-bold">40 Soru • Tam Profil</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-blue-500 opacity-0 group-hover:opacity-10 transition-opacity" />
                 </button>
 
@@ -105,7 +105,7 @@ export default function Home() {
                     <span>Hızlı Test</span>
                     <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </div>
-                  <span className="text-[10px] uppercase opacity-50 font-bold">15 Soru • 1 Dakika</span>
+                  <span className="text-[10px] uppercase opacity-50 font-bold">20 Soru • 1.5 Dakika</span>
                 </button>
               </div>
             </div>

@@ -30,8 +30,8 @@ export default function QuizEngine({ mode, onFinish, onReset }: QuizEngineProps)
 
     const questions = useMemo(() => {
         if (mode === 'full') return allQuestions;
-        // Hızlı mod için 15 rasgele soru seç
-        return [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, 15);
+        // Hızlı mod için 20 rasgele soru seç
+        return [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, 20);
     }, [mode]);
 
     const playSound = () => {
