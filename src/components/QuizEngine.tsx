@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, HelpCircle, Undo2 } from 'lucide-react';
 import { questions as allQuestions } from '@/data/questions';
 import { Ideology, IdeologyId } from '@/data/ideologies';
 import { Answer, UserResponses, calculateScores, AxisScore, LeaderMatch, BreakdownItem } from '@/utils/scoring';
@@ -111,10 +111,23 @@ export default function QuizEngine({ mode, onFinish, onReset }: QuizEngineProps)
                 </AnimatePresence>
             </div>
 
-            {/* Instructions */}
-            <div className="mt-8 flex justify-center items-center gap-2 text-gray-500 animate-pulse">
-                <HelpCircle className="w-4 h-4" />
-                <span className="text-sm">Kartı kaydırarak karar ver</span>
+            {/* Instructions & Back Button */}
+            <div className="mt-8 flex flex-col items-center gap-4">
+                {currentIndex > 0 && (
+                    <motion.button
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        onClick={() => setCurrentIndex(prev => prev - 1)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-400 hover:text-white transition-all uppercase tracking-widest border border-white/5"
+                    >
+                        <Undo2 className="w-4 h-4" />
+                        Önceki Soruya Dön
+                    </motion.button>
+                )}
+                <div className="flex justify-center items-center gap-2 text-gray-500 animate-pulse">
+                    <HelpCircle className="w-4 h-4" />
+                    <span className="text-sm">Kartı kaydırarak karar ver</span>
+                </div>
             </div>
         </div>
     );
