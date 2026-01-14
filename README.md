@@ -3,7 +3,7 @@
 Türkiye siyasetindeki yerini keşfetmeni sağlayan, modern ve eğlenceli bir analiz uygulaması.
 
 ### 🧐 Bu nedir?
-Sıkıcı ve uzun siyasi testlerden sıkıldıysan doğru yerdesin. Türkiye İdeolojik, alışık olduğun "swipe" (kaydırma) mekaniği ile çalışır. Sorulara sağa veya sola kaydırarak cevap verirsin ve sonuç ekranında 12 farklı ideolojik akımdan hangisine daha yakın olduğunu öğrenirsin.
+Sıkıcı ve uzun siyasi testlerden sıkıldıysan doğru yerdesin. Türkiye İdeolojik, alışık olduğun "swipe" (kaydırma) mekaniği ile çalışır. Sorulara sağa veya sola kaydırarak cevap verirsin ve sonuç ekranında 13 farklı ideolojik akımdan hangisine daha yakın olduğunu öğrenirsin.
 
 ### ✨ Özellikler
 *   **İnteraktif Deneyim:** Soruları cevaplamak için kartları sağa (katılıyorum) veya sola (katılmıyorum) kaydırman yeterli.
