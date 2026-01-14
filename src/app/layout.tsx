@@ -2,8 +2,21 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Türkiyeİdeolojik - Siyasi Kimliğini Keşfet",
-  description: "Tinder usulü kaydırmalı sorularla Türkiye siyasetindeki gerçek kimliğini keşfet.",
+  title: "Türkiye İdeolojik - Modern Siyasi Kimlik Analizi",
+  description: "Tinder usulü kaydırmalı sorularla Türkiye siyasetindeki gerçek kimliğini keşfet. 40 soru ile bilimsel verilere dayanan en doğru ideolojik eşleşme.",
+  keywords: ["siyasi pusula", "türkiye siyaseti", "ideoloji testi", "seçim", "parti eşleşme", "kemalizm", "ülkücülük", "liberalizm"],
+  authors: [{ name: "Türkiye İdeolojik" }],
+  openGraph: {
+    title: "Türkiyeİdeolojik - Siyasi Kimliğini Keşfet",
+    description: "40 soruda siyasi eğilimini öğren.",
+    type: "website",
+    locale: "tr_TR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Türkiyeİdeolojik - Siyasi Kimliğini Keşfet",
+    description: "Seni en iyi ifade eden ideolojiyi bul.",
+  }
 };
 
 export default function RootLayout({

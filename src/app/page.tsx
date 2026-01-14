@@ -74,9 +74,9 @@ export default function Home() {
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', damping: 12 }}
-                className="inline-block p-3 rounded-2xl bg-gradient-to-br from-red-500/20 to-blue-500/20 border border-white/10 mb-4"
+                className="inline-block p-4 rounded-[2rem] bg-gradient-to-br from-red-500/20 to-blue-500/20 border border-white/10 mb-4 animate-float"
               >
-                <BarChart3 className="w-12 h-12 text-white" />
+                <BarChart3 className="w-14 h-14 text-white" />
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
                 <span className="gradient-text">Türkiye</span>

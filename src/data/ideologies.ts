@@ -48,9 +48,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Ne Mutlu Türküm Diyene!"
         },
         actionPlan: [
-            "Kamuda liyakat sistemini geri getirip mülakatları tamamen kaldırmak.",
-            "Eğitim müfredatını bilimsel ve laik temellere göre baştan aşağı yenilemek.",
-            "Stratejik kurumların özelleştirilmesini durdurup devlet kontrolünü artırmak."
+            "Devlet kurumlarında liyakati en katı şekilde uygulayıp mülakatları tamamen tarihe gömmek.",
+            "Tüm stratejik sanayi kollarında ve enerjide yeniden devlet kontrolünü sağlamak.",
+            "Köy Enstitüleri modelini modernize ederek kırsal kalkınma ve nitelikli eğitimi birleştirmek."
         ]
     },
     sosyal_demokrat: {
@@ -68,9 +68,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Türkiye İttifakı!"
         },
         actionPlan: [
-            "Kent lokantaları ve sosyal yardım ağlarını ulusal seviyeye taşımak.",
-            "Yargı bağımsızlığını sağlayıp Avrupa İnsan Hakları Sözleşmesi'ne tam uyum.",
-            "Asgari ücreti insani yaşam sınırına çekip vergi yükünü zenginden almak."
+            "Avrupa Birliği ile tam entegrasyon için demokratik reform takvimini derhal başlatmak.",
+            "Sendikal hakları güçlendirip asgari ücreti insani yaşam standartlarına göre üç ayda bir güncellemek.",
+            "Yerel yönetimlerdeki 'Kent Lokantası' gibi sosyal başarıları ulusal çapta bir ağa dönüştürmek."
         ]
     },
     muhafazakar: {
@@ -88,9 +88,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Durmak Yok, Yola Devam."
         },
         actionPlan: [
-            "Savunma sanayi projelerine (KAAN, TOGG vb.) hız kesmeden devam etmek.",
-            "Yeni, sivil ve kapsayıcı bir anayasa için referanduma gitmek.",
-            "Bölgesel güç odaklı aktif bir dış politika izlemek."
+            "Türkiye Yüzyılı vizyonuyla yerli savunma sanayi kapasitesini %100 yerli üretim seviyesine çekmek.",
+            "Aile yapısını koruma odaklı geniş kapsamlı vergi indirimleri ve konut destekleri sağlamak.",
+            "Büyük kalkınma projelerini (Kanal İstanbul, nükleer vb.) tamamlayarak bölgesel liderliği pekiştirmek."
         ]
     },
     ulkucu: {
@@ -108,9 +108,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Tanrı Türk'ü Korusun ve Yüceltsin!"
         },
         actionPlan: [
-            "Terörle mücadelede tavizsiz bir güvenlik politikası uygulamak.",
-            "Türk Devletleri Teşkilatı'nı askeri ve ekonomik bir birliğe dönüştürmek.",
-            "Devlet kadrolarında milli hassasiyeti yüksek kadrolaşmaya gitmek."
+            "Terörün her türlüsüne karşı 'tavizsiz mücadele' doktriniyle sınır ötesi güvenliği kalıcı hale getirmek.",
+            "Türk Devletleri Teşkilatı'nı (TDT) Avrupa Birliği benzeri ortak bir pazara ve orduya dönüştürmek.",
+            "Kamu kurumlarında milli beka odaklı bir kadrolaşma ve denetim mekanizması kurmak."
         ]
     },
     liberal: {
@@ -128,9 +128,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Özgürlük, Herkese ve Daima!"
         },
         actionPlan: [
-            "TRT dahil tüm kamu iktisadi teşebbüslerini acilen özelleştirmek.",
-            "Merkez Bankası'nı tam bağımsız yapıp vergi oranlarını radikal düşürmek.",
-            "Vize serbestisi ve serbest ticaret anlaşmalarıyla dünyayla entegrasyon."
+            "TRT ve devlet bankaları dahil tüm kamu iktisadi teşebbüslerini blok halinde özelleştirip piyasadan çekilmek.",
+            "Bireysel silahlanma haklarını genişletip mülkiyet güvenliğini hane bazında garanti altına almak.",
+            "Merkez Bankası'nı sembolik bir kuruma dönüştürüp para politikasını serbest kur rejimine bırakmak."
         ]
     },
     sosyalist: {
@@ -148,9 +148,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Dünyanın Bütün İşçileri Birleşin!"
         },
         actionPlan: [
-            "Tüm temel hizmetlerin (eğitim, sağlık, ulaşım) tamamen ücretsiz yapılması.",
-            "Haftalık çalışma süresini 35 saate indirip işten çıkarmaları yasaklamak.",
-            "NATO'dan çıkıp tam bağımsız, emekten yana bir dış politika kurmak."
+            "Büyük sanayi holdinglerini ve bankaları halk adına kamulaştırıp işçi konseylerine devretmek.",
+            "Haftalık çalışma süresini 30 saate indirip işsizliği iş paylaşımıyla tamamen yok etmek.",
+            "Kira artışlarını tamamen yasaklayıp boş konutları evsizlere tahsis eden bir iskan yasası çıkarmak."
         ]
     },
     boluculuk: {
@@ -168,9 +168,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Özgür Yaşam, Demokratik Toplum."
         },
         actionPlan: [
-            "Yerinden yönetim ve özerklik şartlarını hayata geçirmek.",
-            "Anadilde eğitimi tüm kademelerde zorunlu/seçmeli hale getirmek.",
-            "Kayyum atamalarını yasaklayıp geniş bir genel af ilan etmek."
+            "Avrupa Yerel Yönetimler Özerklik Şartı'ndaki tüm çekinceleri kaldırıp bölgesel parlamentolar kurmak.",
+            "Anayasa'daki 'Türk' tanımını kaldırıp 'Türkiye Vatandaşı' temelinde çok kimlikli bir anayasa yazmak.",
+            "Üniter yapıyı tartışmaya açarak yerel güvenlik ve eğitim yetkilerini bölgelere devretmek."
         ]
     },
     islamci: {
@@ -188,9 +188,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Hakkın Hakimiyeti İçin Çalışmak İbadettir."
         },
         actionPlan: [
-            "Faizsiz ekonomi sistemine (Adil Düzen) geçişi hızlandırmak.",
-            "D8 Teşkilatı'nı canlandırıp İslam Birliği'ni kurmak.",
-            "Eğitim müfredatını manevi ve ahlaki değerler ekseninde yenilemek."
+            "Adil Düzen sistemiyle ağır sanayi hamlesini başlatıp faizci dünya düzeninden tamamen kopmak.",
+            "D8 Teşkilatı üzerinden İslam Ortak Pazarı ve İslam Dinarı'nı hayata geçirmek.",
+            "Eğitimi ve hukuku fıtrata ve inanca dayalı referanslarla yeniden yapılandırmak."
         ]
     },
     avrasyaci: {
@@ -208,9 +208,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Yükselen Asya, Bağımsız Türkiye!"
         },
         actionPlan: [
-            "NATO'dan çıkıp BRICS ve Şanghay İşbirliği Örgütü'ne üye olmak.",
-            "Üretim devrimi için planlı ekonomi ve kamulaştırma hamlesi.",
-            "Eskişehir-Pekin İpek Yolu hattını stratejik merkez yapmak."
+            "NATO'dan derhal çıkıp Türkiye'deki tüm yabancı askeri üsleri mühürlemek.",
+            "BRICS ve Şanghay İşbirliği Örgütü'ne tam üyelik ile yeni bir küresel ittifak kurmak.",
+            "İçeride ordunun kontrolünde güçlü bir merkezi üretim ve planlama otoritesi oluşturmak."
         ]
     },
     ulusalci: {
@@ -228,9 +228,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Türkiye Türklerindir!"
         },
         actionPlan: [
-            "Sığınmacıların tamamını bir yıl içinde ülkelerine geri göndermek.",
-            "AB ve Gümrük Birliği anlaşmalarını milli çıkarlarca revize etmek.",
-            "Mavi Vatan ve Kıbrıs konusunda tavizsiz, sert dış politika."
+            "Sığınmacı ve kaçakları hiçbir uluslararası yaptırımı dinlemeden bir yıl içinde sınır dışı etmek.",
+            "Gümrük Birliği'nden gerekirse çıkıp milli ekonomiyi koruyucu bir gümrük duvarı örmek.",
+            "Mavi Vatan sınırlarında tavizsiz bir askeri varlık gösterip enerji kaynaklarını millileştirmek."
         ]
     },
     merkez_sag: {
@@ -248,9 +248,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Bizim Yolumuz, Milletin Yoludur."
         },
         actionPlan: [
-            "Güçlendirilmiş parlamenter sisteme acil geri dönüş hamlesi.",
-            "Merkez Bankası ve TÜİK gibi kurumlara liyakatli atamalar.",
-            "Küçük esnaf ve sanayiciyi koruyan vergi reformları."
+            "Hukuk güvenliğini sağlayarak doğrudan yabancı yatırımı çekmek ve liranın istikrarını korumak.",
+            "Güçlendirilmiş Parlamenter Sistem ile kuvvetler ayrılığını yeniden tesis etmek.",
+            "KOBİ'lere yönelik büyük teşvik paketleri açarak orta sınıfı ekonomik olarak güçlendirmek."
         ]
     },
     yesil: {
@@ -268,9 +268,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Doğa ile Uyum İçinde Bir Gelecek."
         },
         actionPlan: [
-            "Fosil yakıt kullanımını sonlandırıp %100 yenilenebilir enerjiye geçiş.",
-            "Hayvan hakları kanununu en sert şekilde revize etmek.",
-            "Tüm maden projelerini ekolojik denetimden geçirip riskli olanları kapatmak."
+            "Türkiye'deki tüm kömür ve linyit madenlerini derhal kapatıp %100 rüzgar/güneş hedefine geçmek.",
+            "Şehirleri 'yaya odaklı' hale getirip toplu taşımayı tamamen ücretsiz ve elektrikli yapmak.",
+            "Hayvan hakları anayasası hazırlayarak doğaya yönelik tüm suçları ağır ceza kapsamına almak."
         ]
     },
     turkculuk: {
@@ -288,11 +288,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             motto: "Vatan Ne Türkiye'dir Türklere, Ne Türkistan; Vatan Büyük ve Müebbet Bir Ülkedir: Turan."
         },
         actionPlan: [
-            "Sınır güvenliği için 'Duvar' ve 'Sensör' projelerini tamamlamak.",
-            "Vatandaşlık alan sığınmacıların vatandaşlık incelemesini başlatmak.",
-            "Milli Savunma Bakanlığı yapısını 15 Temmuz öncesine döndürmek."
+            "Demografik beka yasası çıkararak vatandaşlık verilmiş yabancıları incelemeye alıp iptal etmek.",
+            "Türklük kimliğini anayasada tek birleştirici unsur olarak daha sert ifadelerle tanımlamak.",
+            "Türk dünyasıyla 'Kızılelma' vizyonu çerçevesinde derin bir askeri ve kültürel entegrasyon başlatmak."
         ]
     },
 };
+
 
 

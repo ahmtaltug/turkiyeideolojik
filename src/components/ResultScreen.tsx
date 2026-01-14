@@ -13,6 +13,8 @@ import { toPng } from 'html-to-image';
 import {
     Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip
 } from 'recharts';
+import confetti from 'canvas-confetti';
+import { useEffect } from 'react';
 
 interface ResultScreenProps {
     ideology: Ideology;
@@ -40,6 +42,29 @@ export default function ResultScreen({
     const cardRef = useRef<HTMLDivElement>(null);
     const [showDetails, setShowDetails] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+
+    useEffect(() => {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const interval: any = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+            // since particles fall down, start a bit higher than random
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const downloadCard = async () => {
         if (!cardRef.current) return;
@@ -118,7 +143,10 @@ export default function ResultScreen({
                                         {ideology.name}
                                     </motion.h1>
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                        <div className="inline-block px-4 py-2 bg-white text-black font-black italic rounded-xl text-2xl shrink-0">
+                                        <div
+                                            className="inline-block px-5 py-2.5 text-black font-black italic rounded-2xl text-2xl shrink-0 shadow-lg shadow-white/10"
+                                            style={{ backgroundColor: ideology.color === '#ffffff' ? '#ffffff' : 'white' }}
+                                        >
                                             %{matchPercentage} UYUM
                                         </div>
                                         <div className="flex flex-col">
@@ -138,14 +166,16 @@ export default function ResultScreen({
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                                 {axisScores.map((axis) => (
-                                    <div key={axis.id} className="space-y-3">
-                                        <div className="flex justify-between items-end px-0.5 gap-2 min-h-[20px]">
-                                            <span className={`text-[7px] md:text-[9px] font-black uppercase tracking-tighter transition-colors leading-tight max-w-[48%] ${axis.value < -15 ? 'text-white' : 'text-gray-600'}`}>
-                                                {axis.labels[0].replace(' / ', '/')}
-                                            </span>
-                                            <span className={`text-[7px] md:text-[9px] font-black uppercase tracking-tighter transition-colors leading-tight max-w-[48%] text-right ${axis.value > 15 ? 'text-white' : 'text-gray-600'}`}>
-                                                {axis.labels[1].replace(' / ', '/')}
-                                            </span>
+                                    <div key={axis.id} className="space-y-4">
+                                        <div className="flex flex-col gap-1 min-h-[48px] justify-end">
+                                            <div className="flex justify-between items-end gap-1 px-1">
+                                                <div className={`text-[7px] md:text-[9px] font-black uppercase tracking-tighter transition-colors leading-[1.1] max-w-[45%] ${axis.value < -15 ? 'text-white' : 'text-gray-600'}`}>
+                                                    {axis.labels[0].split(' / ').map((s, i) => <div key={i}>{s}</div>)}
+                                                </div>
+                                                <div className={`text-[7px] md:text-[9px] font-black uppercase tracking-tighter transition-colors leading-[1.1] max-w-[45%] text-right ${axis.value > 15 ? 'text-white' : 'text-gray-600'}`}>
+                                                    {axis.labels[1].split(' / ').map((s, i) => <div key={i}>{s}</div>)}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden relative border border-white/5">
                                             <div className="absolute inset-y-0 left-1/2 w-0.5 bg-white/20 -translate-x-1/2 z-10" />
