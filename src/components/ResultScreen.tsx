@@ -1,14 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     RefreshCcw, UserCheck, Download, Info, Loader2, AlertTriangle, X,
     Quote, Target, Landmark, Scale, Share2, Check, ListOrdered, Zap,
 } from 'lucide-react';
 import { IdeologyId, ideologies } from '@/data/ideologies';
-import { BreakdownItem, IDEOLOGY_AXES, QuizResult } from '@/utils/scoring';
-import { toPng } from 'html-to-image';
+import { BreakdownItem, IDEOLOGY_AXES, UserResponses, calculateScores } from '@/utils/scoring';
 import Link from 'next/link';
 import { CONTENT_DATE } from '@/lib/site';
 import { QuizMode } from '@/utils/storage';
@@ -19,7 +18,7 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } fro
 const LOW_CONFIDENCE_BELOW = 15;
 
 interface ResultScreenProps {
-    result: QuizResult;
+    responses: UserResponses;
     shared: boolean;
     /** Test mode, for the anonymous statistics; absent for shared results. */
     mode?: QuizMode;
@@ -36,7 +35,8 @@ const fadeUp = (delay: number) => ({
     transition: { delay },
 });
 
-export default function ResultScreen({ result, shared, mode, statsEnabled, statsOptIn, onReset }: ResultScreenProps) {
+export default function ResultScreen({ responses, shared, mode, statsEnabled, statsOptIn, onReset }: ResultScreenProps) {
+    const result = useMemo(() => calculateScores(responses), [responses]);
     const {
         topIdeology: ideology, oppositeIdeology, allScores, axisScores,
         matchPercentage, leaderMatches, agreements, disagreements, oppositeDifferences, consistencyScore, answeredCount,
@@ -65,6 +65,8 @@ export default function ResultScreen({ result, shared, mode, statsEnabled, stats
 
     const renderCard = async () => {
         if (!cardRef.current) return null;
+        // Loaded only when the visitor actually downloads the card.
+        const { toPng } = await import('html-to-image');
         return toPng(cardRef.current, { cacheBust: true, pixelRatio: 2, backgroundColor: '#050505' });
     };
 

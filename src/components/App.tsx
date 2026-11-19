@@ -1,18 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, RefreshCw, BarChart3, Users, PlayCircle } from 'lucide-react';
 import QuizEngine from '@/components/QuizEngine';
-import ResultScreen from '@/components/ResultScreen';
+import dynamic from 'next/dynamic';
+
+// The result screen (charts, image export) is split into its own bundle so the
+// start page loads less JavaScript. It is prefetched as soon as a quiz starts.
+const loadResultScreen = () => import('@/components/ResultScreen');
+const ResultScreen = dynamic(loadResultScreen);
 import { questions } from '@/data/questions';
-import {
-  UserResponses,
-  calculateScores,
-  decodeResponses,
-  encodeResponses,
-  pickBalancedQuestions,
-} from '@/utils/scoring';
+import { UserResponses, decodeResponses, encodeResponses, pickBalancedQuestions } from '@/utils/quiz';
 import { QuizMode, SavedProgress, clearProgress, loadProgress, loadStatsOptIn, saveStatsOptIn } from '@/utils/storage';
 import { CONTENT_DATE, SHARE_PARAM } from '@/lib/site';
 import Link from 'next/link';
@@ -58,12 +57,8 @@ export default function App({ initialSharedCode, statsEnabled }: AppProps) {
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
+    if (view.name === 'quiz') void loadResultScreen();
   }, [view.name]);
-
-  const result = useMemo(
-    () => (view.name === 'result' ? calculateScores(view.responses) : null),
-    [view]
-  );
 
   const startQuiz = (mode: QuizMode) => {
     clearProgress();
@@ -92,7 +87,8 @@ export default function App({ initialSharedCode, statsEnabled }: AppProps) {
 
   return (
     <main className="min-h-svh flex flex-col items-center justify-center p-4 md:p-8">
-      <AnimatePresence mode="wait">
+      {/* initial={false}: the server-rendered first screen is visible immediately instead of fading in after JS loads. */}
+      <AnimatePresence mode="wait" initial={false}>
         {view.name === 'home' && (
           <motion.div
             key="home"
@@ -215,10 +211,10 @@ export default function App({ initialSharedCode, statsEnabled }: AppProps) {
           />
         )}
 
-        {view.name === 'result' && result && (
+        {view.name === 'result' && (
           <ResultScreen
             key="result"
-            result={result}
+            responses={view.responses}
             shared={view.shared}
             mode={view.mode}
             statsEnabled={statsEnabled}
