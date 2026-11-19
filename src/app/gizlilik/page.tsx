@@ -52,7 +52,7 @@ export default function PrivacyPage() {
                     <p>
                         Sonuç ekranında kutucuğu işaretleyip &ldquo;Sonucumu ekle&rdquo; dersen, tarayıcın sunucuya yalnızca iki bilgi gönderir:
                         sonuç ideolojinin adı ve test türü (Hızlı Test / Tam Analiz). Sunucu bu bilgiyle yalnızca toplam sayaçları
-                        (tüm zamanlar, ay bazında ve test türü bazında) bir artırır. Cevapların, IP adresin, cihaz bilgin, zaman damgası
+                        (ideoloji bazında ve test türü bazında) bir artırır. Cevapların, IP adresin, cihaz bilgin, zaman damgası
                         veya seni tanımlayabilecek başka hiçbir bilgi bu kayıtla birlikte saklanmaz; tek tek sonuçlar tutulmaz.
                     </p>
                     <p>
