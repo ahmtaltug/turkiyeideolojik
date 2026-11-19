@@ -17,7 +17,7 @@ export const leaders: PoliticalLeader[] = [
     },
     {
         name: 'Ekrem İmamoğlu',
-        title: 'İBB Başkanı / CHP',
+        title: 'CHP Cumhurbaşkanı Adayı',
         coordinates: { ekonomi: -40, toplum: -70, milliyetcilik: 20, yonetim: -70 },
         color: '#EE1C25'
     },
@@ -29,7 +29,7 @@ export const leaders: PoliticalLeader[] = [
     },
     {
         name: 'Mansur Yavaş',
-        title: 'ABB Başkanı / CHP',
+        title: 'Ankara Büyükşehir Bld. Bşk.',
         coordinates: { ekonomi: -20, toplum: -20, milliyetcilik: 80, yonetim: -50 },
         color: '#EE1C25'
     },

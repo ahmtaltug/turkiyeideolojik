@@ -1,67 +1,90 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, RefreshCw, BarChart3, Info } from 'lucide-react';
+import { ChevronRight, RefreshCw, BarChart3, Users, PlayCircle } from 'lucide-react';
 import QuizEngine from '@/components/QuizEngine';
 import ResultScreen from '@/components/ResultScreen';
-import { Ideology, IdeologyId } from '@/data/ideologies';
-import { AxisScore, BreakdownItem, LeaderMatch } from '@/utils/scoring';
+import { questions } from '@/data/questions';
+import {
+  UserResponses,
+  calculateScores,
+  decodeResponses,
+  encodeResponses,
+  pickBalancedQuestions,
+} from '@/utils/scoring';
+import { QuizMode, SavedProgress, clearProgress, loadProgress } from '@/utils/storage';
+
+const QUICK_COUNT = 20;
+const SHARE_PARAM = 'sonuc';
+
+type View =
+  | { name: 'home' }
+  | { name: 'quiz'; mode: QuizMode; questionIds: number[]; index: number; responses: UserResponses }
+  | { name: 'result'; responses: UserResponses; shared: boolean };
+
+const setHash = (code: string | null) => {
+  const url = new URL(window.location.href);
+  url.hash = code ? `${SHARE_PARAM}=${code}` : '';
+  window.history.replaceState(null, '', code ? url.toString() : url.pathname + url.search);
+};
+
+const readSharedResponses = (): UserResponses | null => {
+  const match = window.location.hash.match(new RegExp(`${SHARE_PARAM}=([ad_]+)`));
+  return match ? decodeResponses(match[1]) : null;
+};
 
 export default function Home() {
-  const [view, setView] = useState<'home' | 'quiz' | 'result'>('home');
-  const [mode, setMode] = useState<'quick' | 'full'>('full');
-  const [result, setResult] = useState<Ideology | null>(null);
-  const [oppositeResult, setOppositeResult] = useState<Ideology | null>(null);
-  const [resultScores, setResultScores] = useState<Record<IdeologyId, number> | null>(null);
-  const [axisScores, setAxisScores] = useState<AxisScore[] | null>(null);
-  const [matchPercentage, setMatchPercentage] = useState<number>(0);
-  const [leaderMatches, setLeaderMatches] = useState<LeaderMatch[] | null>(null);
-  const [breakdown, setBreakdown] = useState<BreakdownItem[] | null>(null);
-  const [consistencyScore, setConsistencyScore] = useState<number>(0);
+  const [view, setView] = useState<View>({ name: 'home' });
+  const [saved, setSaved] = useState<SavedProgress | null>(null);
 
-  const startQuiz = (selectedMode: 'quick' | 'full') => {
-    setMode(selectedMode);
-    setView('quiz');
+  // Client-only state (localStorage / URL hash) is read after hydration.
+  useEffect(() => {
+    const shared = readSharedResponses();
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (shared) setView({ name: 'result', responses: shared, shared: true });
+    setSaved(loadProgress());
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [view.name]);
+
+  const result = useMemo(
+    () => (view.name === 'result' ? calculateScores(view.responses) : null),
+    [view]
+  );
+
+  const startQuiz = (mode: QuizMode) => {
+    clearProgress();
+    setSaved(null);
+    const ids = mode === 'full'
+      ? questions.map(q => q.id)
+      : pickBalancedQuestions(questions, QUICK_COUNT).map(q => q.id);
+    setView({ name: 'quiz', mode, questionIds: ids, index: 0, responses: {} });
   };
 
-  const finishQuiz = (
-    ideology: Ideology,
-    opposite: Ideology,
-    scores: Record<IdeologyId, number>,
-    axes: AxisScore[],
-    match: number,
-    leaders: LeaderMatch[],
-    breakdownItems: BreakdownItem[],
-    consistency: number
-  ) => {
-    setResult(ideology);
-    setOppositeResult(opposite);
-    setResultScores(scores);
-    setAxisScores(axes);
-    setMatchPercentage(match);
-    setLeaderMatches(leaders);
-    setBreakdown(breakdownItems);
-    setConsistencyScore(consistency);
-    setView('result');
+  const resumeQuiz = () => {
+    if (!saved) return;
+    setView({ name: 'quiz', mode: saved.mode, questionIds: saved.questionIds, index: saved.currentIndex, responses: saved.responses });
   };
 
-  const reset = () => {
-    setResult(null);
-    setOppositeResult(null);
-    setResultScores(null);
-    setAxisScores(null);
-    setMatchPercentage(0);
-    setLeaderMatches(null);
-    setBreakdown(null);
-    setConsistencyScore(0);
-    setView('home');
-  };
+  const finishQuiz = useCallback((responses: UserResponses) => {
+    setHash(encodeResponses(responses));
+    setView({ name: 'result', responses, shared: false });
+  }, []);
+
+  const goHome = useCallback(() => {
+    setHash(null);
+    setSaved(loadProgress());
+    setView({ name: 'home' });
+  }, []);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+    <main className="min-h-svh flex flex-col items-center justify-center p-4 md:p-8">
       <AnimatePresence mode="wait">
-        {view === 'home' && (
+        {view.name === 'home' && (
           <motion.div
             key="home"
             initial={{ opacity: 0, y: 20 }}
@@ -76,86 +99,97 @@ export default function Home() {
                 transition={{ type: 'spring', damping: 12 }}
                 className="inline-block p-4 rounded-[2rem] bg-gradient-to-br from-red-500/20 to-blue-500/20 border border-white/10 mb-4 animate-float"
               >
-                <BarChart3 className="w-14 h-14 text-white" />
+                <BarChart3 className="w-14 h-14 text-white" aria-hidden="true" />
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
                 <span className="gradient-text">Türkiye</span>
                 <span className="text-white">İdeolojik</span>
               </h1>
-              <p className="text-xl text-gray-400 max-w-lg mx-auto leading-relaxed">
-                Tinder usulü kaydırmalı sorularla Türkiye siyasetindeki gerçek kimliğini keşfet.
+              <p className="text-lg md:text-xl text-gray-400 max-w-lg mx-auto leading-relaxed">
+                Kaydırmalı sorularla Türkiye siyasetindeki yerini keşfet.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
-                <button
-                  onClick={() => startQuiz('full')}
-                  className="group relative w-full px-8 py-5 bg-white text-black font-black rounded-2xl overflow-hidden transition-all hover:scale-105 active:scale-95 flex flex-col items-center"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span>Tam Analiz</span>
-                    <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                  </div>
-                  <span className="text-[10px] uppercase opacity-50 font-bold">40 Soru • Tam Profil</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-blue-500 opacity-0 group-hover:opacity-10 transition-opacity" />
-                </button>
+            {saved && (
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={resumeQuiz}
+                className="w-full max-w-md mx-auto flex items-center justify-center gap-3 px-6 py-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 text-yellow-400 font-bold hover:bg-yellow-500/15 transition-colors"
+              >
+                <PlayCircle className="w-5 h-5" />
+                Kaldığın yerden devam et ({saved.mode === 'quick' ? 'Hızlı' : 'Tam'} • {saved.currentIndex}/{saved.questionIds.length})
+              </motion.button>
+            )}
 
-                <button
-                  onClick={() => startQuiz('quick')}
-                  className="group relative w-full px-8 py-5 glass text-white font-bold rounded-2xl overflow-hidden transition-all hover:scale-105 active:scale-95 flex flex-col items-center border-white/10"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span>Hızlı Test</span>
-                    <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                  </div>
-                  <span className="text-[10px] uppercase opacity-50 font-bold">20 Soru • 1.5 Dakika</span>
-                </button>
-              </div>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md mx-auto">
+              <button
+                onClick={() => startQuiz('full')}
+                className="group relative w-full px-8 py-5 bg-white text-black font-black rounded-2xl overflow-hidden transition-all hover:scale-105 active:scale-95 flex flex-col items-center"
+              >
+                <span className="flex items-center gap-2 mb-1">
+                  Tam Analiz
+                  <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </span>
+                <span className="text-[10px] uppercase opacity-60 font-bold">{questions.length} Soru • ~4 Dakika</span>
+              </button>
+
+              <button
+                onClick={() => startQuiz('quick')}
+                className="group relative w-full px-8 py-5 glass text-white font-bold rounded-2xl overflow-hidden transition-all hover:scale-105 active:scale-95 flex flex-col items-center"
+              >
+                <span className="flex items-center gap-2 mb-1">
+                  Hızlı Test
+                  <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </span>
+                <span className="text-[10px] uppercase opacity-60 font-bold">{QUICK_COUNT} Soru • ~2 Dakika</span>
+              </button>
             </div>
 
-
-            <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+            <div className="pt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
               {[
-                { icon: BarChart3, title: 'Analiz', text: '13 farklı ideolojik akım üzerinden derinlemesine eşleşme.' },
-                { icon: RefreshCw, title: 'Swipe', text: 'Sıkıcı testlerden kurtul, sağa veya sola kaydırarak cevapla.' },
-                { icon: Info, title: 'Partiler', text: 'Görüşlerine en yakın güncel siyasi partileri hemen öğren.' },
-              ].map((item, i) => (
-                <div key={i} className="glass p-6 rounded-2xl space-y-3">
-                  <item.icon className="w-6 h-6 text-gray-400" />
-                  <h3 className="font-bold text-white">{item.title}</h3>
-                  <p className="text-sm text-gray-500">{item.text}</p>
+                { icon: BarChart3, title: 'Analiz', text: '13 ideoloji ve 4 eksen üzerinden ayrıntılı eşleşme.' },
+                { icon: RefreshCw, title: 'Kaydır', text: 'Sağa kaydır katıl, sola kaydır katılma. Butonlar ve klavye de çalışır.' },
+                { icon: Users, title: 'Liderler', text: 'Görüşlerinin hangi siyasi liderlere ve partilere yakın olduğunu gör.' },
+              ].map(item => (
+                <div key={item.title} className="glass p-6 rounded-2xl space-y-3">
+                  <item.icon className="w-6 h-6 text-gray-400" aria-hidden="true" />
+                  <h2 className="font-bold text-white">{item.title}</h2>
+                  <p className="text-sm text-gray-400">{item.text}</p>
                 </div>
               ))}
             </div>
 
-            <footer className="pt-12 text-gray-600 text-xs uppercase tracking-widest font-medium">
-              &copy; 2026 Türkiyeİdeolojik &bull; Bilimsel Değildir
+            <p className="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">
+              Cevapların yalnızca tarayıcında işlenir, hiçbir sunucuya gönderilmez.
+            </p>
+
+            <footer className="pt-4 text-gray-600 text-xs uppercase tracking-widest font-medium">
+              &copy; {new Date().getFullYear()} Türkiye İdeolojik &bull; Eğlence amaçlıdır, bilimsel değildir
             </footer>
           </motion.div>
         )}
 
-        {view === 'quiz' && (
-          <QuizEngine key="quiz" mode={mode} onFinish={finishQuiz} onReset={reset} />
-        )}
-
-
-        {view === 'result' && result && oppositeResult && resultScores && axisScores && leaderMatches && breakdown && (
-          <ResultScreen
-            key="result"
-            ideology={result}
-            oppositeIdeology={oppositeResult}
-            allScores={resultScores}
-            axisScores={axisScores}
-            matchPercentage={matchPercentage}
-            leaderMatches={leaderMatches}
-            breakdown={breakdown}
-            consistencyScore={consistencyScore}
-            onReset={reset}
+        {view.name === 'quiz' && (
+          <QuizEngine
+            key={`quiz-${view.questionIds.join(',')}`}
+            mode={view.mode}
+            questionIds={view.questionIds}
+            initialIndex={view.index}
+            initialResponses={view.responses}
+            onFinish={finishQuiz}
+            onExit={goHome}
           />
         )}
 
-
+        {view.name === 'result' && result && (
+          <ResultScreen
+            key="result"
+            result={result}
+            shared={view.shared}
+            onReset={goHome}
+          />
+        )}
       </AnimatePresence>
     </main>
   );
