@@ -31,7 +31,7 @@ export const saveProgress = (progress: SavedProgress) =>
 export const clearProgress = () => safe(() => localStorage.removeItem(PROGRESS_KEY), undefined);
 
 export const loadSoundEnabled = (): boolean =>
-    safe(() => localStorage.getItem(SOUND_KEY) !== 'off', true);
+    safe(() => localStorage.getItem(SOUND_KEY) === 'on', false);
 
 export const saveSoundEnabled = (enabled: boolean) =>
     safe(() => localStorage.setItem(SOUND_KEY, enabled ? 'on' : 'off'), undefined);

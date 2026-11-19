@@ -165,7 +165,7 @@ export default function Home() {
             </p>
 
             <footer className="pt-4 text-gray-600 text-xs uppercase tracking-widest font-medium">
-              &copy; {new Date().getFullYear()} Türkiye İdeolojik &bull; Eğlence amaçlıdır, bilimsel değildir
+              &copy; {new Date().getFullYear()} Türkiye İdeolojik &bull; Bilimsel bir ölçüm değildir
             </footer>
           </motion.div>
         )}

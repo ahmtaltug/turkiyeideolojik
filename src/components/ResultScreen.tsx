@@ -4,13 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     RefreshCcw, UserCheck, Download, Info, Loader2, AlertTriangle, X,
-    Quote, Target, Sparkles, Share2, Check, ListOrdered, Zap,
+    Quote, Target, Landmark, Scale, Share2, Check, ListOrdered, Zap,
 } from 'lucide-react';
 import { IdeologyId, ideologies } from '@/data/ideologies';
 import { BreakdownItem, IDEOLOGY_AXES, QuizResult } from '@/utils/scoring';
 import { toPng } from 'html-to-image';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import confetti from 'canvas-confetti';
 
 interface ResultScreenProps {
     result: QuizResult;
@@ -27,7 +26,7 @@ const fadeUp = (delay: number) => ({
 export default function ResultScreen({ result, shared, onReset }: ResultScreenProps) {
     const {
         topIdeology: ideology, oppositeIdeology, allScores, axisScores,
-        matchPercentage, leaderMatches, agreements, disagreements, consistencyScore, answeredCount,
+        matchPercentage, leaderMatches, agreements, disagreements, oppositeDifferences, consistencyScore, answeredCount,
     } = result;
 
     const cardRef = useRef<HTMLDivElement>(null);
@@ -37,22 +36,6 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
 
     const secondColor = ideology.isHybrid && ideology.secondId ? ideologies[ideology.secondId].color : null;
     const accentGradient = secondColor ? `linear-gradient(to right, ${ideology.color}, ${secondColor})` : undefined;
-
-    useEffect(() => {
-        if (shared) return;
-        const duration = 2500;
-        const end = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0, disableForReducedMotion: true };
-        const rand = (min: number, max: number) => Math.random() * (max - min) + min;
-        const interval = setInterval(() => {
-            const left = end - Date.now();
-            if (left <= 0) return clearInterval(interval);
-            const particleCount = 40 * (left / duration);
-            confetti({ ...defaults, particleCount, origin: { x: rand(0.1, 0.3), y: Math.random() - 0.2 } });
-            confetti({ ...defaults, particleCount, origin: { x: rand(0.7, 0.9), y: Math.random() - 0.2 } });
-        }, 250);
-        return () => clearInterval(interval);
-    }, [shared]);
 
     // Modal: close on Escape and lock background scroll.
     useEffect(() => {
@@ -156,7 +139,7 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                     <motion.h1
                                         initial={{ y: 20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
-                                        className={`${ideology.isHybrid ? 'text-4xl md:text-6xl' : 'text-5xl md:text-7xl'} font-black italic uppercase leading-none tracking-tighter break-words max-w-full pr-2`}
+                                        className={`${ideology.isHybrid ? 'text-3xl md:text-5xl' : 'text-4xl md:text-6xl'} font-extrabold leading-tight tracking-tight break-words max-w-full pr-2`}
                                         style={accentGradient
                                             ? { backgroundImage: accentGradient, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }
                                             : { color: ideology.color }}
@@ -164,8 +147,9 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                         {ideology.name}
                                     </motion.h1>
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                        <div className="inline-block self-start px-5 py-2.5 bg-white text-black font-black italic rounded-2xl text-2xl shrink-0 shadow-lg shadow-white/10">
-                                            %{matchPercentage} UYUM
+                                        <div className="inline-flex flex-col self-start px-5 py-2.5 bg-white text-black rounded-2xl shrink-0">
+                                            <span className="text-2xl font-extrabold tabular-nums leading-none">%{matchPercentage}</span>
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mt-1">Uyum</span>
                                         </div>
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-2">
@@ -174,7 +158,7 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                                     title="Aynı eksendeki cevaplarının birbiriyle ne kadar uyumlu olduğunu gösterir."
                                                     className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tight ${consistencyScore > 60 ? 'bg-green-500/20 text-green-400' : 'bg-orange-500/20 text-orange-400'}`}
                                                 >
-                                                    {consistencyScore > 60 ? 'Net Çizgili' : 'Esnek Düşünür'}
+                                                    {consistencyScore > 60 ? 'Tutarlı' : 'Karma Görüşler'}
                                                 </span>
                                             </div>
                                             <p className="text-gray-400 font-medium max-w-md text-sm leading-snug mt-1">
@@ -225,9 +209,9 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                                 style={{ left: `${50 + IDEOLOGY_AXES[ideology.id][axis.id] / 2}%` }}
                                             />
                                         </div>
-                                        <div className="pt-2 border-t border-white/10 flex justify-between text-[10px] font-black text-gray-500 uppercase tracking-[0.15em] italic">
+                                        <div className="pt-2 border-t border-white/10 flex justify-between text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em]">
                                             <span>{axis.name}</span>
-                                            <span className="text-gray-400 not-italic tabular-nums">{axis.value > 0 ? '+' : ''}{axis.value}</span>
+                                            <span className="text-gray-400 tabular-nums">{axis.value > 0 ? '+' : ''}{axis.value}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -356,16 +340,13 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                         <h2 className="font-bold text-white uppercase tracking-wider text-sm">En Uzak Görüş</h2>
                     </div>
                     <div className="relative z-10 space-y-3">
-                        <div className="text-3xl md:text-4xl font-black italic uppercase break-words" style={{ color: `${oppositeIdeology.color}aa` }}>
+                        <div className="text-2xl md:text-3xl font-extrabold break-words" style={{ color: oppositeIdeology.color }}>
                             {oppositeIdeology.name}
                         </div>
-                        <p className="text-xs text-gray-400 leading-relaxed italic">
-                            Cevaplarına göre siyasi spektrumda senden en uzak duran görüş bu.
-                        </p>
-                        <div className="p-4 bg-red-500/5 border border-red-500/10 rounded-2xl">
-                            <Quote className="w-4 h-4 text-red-500/30 mb-1" />
-                            <p className="text-[11px] text-red-300 font-medium leading-snug">{oppositeIdeology.roast}</p>
-                        </div>
+                        <p className="text-xs text-gray-400 leading-relaxed">{oppositeIdeology.description}</p>
+                        {oppositeDifferences.length > 0 && (
+                            <BreakdownList title="En belirgin ayrılıklar" items={oppositeDifferences} agree={false} />
+                        )}
                     </div>
                     <div
                         aria-hidden="true"
@@ -374,16 +355,23 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                     />
                 </motion.section>
 
-                {/* Self roast */}
+                {/* Criticisms of the matched ideology */}
                 <motion.section {...fadeUp(0.35)} className="glass p-6 rounded-[2rem] space-y-4 md:col-span-2 lg:col-span-1">
                     <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-                        <Zap className="w-5 h-5 text-orange-400" />
-                        <h2 className="font-bold text-white uppercase tracking-wider text-sm">Kendine Bir Bak</h2>
+                        <Scale className="w-5 h-5 text-orange-400" />
+                        <h2 className="font-bold text-white uppercase tracking-wider text-sm">Eleştiriler</h2>
                     </div>
-                    <p className="text-sm text-gray-300 leading-relaxed italic">
-                        &ldquo;{ideologies[ideology.id].roast}&rdquo;
+                    <p className="text-[11px] text-gray-500 leading-snug">
+                        {ideologies[ideology.id].name} çizgisine sıkça yöneltilen eleştiriler:
                     </p>
-                    <p className="text-[10px] text-gray-600 uppercase tracking-widest">Şaka, alınma. Herkesin payına düşen var.</p>
+                    <ul className="space-y-3">
+                        {ideologies[ideology.id].critiques.map(c => (
+                            <li key={c} className="flex gap-3 text-sm text-gray-300 leading-relaxed">
+                                <span className="mt-2 w-1.5 h-1.5 shrink-0 rounded-full bg-orange-400/70" />
+                                {c}
+                            </li>
+                        ))}
+                    </ul>
                 </motion.section>
 
                 {/* Full ranking */}
@@ -412,38 +400,28 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                     </ol>
                 </motion.section>
 
-                {/* What would you do */}
-                <motion.section {...fadeUp(0.5)} className="md:col-span-2 lg:col-span-3 glass p-6 md:p-8 rounded-[2.5rem] space-y-6 relative overflow-hidden">
-                    <div aria-hidden="true" className="absolute -top-12 -right-12 p-8 opacity-5 rotate-12">
-                        <Sparkles className="w-48 h-48 text-yellow-500" />
-                    </div>
-                    <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-                        <div className="p-3 bg-yellow-500/10 rounded-2xl">
-                            <Sparkles className="w-6 h-6 text-yellow-500" />
-                        </div>
+                {/* Typical policy proposals */}
+                <motion.section {...fadeUp(0.5)} className="md:col-span-2 lg:col-span-3 glass p-6 md:p-8 rounded-[2rem] space-y-6">
+                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                        <Landmark className="w-5 h-5 text-sky-400" />
                         <div>
-                            <h2 className="font-bold text-white uppercase tracking-wider text-lg md:text-xl">Sen Olsan Ne Yapardın?</h2>
-                            <p className="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">İdeolojine Göre Gelecek Vizyonun</p>
+                            <h2 className="font-bold text-white uppercase tracking-wider text-sm">Politika Önerileri</h2>
+                            <p className="text-[11px] text-gray-500">{ideologies[ideology.id].name} çizgisinin öne çıkardığı başlıca politikalar</p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 relative z-10">
+                    <ol className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {ideology.actionPlan.map((action, i) => (
-                            <div key={action} className="space-y-4 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-yellow-500/20 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-sm font-black text-black shadow-lg shadow-yellow-500/20">
-                                        0{i + 1}
-                                    </div>
-                                    <div className="h-px flex-1 bg-white/5" />
-                                </div>
-                                <p className="text-sm text-gray-300 font-bold leading-relaxed">{action}</p>
-                            </div>
+                            <li key={action} className="flex gap-4 p-5 bg-white/5 rounded-2xl border border-white/10">
+                                <span className="text-sm font-bold text-gray-500 tabular-nums">{i + 1}.</span>
+                                <p className="text-sm text-gray-300 leading-relaxed">{action}</p>
+                            </li>
                         ))}
-                    </div>
+                    </ol>
                 </motion.section>
             </div>
 
             <p className="text-center text-[10px] text-gray-600 uppercase tracking-widest leading-relaxed">
-                Bu sonuç yalnızca verdiğin cevaplara dayalı eğlencelik bir eşleşmedir; bilimsel bir ölçüm değildir.
+                Bu sonuç yalnızca verdiğin cevaplara dayalı bir eşleşmedir; bilimsel bir ölçüm değildir.
             </p>
 
             {/* Info modal */}
@@ -478,7 +456,7 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                             <div className="h-40 md:h-48 relative overflow-hidden flex items-end p-8" style={{ backgroundColor: `${ideology.color}20` }}>
                                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `linear-gradient(to bottom, transparent, ${ideology.color})` }} />
                                 <div className="relative z-10">
-                                    <h2 id="ideology-dialog-title" className="text-3xl md:text-5xl font-black italic uppercase mb-2" style={{ color: ideology.color }}>
+                                    <h2 id="ideology-dialog-title" className="text-3xl md:text-4xl font-extrabold mb-2" style={{ color: ideology.color }}>
                                         {ideologies[ideology.id].name}
                                     </h2>
                                     <p className="text-white/60 font-bold uppercase tracking-[0.3em] text-[10px]">İdeolojik Bilgi Kartı</p>
@@ -514,7 +492,7 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                             <Quote className="w-4 h-4" /> Siyasi Motto
                                         </h3>
                                         <div
-                                            className="p-4 rounded-2xl border-l-4 font-bold italic text-white"
+                                            className="p-4 rounded-2xl border-l-4 font-semibold text-white"
                                             style={{ backgroundColor: `${ideology.color}10`, borderLeftColor: ideology.color }}
                                         >
                                             &ldquo;{ideology.details?.motto}&rdquo;

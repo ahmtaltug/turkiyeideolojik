@@ -34,4 +34,4 @@ Teknolojiler: Next.js 16, React 19, Tailwind CSS 4, Framer Motion, Recharts.
 İsteğe bağlı: `NEXT_PUBLIC_SITE_URL` ortam değişkeni sosyal medya önizlemeleri için sitenin adresini belirler (Vercel'de otomatik).
 
 ### ⚠️ Önemli Not
-Bu uygulama eğlence ve fikir jimnastiği amacıyla geliştirilmiştir. Sonuçlar bilimsel bir kesinlik taşımaz; ideoloji ve lider konumları yaklaşık tahminlerdir.
+Bu uygulama bilgilendirme ve fikir jimnastiği amacıyla geliştirilmiştir. Sonuçlar bilimsel bir kesinlik taşımaz; ideoloji ve lider konumları yaklaşık tahminlerdir.

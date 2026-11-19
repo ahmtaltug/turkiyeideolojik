@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 const description =
-  "Kaydırmalı sorularla Türkiye siyasetindeki yerini keşfet: 13 ideoloji, 4 eksen ve lider uyumu. Eğlence amaçlıdır, bilimsel değildir.";
+  "Kaydırmalı sorularla Türkiye siyasetindeki yerini keşfet: 13 ideoloji, 4 eksen ve lider uyumu. Bilimsel bir ölçüm değildir.";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
