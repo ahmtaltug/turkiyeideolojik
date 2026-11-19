@@ -99,14 +99,12 @@ export default function MethodologyPage() {
 
                 <Section title="Gizlilik">
                     <p>
-                        Cevapların tarayıcında işlenir; hesap açma, kayıt ya da çerez yoktur. Yarım kalan testin ve ses
-                        tercihin, kaldığın yerden devam edebilmen için yalnızca kendi tarayıcında saklanır.
+                        Cevapların tarayıcında işlenir ve kaydedilmez; hesap açma ya da çerez yoktur. Sonucunu{' '}
+                        <Link href="/istatistik" className="underline underline-offset-4 hover:text-white">anonim istatistiklere</Link>{' '}
+                        eklemek isteğe bağlıdır ve yalnızca açık rızanla, kimliğinle ilişkilendirilmeden yapılır.
                     </p>
                     <p>
-                        Sonucunu paylaştığında linkin içinde cevapların kısa bir kodu bulunur; linki açan herkes aynı sonucu görür.
-                        Paylaşılan link açıldığında bu kod, sosyal medya önizleme görselini oluşturmak için sunucuya iletilir.
-                        Herhangi bir veritabanında saklanmaz; yalnızca barındırma sağlayıcısının standart erişim kayıtlarında
-                        geçici olarak yer alabilir. Sonucunu paylaşmazsan cevapların tarayıcından çıkmaz.
+                        Ayrıntılar için <Link href="/gizlilik" className="underline underline-offset-4 hover:text-white">Aydınlatma Metni</Link>&apos;ne bakabilirsin.
                     </p>
                 </Section>
 

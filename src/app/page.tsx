@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import App from '@/components/App';
 import { calculateScores, decodeResponses } from '@/utils/scoring';
 import { SHARE_PARAM, SITE_NAME } from '@/lib/site';
+import { isStatsEnabled } from '@/lib/stats';
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -32,5 +33,5 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  return <App initialSharedCode={await readCode(searchParams)} />;
+  return <App initialSharedCode={await readCode(searchParams)} statsEnabled={isStatsEnabled()} />;
 }
