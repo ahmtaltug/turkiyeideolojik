@@ -30,7 +30,7 @@ const setHash = (code: string | null) => {
 };
 
 const readSharedResponses = (): UserResponses | null => {
-  const match = window.location.hash.match(new RegExp(`${SHARE_PARAM}=([ad_]+)`));
+  const match = window.location.hash.match(new RegExp(`${SHARE_PARAM}=(\\d+-[ad_]+)`));
   return match ? decodeResponses(match[1]) : null;
 };
 

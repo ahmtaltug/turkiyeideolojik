@@ -1,6 +1,16 @@
 import { IdeologyId, ideologies, Ideology } from '../data/ideologies';
-import { questions, AxisId, Question } from '../data/questions';
+import { questions, AxisId, Question, Stance } from '../data/questions';
 import { leaders, PoliticalLeader } from '../data/leaders';
+
+/*
+ * Scoring model
+ * -------------
+ * Every question stores how each ideology would answer it (stance -2..2).
+ * Each stance is read as a probability of agreeing; a user's match with an
+ * ideology is how likely a holder of it would be to answer exactly like them.
+ * Axis positions come from each question's axis loadings, and ideology/leader
+ * axis positions are derived from the same stances, so everything stays in sync.
+ */
 
 export type Answer = 'agree' | 'disagree';
 
@@ -21,11 +31,10 @@ export interface LeaderMatch {
 }
 
 export interface BreakdownItem {
+    questionId: number;
     questionText: string;
     answer: Answer;
-    /** Relative influence on the top result, 0-100. */
-    impact: number;
-    direction: 'positive' | 'negative';
+    stance: Stance;
 }
 
 export interface QuizResult {
@@ -35,7 +44,10 @@ export interface QuizResult {
     axisScores: AxisScore[];
     matchPercentage: number;
     leaderMatches: LeaderMatch[];
-    breakdown: BreakdownItem[];
+    /** Strongest issues where the user sides with the top ideology. */
+    agreements: BreakdownItem[];
+    /** Strongest issues where the user departs from the top ideology. */
+    disagreements: BreakdownItem[];
     consistencyScore: number;
     answeredCount: number;
 }
@@ -43,62 +55,86 @@ export interface QuizResult {
 export const AXIS_IDS: AxisId[] = ['ekonomi', 'toplum', 'milliyetcilik', 'yonetim'];
 
 export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = {
-    ekonomi: {
-        name: 'Ekonomi',
-        labels: ['Devletçi / Sosyalist', 'Serbest Piyasa / Liberal']
-    },
-    toplum: {
-        name: 'Toplumsal',
-        labels: ['İlerici / Seküler', 'Muhafazakar / Dindar']
-    },
-    milliyetcilik: {
-        name: 'Milliyetçilik',
-        labels: ['Küreselci / Kozmopolit', 'Milliyetçi / Ulusalcı']
-    },
-    yonetim: {
-        name: 'Yönetim',
-        labels: ['Özgürlükçü / Demokratik', 'Otoriter / Devletçi']
-    }
+    ekonomi: { name: 'Ekonomi', labels: ['Devletçi / Sosyal', 'Serbest Piyasa / Liberal'] },
+    toplum: { name: 'Toplumsal', labels: ['İlerici / Seküler', 'Muhafazakar / Dindar'] },
+    milliyetcilik: { name: 'Milliyetçilik', labels: ['Çoğulcu / Küreselci', 'Milliyetçi / Ulusalcı'] },
+    yonetim: { name: 'Yönetim', labels: ['Özgürlükçü / Yerinden', 'Otoriter / Merkeziyetçi'] },
 };
 
 const AXIS_IMPORTANCE: Record<AxisId, number> = {
-    milliyetcilik: 1.3,
-    toplum: 1.2,
+    milliyetcilik: 1.2,
+    toplum: 1.1,
     ekonomi: 0.9,
-    yonetim: 0.7
-};
-
-const IDEOLOGY_RIGIDITY: Record<IdeologyId, number> = {
-    islamci: 1.4,
-    sosyalist: 1.3,
-    ozerklikci: 1.5,
-    turkculuk: 1.3,
-    avrasyaci: 1.2,
-    ulusalci: 1.2,
-    kemalist: 1.1,
-    ulkucu: 1.1,
-    muhafazakar: 1.0,
-    sosyal_demokrat: 0.9,
-    merkez_sag: 0.8,
-    liberal: 0.9,
-    yesil: 1.0
+    yonetim: 1,
 };
 
 const IDEOLOGY_IDS = Object.keys(ideologies) as IdeologyId[];
 const questionById = new Map<number, Question>(questions.map(q => [q.id, q]));
 
-/** Explicit weight if the question defines one, otherwise projected from the ideology's ideal axes. */
-const getEffectiveWeight = (q: Question, ideologyId: IdeologyId): number => {
-    const explicit = q.weights[ideologyId];
-    if (explicit !== undefined) return explicit;
-    const ideal = ideologies[ideologyId].idealAxes;
-    return AXIS_IDS.reduce((sum, axis) => sum + (q.axisWeights[axis] * ideal[axis]) / 100, 0);
+/**
+ * Probability that someone holding `stance` agrees with the statement.
+ * Clamped so a single answer can never rule an ideology out completely.
+ */
+const agreeProbability = (stance: number) => Math.min(0.95, Math.max(0.05, (stance + 2) / 4));
+
+const answerValue = (answer: Answer) => (answer === 'agree' ? 1 : -1);
+
+const P_MIN = 0.05;
+const P_MAX = 0.95;
+
+/**
+ * Match (0-100): geometric mean of the probabilities that a holder of this
+ * profile would give each of the user's answers, rescaled so that "always
+ * answers like a committed member" is 100 and "always the opposite" is 0.
+ * Contradicting a core (±2) position therefore costs far more than a mild one.
+ */
+const matchScore = (
+    answered: { question: Question; answer: Answer }[],
+    stanceOf: (q: Question) => number
+): number => {
+    if (answered.length === 0) return 50;
+    let logSum = 0;
+    for (const { question, answer } of answered) {
+        const p = agreeProbability(stanceOf(question));
+        logSum += Math.log(answer === 'agree' ? p : 1 - p);
+    }
+    const geoMean = Math.exp(logSum / answered.length);
+    return Math.round(((geoMean - P_MIN) / (P_MAX - P_MIN)) * 100);
 };
 
-/** The axis a question mostly measures (largest absolute axis weight). */
+export const leaderStance = (leader: PoliticalLeader, q: Question): number => {
+    const override = leader.overrides?.[q.id];
+    if (override !== undefined) return override;
+    return (Object.entries(leader.blend) as [IdeologyId, number][])
+        .reduce((sum, [id, w]) => sum + w * q.stances[id], 0);
+};
+
+/** Axis position (-100..100) of a profile that answers with probability given by its stance. */
+const profileAxes = (stanceOf: (q: Question) => number): Record<AxisId, number> => {
+    const raw: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const max: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    for (const q of questions) {
+        const s = stanceOf(q) / 2;
+        for (const axis of AXIS_IDS) {
+            const load = q.axes[axis] ?? 0;
+            raw[axis] += s * load;
+            max[axis] += Math.abs(load);
+        }
+    }
+    return Object.fromEntries(
+        AXIS_IDS.map(a => [a, max[a] === 0 ? 0 : Math.round((raw[a] / max[a]) * 100)])
+    ) as Record<AxisId, number>;
+};
+
+/** Where each ideology sits on the four axes, derived from its stances. */
+export const IDEOLOGY_AXES: Record<IdeologyId, Record<AxisId, number>> = Object.fromEntries(
+    IDEOLOGY_IDS.map(id => [id, profileAxes(q => q.stances[id])])
+) as Record<IdeologyId, Record<AxisId, number>>;
+
+/** The axis a question mostly measures (largest absolute loading). */
 export const dominantAxis = (q: Question): AxisId =>
     AXIS_IDS.reduce((best, axis) =>
-        Math.abs(q.axisWeights[axis]) > Math.abs(q.axisWeights[best]) ? axis : best, AXIS_IDS[0]);
+        Math.abs(q.axes[axis] ?? 0) > Math.abs(q.axes[best] ?? 0) ? axis : best, AXIS_IDS[0]);
 
 /**
  * Picks `count` questions balanced across axes (round-robin over the dominant axis),
@@ -135,92 +171,51 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
         .map(([qId, answer]) => ({ question: questionById.get(Number(qId)), answer }))
         .filter((r): r is { question: Question; answer: Answer } => !!r.question);
 
-    const ideologyRaw = Object.fromEntries(IDEOLOGY_IDS.map(id => [id, 0])) as Record<IdeologyId, number>;
-    const ideologyMax = Object.fromEntries(IDEOLOGY_IDS.map(id => [id, 0])) as Record<IdeologyId, number>;
+    // Ideology match = weighted agreement on answered questions.
+    const allScores = Object.fromEntries(
+        IDEOLOGY_IDS.map(id => [id, matchScore(answered, q => q.stances[id])])
+    ) as Record<IdeologyId, number>;
+
+    // User axes, normalised over answered questions only.
     const axisRaw: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
     const axisMax: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    // Positive / negative evidence per axis, used for the consistency score.
     const axisPos: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
     const axisNeg: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    const questionImpacts = new Map<number, Record<IdeologyId, number>>();
-
-    // Only answered questions count towards the maxima; otherwise a 20-question
-    // quick test would have its scores squashed toward the centre.
     for (const { question, answer } of answered) {
-        const multiplier = answer === 'agree' ? 1 : -1;
-        const impacts = {} as Record<IdeologyId, number>;
-
-        for (const id of IDEOLOGY_IDS) {
-            const weight = getEffectiveWeight(question, id);
-            let impact = weight * multiplier;
-            // Red line penalty: contradicting a core value of an ideology costs extra.
-            if (Math.abs(weight) >= 8 && Math.sign(weight) !== multiplier) impact *= 1.5;
-            ideologyRaw[id] += impact;
-            ideologyMax[id] += Math.abs(weight);
-            impacts[id] = impact;
-        }
-        questionImpacts.set(question.id, impacts);
-
         for (const axis of AXIS_IDS) {
-            const w = question.axisWeights[axis];
-            const val = w * multiplier;
+            const load = question.axes[axis] ?? 0;
+            const val = load * answerValue(answer);
             axisRaw[axis] += val;
-            axisMax[axis] += Math.abs(w);
+            axisMax[axis] += Math.abs(load);
             if (val > 0) axisPos[axis] += val;
-            else if (val < 0) axisNeg[axis] -= val;
+            else axisNeg[axis] -= val;
         }
     }
+    const axisScores: AxisScore[] = AXIS_IDS.map(axis => ({
+        id: axis,
+        name: AXES[axis].name,
+        value: axisMax[axis] === 0 ? 0 : Math.round((axisRaw[axis] / axisMax[axis]) * 100),
+        labels: AXES[axis].labels,
+    }));
 
-    // Consistency: on each axis, how much of the evidence points the "minority" way.
-    let conflictSum = 0;
-    let evidenceSum = 0;
+    // Consistency: how much of the evidence on each axis points the "minority" way.
+    let conflict = 0;
+    let evidence = 0;
     for (const axis of AXIS_IDS) {
-        const total = axisPos[axis] + axisNeg[axis];
-        if (total === 0) continue;
-        conflictSum += Math.min(axisPos[axis], axisNeg[axis]) * AXIS_IMPORTANCE[axis];
-        evidenceSum += total * AXIS_IMPORTANCE[axis];
+        conflict += Math.min(axisPos[axis], axisNeg[axis]) * AXIS_IMPORTANCE[axis];
+        evidence += (axisPos[axis] + axisNeg[axis]) * AXIS_IMPORTANCE[axis];
     }
-    // A minority share of 0.5 (perfectly split) maps to 0, 0 maps to 100.
-    const consistencyScore = evidenceSum === 0
+    const consistencyScore = evidence === 0
         ? 100
-        : Math.round(100 * (1 - (conflictSum / evidenceSum) * 2));
+        : Math.max(0, Math.min(100, Math.round(100 * (1 - (conflict / evidence) * 2))));
 
-    const normalizedAxes = {} as Record<AxisId, number>;
-    const axisScores: AxisScore[] = AXIS_IDS.map(axis => {
-        const value = axisMax[axis] === 0 ? 0 : Math.round((axisRaw[axis] / axisMax[axis]) * 100);
-        normalizedAxes[axis] = value;
-        return { id: axis, name: AXES[axis].name, value, labels: AXES[axis].labels };
-    });
-
-    // Final: Gaussian distance on the axes (75%) blended with direct question weights (25%).
-    const importanceSum = AXIS_IDS.reduce((s, a) => s + AXIS_IMPORTANCE[a], 0);
-    const finalScores = {} as Record<IdeologyId, number>;
-    for (const id of IDEOLOGY_IDS) {
-        const ideology = ideologies[id];
-        const maxW = ideologyMax[id];
-        // Penalties can push raw below -maxW; clamp so the score stays within 0-100.
-        const weightScore = maxW === 0
-            ? 50
-            : Math.min(100, Math.max(0, ((ideologyRaw[id] + maxW) / (2 * maxW)) * 100));
-
-        const weightedDistance = AXIS_IDS.reduce((sum, axis) => {
-            const delta = (normalizedAxes[axis] - ideology.idealAxes[axis]) / 120;
-            return sum + delta * delta * AXIS_IMPORTANCE[axis];
-        }, 0);
-        const rigidity = IDEOLOGY_RIGIDITY[id] ?? 1;
-        const distanceMatch = Math.exp(-(weightedDistance * rigidity) / (importanceSum / 2)) * 100;
-
-        finalScores[id] = Math.round(weightScore * 0.25 + distanceMatch * 0.75);
-    }
-
-    const sorted = (Object.entries(finalScores) as [IdeologyId, number][]).sort(([, a], [, b]) => b - a);
+    const sorted = (Object.entries(allScores) as [IdeologyId, number][]).sort(([, a], [, b]) => b - a);
     const [topId, topScore] = sorted[0];
     const [secondId, secondScore] = sorted[1];
     const oppositeId = sorted[sorted.length - 1][0];
 
-    const isHybrid = topScore - secondScore <= 5 && topScore > 40;
     let topIdeology: Ideology = { ...ideologies[topId] };
-    if (isHybrid) {
+    if (topScore - secondScore <= 3 && topScore >= 50) {
         const second = ideologies[secondId];
         topIdeology = {
             ...topIdeology,
@@ -233,60 +228,56 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
     }
 
     const leaderMatches: LeaderMatch[] = leaders
-        .map(leader => {
-            const d = AXIS_IDS.reduce((sum, axis) => {
-                const delta = (normalizedAxes[axis] - leader.coordinates[axis]) / 150;
-                return sum + delta * delta * AXIS_IMPORTANCE[axis];
-            }, 0);
-            return { leader, matchPercentage: Math.round(Math.exp(-d / 2.5) * 100) };
-        })
+        .map(leader => ({ leader, matchPercentage: matchScore(answered, q => leaderStance(leader, q)) }))
         .sort((a, b) => b.matchPercentage - a.matchPercentage);
 
-    const rawBreakdown = answered
-        .map(({ question, answer }) => {
-            const impact = questionImpacts.get(question.id)?.[topId] ?? 0;
-            return { questionText: question.text, answer, raw: impact };
-        })
-        .filter(item => item.raw !== 0)
-        .sort((a, b) => Math.abs(b.raw) - Math.abs(a.raw))
-        .slice(0, 4);
-    const maxImpact = Math.max(1, ...rawBreakdown.map(i => Math.abs(i.raw)));
-    const breakdown: BreakdownItem[] = rawBreakdown.map(({ questionText, answer, raw }) => ({
-        questionText,
-        answer,
-        impact: Math.round((Math.abs(raw) / maxImpact) * 100),
-        direction: raw >= 0 ? 'positive' : 'negative',
-    }));
+    const items = answered
+        .map(({ question, answer }) => ({
+            questionId: question.id,
+            questionText: question.text,
+            answer,
+            stance: question.stances[topId],
+        }))
+        .filter(i => i.stance !== 0)
+        .sort((a, b) => Math.abs(b.stance) - Math.abs(a.stance));
+    const agreements = items.filter(i => Math.sign(i.stance) === answerValue(i.answer)).slice(0, 3);
+    const disagreements = items.filter(i => Math.sign(i.stance) !== answerValue(i.answer)).slice(0, 3);
 
     return {
         topIdeology,
         oppositeIdeology: ideologies[oppositeId],
-        allScores: finalScores,
+        allScores,
         axisScores,
         matchPercentage: topScore,
         leaderMatches,
-        breakdown,
-        consistencyScore: Math.max(0, Math.min(100, consistencyScore)),
+        agreements,
+        disagreements,
+        consistencyScore,
         answeredCount: answered.length,
     };
 };
 
 /* ---------- Shareable result encoding ---------- */
 
+/** Bumped whenever questions change, so old links don't decode onto new questions. */
+export const SHARE_VERSION = '2';
+
 /**
- * Encodes responses as one character per question (in question order):
+ * Encodes responses as a version prefix plus one character per question:
  * 'a' = agree, 'd' = disagree, '_' = skipped. Trailing skips are trimmed.
  */
 export const encodeResponses = (responses: UserResponses): string =>
-    questions
+    SHARE_VERSION + '-' + questions
         .map(q => (responses[q.id] === 'agree' ? 'a' : responses[q.id] === 'disagree' ? 'd' : '_'))
         .join('')
         .replace(/_+$/, '');
 
 export const decodeResponses = (code: string): UserResponses | null => {
-    if (!/^[ad_]+$/.test(code) || code.length > questions.length) return null;
+    const [version, body] = code.split('-');
+    if (version !== SHARE_VERSION || !body) return null;
+    if (!/^[ad_]+$/.test(body) || body.length > questions.length) return null;
     const responses: UserResponses = {};
-    [...code].forEach((ch, i) => {
+    [...body].forEach((ch, i) => {
         if (ch === 'a') responses[questions[i].id] = 'agree';
         else if (ch === 'd') responses[questions[i].id] = 'disagree';
     });

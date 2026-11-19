@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Undo2, Volume2, VolumeX, X } from 'lucide-react';
 import { questions as allQuestions, Question } from '@/data/questions';
 import { Answer, UserResponses } from '@/utils/scoring';
-import { playSwipeSound, vibrate } from '@/utils/sound';
+import { playSwipeSound, vibrate, warmUpAudio } from '@/utils/sound';
 import { QuizMode, saveProgress, clearProgress, loadSoundEnabled, saveSoundEnabled } from '@/utils/storage';
 import SwipeCard, { SwipeDirection } from './SwipeCard';
 
@@ -128,8 +128,9 @@ export default function QuizEngine({
                     >
                         <motion.div
                             initial={false}
-                            animate={{ width: `${progress}%` }}
-                            className="h-full bg-gradient-to-r from-red-500 to-blue-500"
+                            animate={{ scaleX: progress / 100 }}
+                            transition={{ duration: 0.25 }}
+                            className="h-full w-full origin-left bg-gradient-to-r from-red-500 to-blue-500"
                         />
                     </div>
                 </div>
@@ -144,20 +145,29 @@ export default function QuizEngine({
             </div>
 
             {/* Card stack */}
-            <div className="relative flex-1 perspective-1000 mx-2">
+            <div className="relative flex-1 mx-2" onPointerDown={soundOn ? warmUpAudio : undefined}>
                 {next && (
+                    // Solid background, no backdrop-filter or blur(): the front card moves over
+                    // this every frame, and filters behind it are what made swiping stutter.
                     <div
                         aria-hidden="true"
-                        className="absolute inset-0 glass rounded-3xl p-8 flex items-center justify-center text-center opacity-60 scale-95 translate-y-4"
-                    >
-                        <p className="text-2xl font-medium text-gray-500 blur-xs">{next.text}</p>
-                    </div>
+                        className="absolute inset-0 rounded-3xl bg-[#0a0a0a] border border-white/5 scale-95 translate-y-4"
+                    />
                 )}
                 <AnimatePresence custom={exitDirection} initial={false}>
                     {current && (
                         <SwipeCard key={current.id} text={current.text} onSwipe={answer} />
                     )}
                 </AnimatePresence>
+            </div>
+
+            <div className="mt-3 min-h-[2.5rem] px-3 text-center">
+                {current?.context && (
+                    <p className="text-[11px] leading-snug text-gray-500">
+                        <span className="font-bold uppercase tracking-wider text-gray-400">Bağlam: </span>
+                        {current.context}
+                    </p>
+                )}
             </div>
 
             {previousAnswer && (
