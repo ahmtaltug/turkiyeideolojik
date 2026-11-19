@@ -6,7 +6,7 @@ import { isStatsEnabled, readSnapshot, StatsSnapshot } from '@/lib/stats';
 
 export const metadata: Metadata = {
     title: 'Anonim İstatistikler | Türkiye İdeolojik',
-    description: 'Testi tamamlayıp katkıda bulunmayı seçenlerin sonuçlarının anonim, toplu dağılımı.',
+    description: 'Testi tamamlayanların sonuç ideolojilerinin anonim, toplu dağılımı.',
 };
 
 // Refresh the cached page at most every 5 minutes. Each refresh costs two
@@ -48,8 +48,8 @@ export default async function StatsPage() {
                 <header className="space-y-3">
                     <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Anonim İstatistikler</h1>
                     <p className="text-gray-400">
-                        Testi tamamladıktan sonra sonucunu paylaşmayı <strong className="text-gray-200">kendi isteğiyle</strong> seçen
-                        kullanıcıların sonuç ideolojilerinin toplu dağılımı. Kişi bazında hiçbir kayıt tutulmaz.
+                        Testi tamamlayan ve istatistik katkısını kapatmayan kullanıcıların sonuç ideolojilerinin toplu dağılımı.
+                        Kişi bazında hiçbir kayıt tutulmaz.
                     </p>
                 </header>
 
@@ -104,7 +104,7 @@ export default async function StatsPage() {
 
                 <Card title="Bu sayıları nasıl okumalı?">
                     <ul className="list-disc pl-5 space-y-2 text-sm text-gray-300 leading-relaxed">
-                        <li>Bu bir kamuoyu araştırması değildir. Yalnızca testi çözüp katkıda bulunmayı seçenler sayılır; Türkiye nüfusunu temsil etmez.</li>
+                        <li>Bu bir kamuoyu araştırması değildir. Yalnızca bu siteye gelip testi tamamlayanlar sayılır; Türkiye nüfusunu temsil etmez.</li>
                         <li>Aynı kişi testi birden çok kez çözüp katkıda bulunabilir. Kişisel veri tutulmadığı için tekrarlar ayıklanamaz.</li>
                         <li>Az sayıda katkı varken yüzdeler büyük dalgalanabilir; yorumlarken toplam katkı sayısına da bak.</li>
                         <li>Sayılar birkaç dakikada bir güncellenen toplamlardır; tek tek sonuçlar saklanmaz.</li>

@@ -42,24 +42,26 @@ export default function PrivacyPage() {
                     <ul className="list-disc pl-5 space-y-2">
                         <li>Testi çözmek için hesap açman, ad, e-posta veya başka bir kimlik bilgisi vermen gerekmez.</li>
                         <li>Cevapların tarayıcında işlenir ve bizim tarafımızdan kaydedilmez.</li>
-                        <li>Sonucunu anonim istatistiklere eklemek tamamen isteğe bağlıdır ve yalnızca açık rızanla yapılır.</li>
+                        <li>Test bitince yalnızca sonuç ideolojin ve test türün anonim toplam sayılara eklenir. İstemiyorsan ana sayfadaki işareti kaldırarak bunu kapatabilirsin.</li>
                         <li>Sitede çerez kullanılmaz.</li>
                     </ul>
                 </Section>
 
                 <Section title="3. Hangi veriler, hangi amaçla ve hangi hukuki sebeple işlenir?">
-                    <h3 className="font-semibold text-white">a) Anonim sonuç istatistikleri (yalnızca açık rızan varsa)</h3>
+                    <h3 className="font-semibold text-white">a) Anonim sonuç istatistikleri</h3>
                     <p>
-                        Sonuç ekranında kutucuğu işaretleyip &ldquo;Sonucumu ekle&rdquo; dersen, tarayıcın sunucuya yalnızca iki bilgi gönderir:
-                        sonuç ideolojinin adı ve test türü (Hızlı Test / Tam Analiz). Sunucu bu bilgiyle yalnızca toplam sayaçları
+                        Testi bitirdiğinde, ana sayfadaki &ldquo;Sonucum anonim istatistiklere eklensin&rdquo; işaretini kaldırmadıysan
+                        tarayıcın sunucuya yalnızca iki bilgi gönderir: sonuç ideolojinin adı ve test türü (Hızlı Test / Tam Analiz).
+                        Paylaşılan sonuç linkleri açıldığında hiçbir şey gönderilmez. Sunucu bu bilgiyle yalnızca toplam sayaçları
                         (ideoloji bazında ve test türü bazında) bir artırır. Cevapların, IP adresin, cihaz bilgin, zaman damgası
                         veya seni tanımlayabilecek başka hiçbir bilgi bu kayıtla birlikte saklanmaz; tek tek sonuçlar tutulmaz.
                     </p>
                     <p>
-                        Sonuç ideolojisi, KVKK madde 6 kapsamında özel nitelikli kişisel veri sayılan siyasi düşünceye ilişkin
-                        olabileceğinden, gönderim yalnızca <strong className="text-white">açık rızana</strong> (KVKK m. 6/2) dayanır.
-                        Sayaçlara eklendikten sonra veri kimseyle ilişkilendirilemeyen anonim bir sayıya dönüşür; anonim hale getirilerek
-                        istatistik amacıyla işlenen veriler KVKK madde 28/1-(b) kapsamındadır.
+                        Hukuki sebep: Bu bilgi seninle ilişkilendirilmeden, yalnızca istatistik amacıyla ve ulaştığı anda anonim bir sayıya
+                        dönüştürülerek işlenir. Kişisel verilerin anonim hale getirilerek araştırma, planlama ve istatistik amacıyla
+                        işlenmesi KVKK madde 28/1-(b) kapsamındadır. Sonuç ideolojisi siyasi düşünceye ilişkin olabileceğinden, test
+                        başlamadan önce bu konuda bilgilendirilirsin ve ana sayfadaki işareti kaldırarak katılmamayı seçebilirsin.
+                        Bu tercih tarayıcında hatırlanır.
                     </p>
                     <p>
                         Amaç: Sitede hangi sonuçların ne sıklıkla çıktığını <Link href="/istatistik" className="underline underline-offset-4 hover:text-white">herkese açık istatistik sayfasında</Link>{' '}
@@ -91,7 +93,7 @@ export default function PrivacyPage() {
 
                     <h3 className="font-semibold text-white pt-2">e) Yalnızca kendi tarayıcında saklananlar</h3>
                     <p>
-                        Yarım kalan testin ve ses tercihin, kaldığın yerden devam edebilmen için yalnızca kendi tarayıcının yerel
+                        Yarım kalan testin, ses tercihin ve istatistik tercihin, kaldığın yerden devam edebilmen ve tercihlerinin hatırlanması için yalnızca kendi tarayıcının yerel
                         depolamasında tutulur ve sunucuya gönderilmez. Tarayıcı verilerini silerek bunları kaldırabilirsin.
                     </p>
                 </Section>
@@ -122,8 +124,8 @@ export default function PrivacyPage() {
                     </p>
                     <p>
                         Önemli not: İstatistiğe eklenen sonuçlar ekleme anında anonim bir sayıya dönüştüğü için, belirli bir kişinin
-                        katkısını sonradan bulmak ve silmek teknik olarak mümkün değildir. Bu nedenle rızanı vermeden önce düşünebilirsin;
-                        rıza vermezsen hiçbir sonuç gönderilmez.
+                        katkısını sonradan bulmak ve silmek teknik olarak mümkün değildir. Sonucunun eklenmesini istemiyorsan testi
+                        bitirmeden önce ana sayfadaki işareti kaldır; bu durumda hiçbir sonuç gönderilmez.
                     </p>
                     <p>
                         Başvurularını{' '}

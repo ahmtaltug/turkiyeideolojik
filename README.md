@@ -12,7 +12,7 @@ Sorulara sağa (katılıyorum) veya sola (katılmıyorum) kaydırarak cevap veri
 * **Kaldığın yerden devam:** İlerleme tarayıcıda saklanır, sayfa yenilense de kaybolmaz.
 * **Ayrıntılı sonuç:** 4 eksen (Ekonomi, Toplumsal, Milliyetçilik, Yönetim), tüm ideolojilerin sıralaması, lider uyumu, "Neden bu sonuç?" açıklaması ve tutarlılık skoru.
 * **Paylaşım:** Sonuç linki cevapları kısa bir kodla taşır; WhatsApp, X gibi platformlarda kişinin kendi sonucunu gösteren önizleme görseli oluşur. Kart PNG olarak da indirilebilir.
-* **Anonim istatistikler:** Kullanıcı açık rıza verirse yalnızca sonuç ideolojisi ve test türü toplam sayaçlara eklenir; `/istatistik` sayfasında toplu dağılım gösterilir. Kişi bazında kayıt, IP veya çerez tutulmaz.
+* **Anonim istatistikler:** Test bitince (kullanıcı ana sayfadaki işareti kaldırmadıysa) yalnızca sonuç ideolojisi ve test türü toplam sayaçlara eklenir; `/istatistik` sayfasında toplu dağılım gösterilir. Kişi bazında kayıt, IP veya çerez tutulmaz.
 * **Yöntem sayfası:** `/yontem` hesaplamanın nasıl yapıldığını, sınırlamaları ve gizlilik bilgisini açıklar.
 * **Gizlilik:** Cevaplar tarayıcıda işlenir ve kaydedilmez. Paylaşılan linkteki kod yalnızca önizleme görselini oluşturmak için sunucuya iletilir.
 
