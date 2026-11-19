@@ -23,7 +23,7 @@ const QUICK_COUNT = 20;
 type View =
   | { name: 'home' }
   | { name: 'quiz'; mode: QuizMode; questionIds: number[]; index: number; responses: UserResponses }
-  | { name: 'result'; responses: UserResponses; shared: boolean };
+  | { name: 'result'; responses: UserResponses; shared: boolean; mode?: QuizMode };
 
 const setShareParam = (code: string | null) => {
   const url = new URL(window.location.href);
@@ -36,9 +36,11 @@ const setShareParam = (code: string | null) => {
 interface AppProps {
   /** Share code from the URL, decoded on the server so shared results render without a flash. */
   initialSharedCode?: string;
+  /** Whether anonymous statistics collection is configured on the server. */
+  statsEnabled: boolean;
 }
 
-export default function App({ initialSharedCode }: AppProps) {
+export default function App({ initialSharedCode, statsEnabled }: AppProps) {
   const [view, setView] = useState<View>(() => {
     const shared = initialSharedCode ? decodeResponses(initialSharedCode) : null;
     return shared ? { name: 'result', responses: shared, shared: true } : { name: 'home' };
@@ -76,7 +78,7 @@ export default function App({ initialSharedCode }: AppProps) {
 
   const finishQuiz = useCallback((responses: UserResponses) => {
     setShareParam(encodeResponses(responses));
-    setView({ name: 'result', responses, shared: false });
+    setView(prev => ({ name: 'result', responses, shared: false, mode: prev.name === 'quiz' ? prev.mode : undefined }));
   }, []);
 
   const goHome = useCallback(() => {
@@ -170,7 +172,9 @@ export default function App({ initialSharedCode }: AppProps) {
 
             <footer className="pt-4 text-gray-600 text-xs uppercase tracking-widest font-medium">
               &copy; {new Date().getFullYear()} Türkiye İdeolojik &bull; Bilimsel bir ölçüm değildir &bull;{' '}
-              <Link href="/yontem" className="underline underline-offset-4 hover:text-gray-400">Yöntem</Link>
+              <Link href="/yontem" className="underline underline-offset-4 hover:text-gray-400">Yöntem</Link> &bull;{' '}
+              <Link href="/istatistik" className="underline underline-offset-4 hover:text-gray-400">İstatistikler</Link> &bull;{' '}
+              <Link href="/gizlilik" className="underline underline-offset-4 hover:text-gray-400">Gizlilik</Link>
             </footer>
           </motion.div>
         )}
@@ -192,6 +196,8 @@ export default function App({ initialSharedCode }: AppProps) {
             key="result"
             result={result}
             shared={view.shared}
+            mode={view.mode}
+            statsEnabled={statsEnabled}
             onReset={goHome}
           />
         )}

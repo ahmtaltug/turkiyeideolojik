@@ -11,6 +11,8 @@ import { BreakdownItem, IDEOLOGY_AXES, QuizResult } from '@/utils/scoring';
 import { toPng } from 'html-to-image';
 import Link from 'next/link';
 import { CONTENT_DATE } from '@/lib/site';
+import { QuizMode } from '@/utils/storage';
+import StatsConsent from './StatsConsent';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 /** Below this many answers the result is flagged as less reliable. */
@@ -19,6 +21,10 @@ const LOW_CONFIDENCE_BELOW = 15;
 interface ResultScreenProps {
     result: QuizResult;
     shared: boolean;
+    /** Test mode, for the anonymous statistics; absent for shared results. */
+    mode?: QuizMode;
+    /** Whether anonymous statistics collection is configured on the server. */
+    statsEnabled: boolean;
     onReset: () => void;
 }
 
@@ -28,7 +34,7 @@ const fadeUp = (delay: number) => ({
     transition: { delay },
 });
 
-export default function ResultScreen({ result, shared, onReset }: ResultScreenProps) {
+export default function ResultScreen({ result, shared, mode, statsEnabled, onReset }: ResultScreenProps) {
     const {
         topIdeology: ideology, oppositeIdeology, allScores, axisScores,
         matchPercentage, leaderMatches, agreements, disagreements, oppositeDifferences, consistencyScore, answeredCount,
@@ -298,6 +304,8 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                     <RefreshCcw className="w-6 h-6" />
                 </button>
             </div>
+
+            {!shared && statsEnabled && mode && <StatsConsent ideology={ideology.id} mode={mode} />}
 
             {/* Analysis grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

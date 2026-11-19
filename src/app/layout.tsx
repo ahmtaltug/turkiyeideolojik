@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+import TrafficAnalytics from "@/components/TrafficAnalytics";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -60,6 +61,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <TrafficAnalytics />
       </body>
     </html>
   );
