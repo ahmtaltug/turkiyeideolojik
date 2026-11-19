@@ -223,7 +223,7 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
             ...topIdeology,
             isHybrid: true,
             secondId,
-            name: `${topIdeology.name} - ${second.name} Sentezi`,
+            name: `${topIdeology.name} – ${second.name} Sentezi`,
             description: `${topIdeology.name} ve ${second.name} görüşlerinin ortak paydada buluştuğu hibrit bir siyasi kimlik.`,
             parties: [...new Set([...topIdeology.parties, ...second.parties])],
         };

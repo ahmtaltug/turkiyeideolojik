@@ -101,7 +101,7 @@ export const questions: Question[] = [
     },
     {
         id: 12,
-        text: 'Türkiye İstanbul Sözleşmesi\'ne geri dönmelidir.',
+        text: 'Türkiye, İstanbul Sözleşmesi\'ne geri dönmelidir.',
         context: 'Kadına yönelik şiddeti önlemeye dair bu Avrupa Konseyi sözleşmesinden Türkiye 2021\'de Cumhurbaşkanı kararıyla çekildi.',
         axes: { toplum: -1 },
         stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: -2, avrasyaci: -1, ulusalci: 1, merkez_sag: 1, yesil: 2, turkculuk: 0 },
