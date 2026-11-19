@@ -1,16 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+}
 
 :root {
   --background: #050505;
   --foreground: #ffffff;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  color-scheme: dark;
 }
 
 html {
@@ -20,12 +23,37 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Premium Scrollbar */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.7);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -46,8 +74,7 @@ body {
   background-clip: content-box;
 }
 
-/* Custom Utilities */
-.glass {
+@utility glass {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -55,32 +82,13 @@ body {
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-.gradient-text {
+@utility gradient-text {
   background: linear-gradient(135deg, #ffffff 0%, #a1a1a1 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.perspective-1000 {
+@utility perspective-1000 {
   perspective: 1000px;
-}
-
-/* Animations */
-@keyframes float {
-  0% {
-    transform: translateY(0px) rotate(0deg);
-  }
-
-  50% {
-    transform: translateY(-10px) rotate(2deg);
-  }
-
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
 }

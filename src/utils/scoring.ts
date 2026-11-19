@@ -22,9 +22,25 @@ export interface LeaderMatch {
 
 export interface BreakdownItem {
     questionText: string;
-    impact: number; // Percentage contribution
+    answer: Answer;
+    /** Relative influence on the top result, 0-100. */
+    impact: number;
     direction: 'positive' | 'negative';
 }
+
+export interface QuizResult {
+    topIdeology: Ideology;
+    oppositeIdeology: Ideology;
+    allScores: Record<IdeologyId, number>;
+    axisScores: AxisScore[];
+    matchPercentage: number;
+    leaderMatches: LeaderMatch[];
+    breakdown: BreakdownItem[];
+    consistencyScore: number;
+    answeredCount: number;
+}
+
+export const AXIS_IDS: AxisId[] = ['ekonomi', 'toplum', 'milliyetcilik', 'yonetim'];
 
 export const AXES: Record<AxisId, { name: string; labels: [string, string] }> = {
     ekonomi: {
@@ -55,7 +71,7 @@ const AXIS_IMPORTANCE: Record<AxisId, number> = {
 const IDEOLOGY_RIGIDITY: Record<IdeologyId, number> = {
     islamci: 1.4,
     sosyalist: 1.3,
-    boluculuk: 1.5,
+    ozerklikci: 1.5,
     turkculuk: 1.3,
     avrasyaci: 1.2,
     ulusalci: 1.2,
@@ -68,175 +84,211 @@ const IDEOLOGY_RIGIDITY: Record<IdeologyId, number> = {
     yesil: 1.0
 };
 
-export const calculateScores = (responses: UserResponses) => {
-    const ideologyScores: Record<IdeologyId, number> = {} as Record<IdeologyId, number>;
-    const ideologyMaxPossible: Record<IdeologyId, number> = {} as Record<IdeologyId, number>;
+const IDEOLOGY_IDS = Object.keys(ideologies) as IdeologyId[];
+const questionById = new Map<number, Question>(questions.map(q => [q.id, q]));
 
-    // Initialize
-    (Object.keys(ideologies) as IdeologyId[]).forEach(id => {
-        ideologyScores[id] = 0;
-        ideologyMaxPossible[id] = 0;
-    });
+/** Explicit weight if the question defines one, otherwise projected from the ideology's ideal axes. */
+const getEffectiveWeight = (q: Question, ideologyId: IdeologyId): number => {
+    const explicit = q.weights[ideologyId];
+    if (explicit !== undefined) return explicit;
+    const ideal = ideologies[ideologyId].idealAxes;
+    return AXIS_IDS.reduce((sum, axis) => sum + (q.axisWeights[axis] * ideal[axis]) / 100, 0);
+};
 
-    const axisRawScores: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    const axisMaxPossible: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    const questionImpacts: Record<number, Record<string, number>> = {};
+/** The axis a question mostly measures (largest absolute axis weight). */
+export const dominantAxis = (q: Question): AxisId =>
+    AXIS_IDS.reduce((best, axis) =>
+        Math.abs(q.axisWeights[axis]) > Math.abs(q.axisWeights[best]) ? axis : best, AXIS_IDS[0]);
 
-    // For consistency check
-    const axisResponseVectors: Record<AxisId, number[]> = { ekonomi: [], toplum: [], milliyetcilik: [], yonetim: [] };
-
-    // Helper to get weight for an ideology, fallback to dot product if not defined
-    const getEffectiveWeight = (q: Question, ideologyId: IdeologyId): number => {
-        if (q.weights[ideologyId] !== undefined) return q.weights[ideologyId] as number;
-        const ideology = ideologies[ideologyId];
-        let projection = 0;
-        Object.entries(q.axisWeights).forEach(([axis, weight]) => {
-            const axisId = axis as AxisId;
-            projection += (weight * ideology.idealAxes[axisId]) / 100;
-        });
-        return projection;
+/**
+ * Picks `count` questions balanced across axes (round-robin over the dominant axis),
+ * so short quizzes still measure every dimension. Returned in original order.
+ */
+export const pickBalancedQuestions = (
+    pool: Question[],
+    count: number,
+    random: () => number = Math.random
+): Question[] => {
+    if (count >= pool.length) return [...pool];
+    const shuffle = <T,>(arr: T[]) => {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
     };
+    const groups = AXIS_IDS.map(axis => shuffle(pool.filter(q => dominantAxis(q) === axis)));
+    const picked: Question[] = [];
+    while (picked.length < count) {
+        for (const group of groups) {
+            const next = group.shift();
+            if (next && picked.length < count) picked.push(next);
+        }
+    }
+    const order = new Map(pool.map((q, i) => [q.id, i]));
+    return picked.sort((a, b) => order.get(a.id)! - order.get(b.id)!);
+};
 
-    // Calculate maximums
-    questions.forEach(q => {
-        Object.keys(ideologies).forEach(id => {
-            const ideologyId = id as IdeologyId;
-            ideologyMaxPossible[ideologyId] += Math.abs(getEffectiveWeight(q, ideologyId));
-        });
-        Object.entries(q.axisWeights).forEach(([axisId, weight]) => {
-            axisMaxPossible[axisId as AxisId] += Math.abs(weight as number);
-        });
-    });
+export const calculateScores = (responses: UserResponses): QuizResult => {
+    const answered = Object.entries(responses)
+        .map(([qId, answer]) => ({ question: questionById.get(Number(qId)), answer }))
+        .filter((r): r is { question: Question; answer: Answer } => !!r.question);
 
-    // Process responses
-    Object.entries(responses).forEach(([qId, answer]) => {
-        const question = questions.find((q) => q.id === Number(qId));
-        if (!question) return;
+    const ideologyRaw = Object.fromEntries(IDEOLOGY_IDS.map(id => [id, 0])) as Record<IdeologyId, number>;
+    const ideologyMax = Object.fromEntries(IDEOLOGY_IDS.map(id => [id, 0])) as Record<IdeologyId, number>;
+    const axisRaw: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const axisMax: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    // Positive / negative evidence per axis, used for the consistency score.
+    const axisPos: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const axisNeg: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
+    const questionImpacts = new Map<number, Record<IdeologyId, number>>();
 
+    // Only answered questions count towards the maxima; otherwise a 20-question
+    // quick test would have its scores squashed toward the centre.
+    for (const { question, answer } of answered) {
         const multiplier = answer === 'agree' ? 1 : -1;
-        questionImpacts[question.id] = {};
+        const impacts = {} as Record<IdeologyId, number>;
 
-        Object.keys(ideologies).forEach(id => {
-            const ideologyId = id as IdeologyId;
-            const weight = getEffectiveWeight(question, ideologyId);
+        for (const id of IDEOLOGY_IDS) {
+            const weight = getEffectiveWeight(question, id);
             let impact = weight * multiplier;
+            // Red line penalty: contradicting a core value of an ideology costs extra.
+            if (Math.abs(weight) >= 8 && Math.sign(weight) !== multiplier) impact *= 1.5;
+            ideologyRaw[id] += impact;
+            ideologyMax[id] += Math.abs(weight);
+            impacts[id] = impact;
+        }
+        questionImpacts.set(question.id, impacts);
 
-            // RED LINE PENALTY: Extra penalty if opposing a core value
-            if (Math.abs(weight) >= 8 && Math.sign(weight) !== Math.sign(multiplier)) {
-                impact *= 1.5;
-            }
+        for (const axis of AXIS_IDS) {
+            const w = question.axisWeights[axis];
+            const val = w * multiplier;
+            axisRaw[axis] += val;
+            axisMax[axis] += Math.abs(w);
+            if (val > 0) axisPos[axis] += val;
+            else if (val < 0) axisNeg[axis] -= val;
+        }
+    }
 
-            ideologyScores[ideologyId] += impact;
-            questionImpacts[question.id][ideologyId] = impact;
-        });
+    // Consistency: on each axis, how much of the evidence points the "minority" way.
+    let conflictSum = 0;
+    let evidenceSum = 0;
+    for (const axis of AXIS_IDS) {
+        const total = axisPos[axis] + axisNeg[axis];
+        if (total === 0) continue;
+        conflictSum += Math.min(axisPos[axis], axisNeg[axis]) * AXIS_IMPORTANCE[axis];
+        evidenceSum += total * AXIS_IMPORTANCE[axis];
+    }
+    // A minority share of 0.5 (perfectly split) maps to 0, 0 maps to 100.
+    const consistencyScore = evidenceSum === 0
+        ? 100
+        : Math.round(100 * (1 - (conflictSum / evidenceSum) * 2));
 
-        Object.entries(question.axisWeights).forEach(([axisId, weight]) => {
-            const val = (weight as number) * multiplier;
-            axisRawScores[axisId as AxisId] += val;
-            axisResponseVectors[axisId as AxisId].push(val);
-        });
+    const normalizedAxes = {} as Record<AxisId, number>;
+    const axisScores: AxisScore[] = AXIS_IDS.map(axis => {
+        const value = axisMax[axis] === 0 ? 0 : Math.round((axisRaw[axis] / axisMax[axis]) * 100);
+        normalizedAxes[axis] = value;
+        return { id: axis, name: AXES[axis].name, value, labels: AXES[axis].labels };
     });
 
-    // Consistency Score: High variance in same-axis responses indicates low consistency
-    let consistencyScore = 100;
-    let totalConflict = 0;
-    Object.values(axisResponseVectors).forEach(vectors => {
-        if (vectors.length < 2) return;
-        const signs = vectors.map(v => Math.sign(v)).filter(s => s !== 0);
-        const conflicts = signs.filter(s => s !== signs[0]).length;
-        totalConflict += conflicts / vectors.length;
-    });
-    consistencyScore = Math.max(0, Math.round(100 - (totalConflict * 25)));
-
-    // Normalize Axis Scores
-    const normalizedAxes: Record<AxisId, number> = { ekonomi: 0, toplum: 0, milliyetcilik: 0, yonetim: 0 };
-    const axisScores: AxisScore[] = (Object.keys(axisRawScores) as AxisId[]).map(axisId => {
-        const raw = axisRawScores[axisId];
-        const max = axisMaxPossible[axisId];
-        const value = max === 0 ? 0 : Math.round((raw / max) * 100);
-        normalizedAxes[axisId] = value;
-        return { id: axisId, name: AXES[axisId].name, value, labels: AXES[axisId].labels };
-    });
-
-    // Final Scoring (Gaussian with weights and rigidity)
+    // Final: Gaussian distance on the axes (75%) blended with direct question weights (25%).
+    const importanceSum = AXIS_IDS.reduce((s, a) => s + AXIS_IMPORTANCE[a], 0);
     const finalScores = {} as Record<IdeologyId, number>;
-    Object.entries(ideologies).forEach(([id, ideology]) => {
-        const ideologyId = id as IdeologyId;
-        const maxW = ideologyMaxPossible[ideologyId];
-        const weightScore = maxW === 0 ? 50 : ((ideologyScores[ideologyId] + maxW) / (2 * maxW)) * 100;
+    for (const id of IDEOLOGY_IDS) {
+        const ideology = ideologies[id];
+        const maxW = ideologyMax[id];
+        // Penalties can push raw below -maxW; clamp so the score stays within 0-100.
+        const weightScore = maxW === 0
+            ? 50
+            : Math.min(100, Math.max(0, ((ideologyRaw[id] + maxW) / (2 * maxW)) * 100));
 
-        let weightedDistanceSum = 0;
-        let importanceSum = 0;
-        (Object.keys(AXES) as AxisId[]).forEach(axisId => {
-            const importance = AXIS_IMPORTANCE[axisId];
-            const delta = (normalizedAxes[axisId] - ideology.idealAxes[axisId]) / 120;
-            weightedDistanceSum += Math.pow(delta, 2) * importance;
-            importanceSum += importance;
-        });
+        const weightedDistance = AXIS_IDS.reduce((sum, axis) => {
+            const delta = (normalizedAxes[axis] - ideology.idealAxes[axis]) / 120;
+            return sum + delta * delta * AXIS_IMPORTANCE[axis];
+        }, 0);
+        const rigidity = IDEOLOGY_RIGIDITY[id] ?? 1;
+        const distanceMatch = Math.exp(-(weightedDistance * rigidity) / (importanceSum / 2)) * 100;
 
-        // DYNAMIC SIGMA (Rigidity): High rigidity means the "bell" is narrower
-        const rigidity = IDEOLOGY_RIGIDITY[ideologyId] || 1.0;
-        const distanceMatch = Math.exp(-(weightedDistanceSum * rigidity) / (importanceSum / 2)) * 100;
+        finalScores[id] = Math.round(weightScore * 0.25 + distanceMatch * 0.75);
+    }
 
-        // Final combine: Distance is more authoritative (75%) than raw weight
-        finalScores[ideologyId] = Math.round((weightScore * 0.25) + (distanceMatch * 0.75));
-    });
+    const sorted = (Object.entries(finalScores) as [IdeologyId, number][]).sort(([, a], [, b]) => b - a);
+    const [topId, topScore] = sorted[0];
+    const [secondId, secondScore] = sorted[1];
+    const oppositeId = sorted[sorted.length - 1][0];
 
-    const sortedResult = Object.entries(finalScores).sort(([, a], [, b]) => b - a);
-    const topIdeologyId = sortedResult[0][0] as IdeologyId;
-    const secondIdeologyId = sortedResult[1][0] as IdeologyId;
-    const oppositeIdeologyId = sortedResult[sortedResult.length - 1][0] as IdeologyId;
-
-    const topScore = sortedResult[0][1];
-    const secondScore = sortedResult[1][1];
-    const isHybrid = (topScore - secondScore) <= 5 && topScore > 40;
-
-    let resultIdeology: Ideology & { isHybrid?: boolean; secondId?: IdeologyId } = { ...ideologies[topIdeologyId] };
-
+    const isHybrid = topScore - secondScore <= 5 && topScore > 40;
+    let topIdeology: Ideology = { ...ideologies[topId] };
     if (isHybrid) {
-        const second = ideologies[secondIdeologyId];
-        resultIdeology = {
-            ...resultIdeology,
+        const second = ideologies[secondId];
+        topIdeology = {
+            ...topIdeology,
             isHybrid: true,
-            secondId: secondIdeologyId,
-            name: `${resultIdeology.name} - ${second.name} Sentezi`,
-            description: `${resultIdeology.name} ve ${second.name} görüşlerinin ortak paydada buluştuğu hibrit bir siyasi kimlik.`,
-            parties: [...new Set([...resultIdeology.parties, ...second.parties])],
+            secondId,
+            name: `${topIdeology.name} - ${second.name} Sentezi`,
+            description: `${topIdeology.name} ve ${second.name} görüşlerinin ortak paydada buluştuğu hibrit bir siyasi kimlik.`,
+            parties: [...new Set([...topIdeology.parties, ...second.parties])],
         };
     }
 
-    const leaderMatches: LeaderMatch[] = leaders.map(leader => {
-        let dSum = 0;
-        (Object.keys(AXES) as AxisId[]).forEach(axisId => {
-            const delta = (normalizedAxes[axisId] - leader.coordinates[axisId]) / 150;
-            dSum += Math.pow(delta, 2) * AXIS_IMPORTANCE[axisId];
-        });
-        const match = Math.exp(-dSum / 2.5) * 100;
-        return { leader, matchPercentage: Math.round(match) };
-    }).sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-    const breakdown: BreakdownItem[] = Object.entries(questionImpacts)
-        .map(([qId, impacts]) => {
-            const question = questions.find(q => q.id === Number(qId))!;
-            const impactForTop = impacts[topIdeologyId] || 0;
-            return {
-                questionText: question.text,
-                impact: Math.abs(impactForTop),
-                direction: (impactForTop >= 0 ? 'positive' : 'negative') as any
-            };
+    const leaderMatches: LeaderMatch[] = leaders
+        .map(leader => {
+            const d = AXIS_IDS.reduce((sum, axis) => {
+                const delta = (normalizedAxes[axis] - leader.coordinates[axis]) / 150;
+                return sum + delta * delta * AXIS_IMPORTANCE[axis];
+            }, 0);
+            return { leader, matchPercentage: Math.round(Math.exp(-d / 2.5) * 100) };
         })
-        .filter(item => item.impact > 0)
-        .sort((a, b) => b.impact - a.impact)
+        .sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+    const rawBreakdown = answered
+        .map(({ question, answer }) => {
+            const impact = questionImpacts.get(question.id)?.[topId] ?? 0;
+            return { questionText: question.text, answer, raw: impact };
+        })
+        .filter(item => item.raw !== 0)
+        .sort((a, b) => Math.abs(b.raw) - Math.abs(a.raw))
         .slice(0, 4);
+    const maxImpact = Math.max(1, ...rawBreakdown.map(i => Math.abs(i.raw)));
+    const breakdown: BreakdownItem[] = rawBreakdown.map(({ questionText, answer, raw }) => ({
+        questionText,
+        answer,
+        impact: Math.round((Math.abs(raw) / maxImpact) * 100),
+        direction: raw >= 0 ? 'positive' : 'negative',
+    }));
 
     return {
-        topIdeology: resultIdeology,
-        oppositeIdeology: ideologies[oppositeIdeologyId],
+        topIdeology,
+        oppositeIdeology: ideologies[oppositeId],
         allScores: finalScores,
         axisScores,
         matchPercentage: topScore,
         leaderMatches,
         breakdown,
-        consistencyScore
+        consistencyScore: Math.max(0, Math.min(100, consistencyScore)),
+        answeredCount: answered.length,
     };
+};
+
+/* ---------- Shareable result encoding ---------- */
+
+/**
+ * Encodes responses as one character per question (in question order):
+ * 'a' = agree, 'd' = disagree, '_' = skipped. Trailing skips are trimmed.
+ */
+export const encodeResponses = (responses: UserResponses): string =>
+    questions
+        .map(q => (responses[q.id] === 'agree' ? 'a' : responses[q.id] === 'disagree' ? 'd' : '_'))
+        .join('')
+        .replace(/_+$/, '');
+
+export const decodeResponses = (code: string): UserResponses | null => {
+    if (!/^[ad_]+$/.test(code) || code.length > questions.length) return null;
+    const responses: UserResponses = {};
+    [...code].forEach((ch, i) => {
+        if (ch === 'a') responses[questions[i].id] = 'agree';
+        else if (ch === 'd') responses[questions[i].id] = 'disagree';
+    });
+    return Object.keys(responses).length >= 10 ? responses : null;
 };

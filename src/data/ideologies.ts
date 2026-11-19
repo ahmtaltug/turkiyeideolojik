@@ -7,7 +7,7 @@ export type IdeologyId =
     | 'ulkucu'
     | 'liberal'
     | 'sosyalist'
-    | 'boluculuk'
+    | 'ozerklikci'
     | 'islamci'
     | 'avrasyaci'
     | 'ulusalci'
@@ -30,6 +30,9 @@ export interface Ideology {
         motto: string;
     };
     actionPlan: string[];
+    /** Set when the result is a blend of the top two ideologies. */
+    isHybrid?: boolean;
+    secondId?: IdeologyId;
 }
 
 export const ideologies: Record<IdeologyId, Ideology> = {
@@ -65,7 +68,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: "1960'lardan bugüne evrilen, 2024 yerel seçimleriyle Türkiye'nin birinci partisi konumuna gelen siyasi akım.",
             principles: ["Sosyal Adalet", "Demokratik Yönetim", "Liyakat", "Halkçı Ekonomi"],
-            motto: "Türkiye İttifakı!"
+            motto: "Hak, Hukuk, Adalet."
         },
         actionPlan: [
             "Avrupa Birliği ile tam entegrasyon için demokratik reform takvimini derhal başlatmak.",
@@ -119,7 +122,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         description: 'Bireysel özgürlükleri, serbest piyasa ekonomisini ve sınırlı devleti savunan görüş.',
         parties: ['LDP', 'DEVA'],
         leaders: ['Besim Tibuk', 'Ali Babacan'],
-        color: '#FFD700',
+        color: '#14B8A6',
         roast: "Her şey özelleşsin istiyorsun ama sevgilin 'başkasıyla da görüşelim' dese hemen devletçi olup kural koyarsın.",
         idealAxes: { ekonomi: 90, toplum: -40, milliyetcilik: -60, yonetim: -90 },
         details: {
@@ -153,24 +156,24 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             "Kira artışlarını tamamen yasaklayıp boş konutları evsizlere tahsis eden bir iskan yasası çıkarmak."
         ]
     },
-    boluculuk: {
-        id: 'boluculuk',
-        name: 'Bölücülük',
-        description: 'Türkiye\'nin üniter yapısına karşı çıkan, özyönetim ve ayrılıkçılık odaklı siyasi ajanda.',
+    ozerklikci: {
+        id: 'ozerklikci',
+        name: 'Demokratik Özerklikçi',
+        description: 'Kürt siyasi hareketinden beslenen; yerinden yönetim, anadilde eğitim ve kimliklerin anayasal tanınmasını savunan çizgi.',
         parties: ['DEM Parti'],
-        leaders: ['Selahattin Demirtaş'],
+        leaders: ['Selahattin Demirtaş', 'Tülay Hatimoğulları', 'Tuncer Bakırhan'],
         color: '#9400D3',
-        roast: "Barış ve demokrasi deyip, her fırsatta terör örgütüyle arana mesafe koyamamandaki o garip 'utangaçlık' gerçekten göz kamaştırıcı.",
+        roast: "Her toplantıya eş başkan, eş sözcü ve eş moderatör getiriyorsun; kararı kimin vereceğine karar vermek için ayrı bir meclis kuruyorsun.",
         idealAxes: { ekonomi: -40, toplum: -60, milliyetcilik: -100, yonetim: -40 },
         details: {
-            history: "Bölgesel özyönetim ve etnik temelli siyaset güden, üniter devlet yapısını sorgulayan akımdır.",
-            principles: ["Yerinden Yönetim", "Etnik Siyaset", "Anayasal Kimlik"],
+            history: "1990'lardan bu yana farklı parti isimleriyle varlığını sürdüren, etnik kimlik taleplerini sol ve ekolojist söylemle birleştiren gelenektir. 2025'te başlayan çözüm süreci tartışmalarında merkezi bir aktör olmuştur.",
+            principles: ["Yerinden Yönetim", "Anadilde Eğitim", "Eş Başkanlık", "Anayasal Kimlik"],
             motto: "Özgür Yaşam, Demokratik Toplum."
         },
         actionPlan: [
-            "Avrupa Yerel Yönetimler Özerklik Şartı'ndaki tüm çekinceleri kaldırıp bölgesel parlamentolar kurmak.",
-            "Anayasa'daki 'Türk' tanımını kaldırıp 'Türkiye Vatandaşı' temelinde çok kimlikli bir anayasa yazmak.",
-            "Üniter yapıyı tartışmaya açarak yerel güvenlik ve eğitim yetkilerini bölgelere devretmek."
+            "Avrupa Yerel Yönetimler Özerklik Şartı'ndaki tüm çekinceleri kaldırıp yerel meclislerin yetkisini artırmak.",
+            "Anayasa'daki vatandaşlık tanımını etnik vurgudan arındırıp 'Türkiye Cumhuriyeti vatandaşlığı' temelinde yeniden yazmak.",
+            "Eğitim, kültür ve yerel güvenlik yetkilerinin bir kısmını seçilmiş bölgesel yönetimlere devretmek."
         ]
     },
     islamci: {
@@ -195,7 +198,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
     },
     avrasyaci: {
         id: 'avrasyaci',
-        name: 'Avrasyaci',
+        name: 'Avrasyacı',
         description: 'Batı ittifakı yerine Rusya ve Çin ile stratejik işbirliğini savunan anti-emperyalist çizgi.',
         parties: ['Vatan Partisi'],
         leaders: ['Doğu Perinçek'],
@@ -238,7 +241,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         name: 'Merkez Sağ',
         description: 'Demokratik değerler ile serbest piyasayı birleştiren, ılımlı ve kurumsal milliyetçi çizgi.',
         parties: ['İYİ Parti', 'Demokrat Parti'],
-        leaders: ['Süleyman Demirel', 'Musavat Dervişoğlu', 'Mansur Yavaş'],
+        leaders: ['Adnan Menderes', 'Süleyman Demirel', 'Musavat Dervişoğlu'],
         color: '#4169E1',
         roast: "Üçüncü yol dedin, dördüncü yol dedin, sonunda navigasyonu bozulan turistler gibi yolun ortasında kaldın.",
         idealAxes: { ekonomi: 70, toplum: 20, milliyetcilik: 60, yonetim: 20 },
@@ -283,7 +286,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         roast: "Tüm gün Twitter'da sığınmacı kovalayıp kendini Bilge Kağan sanıyorsun ama aslında sadece algoritmanın kölesi olmuş bir ergensin.",
         idealAxes: { ekonomi: -20, toplum: -20, milliyetcilik: 100, yonetim: 60 },
         details: {
-            history: "Asala ve mülteci krizi gibi dönemlerle şekillenmiş, seküler ve net milliyetçi bir çizgidir.",
+            history: "Ziya Gökalp ve Nihal Atsız'ın fikirlerinden beslenen; son yıllarda sığınmacı tartışmalarıyla yeniden yükselen seküler, etnik vurgulu milliyetçi çizgidir.",
             principles: ["Türklük Bilinci", "Demografik Koruma", "Seküler Devlet"],
             motto: "Vatan Ne Türkiye'dir Türklere, Ne Türkistan; Vatan Büyük ve Müebbet Bir Ülkedir: Turan."
         },
@@ -294,6 +297,3 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         ]
     },
 };
-
-
-

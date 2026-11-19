@@ -1,134 +1,203 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, HelpCircle, Undo2 } from 'lucide-react';
-import { questions as allQuestions } from '@/data/questions';
-import { Ideology, IdeologyId } from '@/data/ideologies';
-import { Answer, UserResponses, calculateScores, AxisScore, LeaderMatch, BreakdownItem } from '@/utils/scoring';
-import SwipeCard from './SwipeCard';
+import { ArrowLeft, Check, Undo2, Volume2, VolumeX, X } from 'lucide-react';
+import { questions as allQuestions, Question } from '@/data/questions';
+import { Answer, UserResponses } from '@/utils/scoring';
+import { playSwipeSound, vibrate } from '@/utils/sound';
+import { QuizMode, saveProgress, clearProgress, loadSoundEnabled, saveSoundEnabled } from '@/utils/storage';
+import SwipeCard, { SwipeDirection } from './SwipeCard';
 
 interface QuizEngineProps {
-    mode: 'quick' | 'full';
-    onFinish: (
-        ideology: Ideology,
-        opposite: Ideology,
-        allScores: Record<IdeologyId, number>,
-        axisScores: AxisScore[],
-        matchPercentage: number,
-        leaders: LeaderMatch[],
-        breakdown: BreakdownItem[],
-        consistencyScore: number
-    ) => void;
-    onReset: () => void;
+    mode: QuizMode;
+    questionIds: number[];
+    initialIndex?: number;
+    initialResponses?: UserResponses;
+    onFinish: (responses: UserResponses) => void;
+    onExit: () => void;
 }
 
-const SWIPE_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3';
+const questionMap = new Map<number, Question>(allQuestions.map(q => [q.id, q]));
 
-export default function QuizEngine({ mode, onFinish, onReset }: QuizEngineProps) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [responses, setResponses] = useState<UserResponses>({});
+export default function QuizEngine({
+    mode,
+    questionIds,
+    initialIndex = 0,
+    initialResponses = {},
+    onFinish,
+    onExit,
+}: QuizEngineProps) {
+    const questions = useMemo(
+        () => questionIds.map(id => questionMap.get(id)).filter((q): q is Question => !!q),
+        [questionIds]
+    );
+    const [currentIndex, setCurrentIndex] = useState(Math.min(initialIndex, questions.length - 1));
+    const [responses, setResponses] = useState<UserResponses>(initialResponses);
+    const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
+    const [soundOn, setSoundOn] = useState(true);
+    const finishedRef = useRef(false);
 
-    const questions = useMemo(() => {
-        if (mode === 'full') return allQuestions;
-        // Hızlı mod için 20 rasgele soru seç
-        return [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, 20);
-    }, [mode]);
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- read client-only preference after hydration
+        setSoundOn(loadSoundEnabled());
+    }, []);
 
-    const playSound = () => {
-        const audio = new Audio(SWIPE_SOUND);
-        audio.volume = 0.2;
-        audio.play().catch(() => { }); // Ignore interaction errors
-    };
+    const current = questions[currentIndex];
+    const next = questions[currentIndex + 1];
 
-    const handleSwipe = (direction: 'left' | 'right') => {
-        playSound();
-        const question = questions[currentIndex];
-        const answer: Answer = direction === 'right' ? 'agree' : 'disagree';
+    const answer = useCallback((direction: SwipeDirection) => {
+        if (!current || finishedRef.current) return;
+        if (soundOn) playSwipeSound(direction);
+        vibrate();
 
-        const newResponses = { ...responses, [question.id]: answer };
+        const value: Answer = direction === 'right' ? 'agree' : 'disagree';
+        const newResponses = { ...responses, [current.id]: value };
         setResponses(newResponses);
+        setExitDirection(direction);
 
         if (currentIndex < questions.length - 1) {
-            setCurrentIndex(prev => prev + 1);
+            const nextIndex = currentIndex + 1;
+            setCurrentIndex(nextIndex);
+            saveProgress({ mode, questionIds, currentIndex: nextIndex, responses: newResponses });
         } else {
-            const result = calculateScores(newResponses);
-            onFinish(
-                result.topIdeology,
-                result.oppositeIdeology,
-                result.allScores,
-                result.axisScores,
-                result.matchPercentage,
-                result.leaderMatches,
-                result.breakdown,
-                result.consistencyScore
-            );
+            finishedRef.current = true;
+            clearProgress();
+            // Let the last card fly out before switching screens.
+            setTimeout(() => onFinish(newResponses), 250);
         }
+    }, [current, currentIndex, mode, onFinish, questionIds, questions.length, responses, soundOn]);
+
+    const goBack = useCallback(() => {
+        if (currentIndex === 0 || finishedRef.current) return;
+        setExitDirection(null);
+        const prevIndex = currentIndex - 1;
+        setCurrentIndex(prevIndex);
+        saveProgress({ mode, questionIds, currentIndex: prevIndex, responses });
+    }, [currentIndex, mode, questionIds, responses]);
+
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            if (e.key === 'ArrowRight') { e.preventDefault(); answer('right'); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); answer('left'); }
+            else if (e.key === 'Backspace' || e.key === 'z') { e.preventDefault(); goBack(); }
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [answer, goBack]);
+
+    const toggleSound = () => {
+        setSoundOn(prev => {
+            saveSoundEnabled(!prev);
+            return !prev;
+        });
     };
 
-
-    const progress = ((currentIndex + 1) / questions.length) * 100;
+    const answeredCount = Object.keys(responses).length;
+    const progress = (Math.min(answeredCount, questions.length) / questions.length) * 100;
+    const previousAnswer = current ? responses[current.id] : undefined;
 
     return (
-        <div className="w-full max-w-lg h-[80vh] flex flex-col pt-4">
-            {/* Quiz Header */}
-            <div className="flex items-center justify-between mb-8 px-4">
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="w-full max-w-lg min-h-[560px] h-[85svh] max-h-[760px] flex flex-col pt-2"
+        >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 px-2">
                 <button
-                    onClick={onReset}
-                    className="p-2 rounded-full hover:bg-white/5 text-gray-400 transition-colors"
+                    onClick={onExit}
+                    aria-label="Ana sayfaya dön"
+                    className="p-2 rounded-full hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
                 >
                     <ArrowLeft className="w-6 h-6" />
                 </button>
                 <div className="flex flex-col items-center">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
-                        Soru {currentIndex + 1} / {questions.length}
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                        {mode === 'quick' ? 'Hızlı Test' : 'Tam Analiz'} • Soru {currentIndex + 1} / {questions.length}
                     </span>
-                    <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                        className="w-40 h-1.5 bg-white/5 rounded-full overflow-hidden"
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={questions.length}
+                        aria-valuenow={answeredCount}
+                        aria-label="İlerleme"
+                    >
                         <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progress}% ` }}
+                            initial={false}
+                            animate={{ width: `${progress}%` }}
                             className="h-full bg-gradient-to-r from-red-500 to-blue-500"
                         />
                     </div>
                 </div>
-                <div className="w-10" /> {/* Spacer */}
+                <button
+                    onClick={toggleSound}
+                    aria-label={soundOn ? 'Sesi kapat' : 'Sesi aç'}
+                    aria-pressed={soundOn}
+                    className="p-2 rounded-full hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
+                >
+                    {soundOn ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                </button>
             </div>
 
-            {/* Card Stack */}
-            <div className="relative flex-1 perspective-1000">
-                <AnimatePresence mode="popLayout">
-                    {questions.slice(currentIndex, currentIndex + 2).reverse().map((question, index) => {
-                        const isFront = index === (questions.slice(currentIndex, currentIndex + 2).length - 1);
-                        return (
-                            <SwipeCard
-                                key={question.id}
-                                text={question.text}
-                                onSwipe={handleSwipe}
-                                isFront={isFront}
-                            />
-                        );
-                    })}
+            {/* Card stack */}
+            <div className="relative flex-1 perspective-1000 mx-2">
+                {next && (
+                    <div
+                        aria-hidden="true"
+                        className="absolute inset-0 glass rounded-3xl p-8 flex items-center justify-center text-center opacity-60 scale-95 translate-y-4"
+                    >
+                        <p className="text-2xl font-medium text-gray-500 blur-xs">{next.text}</p>
+                    </div>
+                )}
+                <AnimatePresence custom={exitDirection} initial={false}>
+                    {current && (
+                        <SwipeCard key={current.id} text={current.text} onSwipe={answer} />
+                    )}
                 </AnimatePresence>
             </div>
 
-            {/* Instructions & Back Button */}
-            <div className="mt-8 flex flex-col items-center gap-4">
-                {currentIndex > 0 && (
-                    <motion.button
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        onClick={() => setCurrentIndex(prev => prev - 1)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-gray-400 hover:text-white transition-all uppercase tracking-widest border border-white/5"
-                    >
-                        <Undo2 className="w-4 h-4" />
-                        Önceki Soruya Dön
-                    </motion.button>
-                )}
-                <div className="flex justify-center items-center gap-2 text-gray-500 animate-pulse">
-                    <HelpCircle className="w-4 h-4" />
-                    <span className="text-sm">Kartı kaydırarak karar ver</span>
-                </div>
+            {previousAnswer && (
+                <p className="mt-3 text-center text-[11px] text-gray-500 uppercase tracking-widest">
+                    Önceki cevabın: <span className={previousAnswer === 'agree' ? 'text-green-500' : 'text-red-500'}>
+                        {previousAnswer === 'agree' ? 'Katılıyorum' : 'Katılmıyorum'}
+                    </span>
+                </p>
+            )}
+
+            {/* Answer buttons */}
+            <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-2">
+                <button
+                    onClick={() => answer('left')}
+                    className="flex items-center justify-center gap-1.5 px-2 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black uppercase text-xs sm:text-sm sm:tracking-wider hover:bg-red-500/20 active:scale-95 transition-all"
+                >
+                    <X className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" /> Katılmıyorum
+                </button>
+                <button
+                    onClick={goBack}
+                    disabled={currentIndex === 0}
+                    aria-label="Önceki soruya dön"
+                    title="Önceki soruya dön"
+                    className="p-4 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all disabled:opacity-30 disabled:pointer-events-none"
+                >
+                    <Undo2 className="w-5 h-5" />
+                </button>
+                <button
+                    onClick={() => answer('right')}
+                    className="flex items-center justify-center gap-1.5 px-2 py-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 font-black uppercase text-xs sm:text-sm sm:tracking-wider hover:bg-green-500/20 active:scale-95 transition-all"
+                >
+                    Katılıyorum <Check className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                </button>
             </div>
-        </div>
+
+            <p className="mt-4 text-center text-xs text-gray-600 hidden md:block">
+                Kartı kaydır ya da klavyede <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">←</kbd>{' '}
+                <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">→</kbd> kullan •{' '}
+                <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">Backspace</kbd> geri al
+            </p>
+        </motion.div>
     );
 }

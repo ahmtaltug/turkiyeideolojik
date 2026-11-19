@@ -42,7 +42,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 5,
-            toplum: -5,
+            toplum: -2,
             milliyetcilik: -10,
             yonetim: -2,
         }
@@ -62,7 +62,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: 5,
+            toplum: 0,
             milliyetcilik: 10,
             yonetim: 6,
         }
@@ -72,7 +72,7 @@ export const questions: Question[] = [
         text: 'Diyanet İşleri Başkanlığı kaldırılmalı ve din işleri tamamen sivil topluma bırakılmalıdır.',
         weights: {
             sosyalist: 10,
-            boluculuk: 8,
+            ozerklikci: 8,
             yesil: 7,
             liberal: 6,
             sosyal_demokrat: 4,
@@ -96,12 +96,12 @@ export const questions: Question[] = [
             ulkucu: 10,
             ulusalci: 10,
             merkez_sag: 6,
-            boluculuk: -10,
+            ozerklikci: -10,
             liberal: -5,
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: 5,
+            toplum: 0,
             milliyetcilik: 10,
             yonetim: 8,
         }
@@ -163,7 +163,7 @@ export const questions: Question[] = [
         id: 9,
         text: 'Kürt sorununun çözümü için yerel yönetimlere özerklik dahil her türlü siyasi hak tanınmalıdır.',
         weights: {
-            boluculuk: 10,
+            ozerklikci: 10,
             yesil: 5,
             liberal: 3,
             turkculuk: -10,
@@ -174,7 +174,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -3,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: -6,
         }
@@ -186,7 +186,7 @@ export const questions: Question[] = [
             yesil: 10,
             sosyalist: 6,
             sosyal_demokrat: 4,
-            boluculuk: 3,
+            ozerklikci: 3,
             merkez_sag: -5,
             muhafazakar: -5,
         },
@@ -239,7 +239,7 @@ export const questions: Question[] = [
             sosyalist: 8,
             sosyal_demokrat: 8,
             kemalist: 6,
-            boluculuk: 6,
+            ozerklikci: 6,
             turkculuk: 4,
             muhafazakar: -10,
             islamci: -10,
@@ -301,7 +301,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -8,
+            toplum: -3,
             milliyetcilik: -5,
             yonetim: -10,
         }
@@ -312,7 +312,7 @@ export const questions: Question[] = [
         weights: {
             liberal: 10,
             yesil: 8,
-            boluculuk: 7,
+            ozerklikci: 7,
             sosyal_demokrat: 4,
             turkculuk: -10,
             ulkucu: -10,
@@ -321,7 +321,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 4,
-            toplum: -5,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: -8,
         }
@@ -360,7 +360,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -5,
+            toplum: -2,
             milliyetcilik: -2,
             yonetim: -10,
         }
@@ -390,7 +390,7 @@ export const questions: Question[] = [
             yesil: 10,
             sosyalist: 9,
             sosyal_demokrat: 9,
-            boluculuk: 7,
+            ozerklikci: 7,
             kemalist: 4,
             muhafazakar: -10,
             islamci: -10,
@@ -426,9 +426,9 @@ export const questions: Question[] = [
     },
     {
         id: 23,
-        text: 'Seçilmiş yerel yöneticilerin (Belediye Baskanı vb.) yerine kayyum atanması hukuk dışıdır ve kabul edilemez.',
+        text: 'Seçilmiş yerel yöneticilerin (Belediye Başkanı vb.) yerine kayyum atanması hukuk dışıdır ve kabul edilemez.',
         weights: {
-            boluculuk: 10,
+            ozerklikci: 10,
             sosyalist: 8,
             sosyal_demokrat: 8,
             liberal: 7,
@@ -441,7 +441,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -4,
+            toplum: 0,
             milliyetcilik: -8,
             yonetim: -10,
         }
@@ -480,7 +480,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: -2,
-            toplum: 5,
+            toplum: 0,
             milliyetcilik: 8,
             yonetim: 10,
         }
@@ -510,7 +510,7 @@ export const questions: Question[] = [
             sosyalist: 10,
             sosyal_demokrat: 8,
             yesil: 6,
-            boluculuk: 4,
+            ozerklikci: 4,
             ulusalci: -8,
             avrasyaci: -8,
             turkculuk: -6,
@@ -518,7 +518,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: -8,
-            toplum: -4,
+            toplum: 0,
             milliyetcilik: -8,
             yonetim: -4,
         }
@@ -538,7 +538,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -5,
+            toplum: 0,
             milliyetcilik: 2,
             yonetim: -10,
         }
@@ -564,7 +564,7 @@ export const questions: Question[] = [
         id: 30,
         text: 'Türkçe dışındaki diller (Kürtçe, Arapça vb.) kamu hizmetlerinde ve eğitimde resmi olarak kullanılabilmelidir.',
         weights: {
-            boluculuk: 10,
+            ozerklikci: 10,
             liberal: 5,
             yesil: 4,
             turkculuk: -10,
@@ -575,7 +575,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -4,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: -6,
         }
@@ -614,7 +614,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -4,
+            toplum: 0,
             milliyetcilik: -6,
             yonetim: -8,
         }
@@ -626,7 +626,7 @@ export const questions: Question[] = [
             sosyal_demokrat: 10,
             merkez_sag: 9,
             liberal: 8,
-            boluculuk: 7,
+            ozerklikci: 7,
             yesil: 6,
             muhafazakar: -10,
             ulkucu: -10,
@@ -634,7 +634,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: -2,
-            toplum: -5,
+            toplum: 0,
             milliyetcilik: -5,
             yonetim: -10,
         }
@@ -672,7 +672,7 @@ export const questions: Question[] = [
         axisWeights: {
             ekonomi: 0,
             toplum: 10,
-            milliyetcilik: 6,
+            milliyetcilik: 2,
             yonetim: 8,
         }
     },
@@ -682,7 +682,7 @@ export const questions: Question[] = [
         weights: {
             ulkucu: 10,
             muhafazakar: 9,
-            boluculuk: 8,
+            ozerklikci: 8,
             merkez_sag: -10,
             turkculuk: -10,
             ulusalci: -10,
@@ -690,7 +690,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -2,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: 5,
         }
@@ -699,7 +699,7 @@ export const questions: Question[] = [
         id: 37,
         text: 'Belirli bir süre hapis yatan mahkumlar için "Umut Hakkı" yasallaşmalı; örgüt silah bıraktığı takdirde lider kadrosuna bu hak tanınmalıdır.',
         weights: {
-            boluculuk: 10,
+            ozerklikci: 10,
             liberal: 8,
             muhafazakar: 6,
             ulkucu: 6,
@@ -710,7 +710,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -5,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: -8,
         }
@@ -738,7 +738,7 @@ export const questions: Question[] = [
         text: 'Kürt sorunu sadece asayiş politikalarıyla değil, meclis çatısı altında tam bir siyasi temsil ve uzlaşma ile çözülmelidir.',
         weights: {
             sosyal_demokrat: 10,
-            boluculuk: 10,
+            ozerklikci: 10,
             liberal: 8,
             yesil: 8,
             muhafazakar: 5,
@@ -748,7 +748,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 0,
-            toplum: -6,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: -8,
         }
@@ -757,7 +757,7 @@ export const questions: Question[] = [
         id: 40,
         text: 'Türkiye, Suriye\'deki güvenliği için gerekirse oradaki Kürt gruplarla (SDG/PYD) doğrudan siyasi masaya oturup anlaşmalıdır.',
         weights: {
-            boluculuk: 10,
+            ozerklikci: 10,
             liberal: 8,
             sosyal_demokrat: 5,
             muhafazakar: 2,
@@ -768,7 +768,7 @@ export const questions: Question[] = [
         },
         axisWeights: {
             ekonomi: 2,
-            toplum: -2,
+            toplum: 0,
             milliyetcilik: -10,
             yonetim: -5,
         }
