@@ -535,7 +535,7 @@ function BreakdownList({ title, items, agree }: { title: string; items: Breakdow
             <h3 className={`text-[10px] font-black uppercase tracking-widest ${agree ? 'text-green-500' : 'text-red-500'}`}>{title}</h3>
             {items.map(item => (
                 <div key={item.questionId} className="p-3 bg-white/5 rounded-xl space-y-1.5">
-                    <p className="text-[11px] text-gray-400 leading-snug">&ldquo;{item.questionText}&rdquo;</p>
+                    <p className="text-[11px] text-gray-400 leading-snug">&ldquo;{item.questionText.replace(/"([^"]+)"/g, '‘$1’')}&rdquo;</p>
                     <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">
                         Sen: <span className={item.answer === 'agree' ? 'text-green-400' : 'text-red-400'}>
                             {item.answer === 'agree' ? 'Katılıyorum' : 'Katılmıyorum'}

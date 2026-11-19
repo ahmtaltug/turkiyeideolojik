@@ -51,7 +51,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: 'Cumhuriyetin kuruluş felsefesidir. 2026\'da CHP\'nin kurultayının mahkemece iptal edilip Kılıçdaroğlu\'nun göreve iade edilmesi ve Özgür Özel\'in YENİ Parti\'yi kurmasıyla Kemalist seçmen iki parti arasında bölündü.',
             principles: ['Cumhuriyetçilik', 'Milliyetçilik', 'Halkçılık', 'Devletçilik', 'Laiklik', 'İnkılapçılık'],
-            motto: 'Yurtta Sulh, Cihanda Sulh.',
+            motto: 'Yurtta sulh, cihanda sulh.',
         },
         actionPlan: [
             'Tarikat ve cemaatlerin eğitimdeki etkisini sınırlayıp laik ve bilimsel müfredatı yeniden kurmak.',
@@ -71,7 +71,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             'Parti içi bölünmeler ve liderlik tartışmalarının iktidar alternatifi olma iddiasını zayıflattığı ileri sürülür.',
         ],
         details: {
-            history: '1960\'ların "ortanın solu"ndan bugüne uzanan gelenek. 2024 yerel seçimlerinde birinci parti olan CHP\'nin yönetimi 2026\'da mahkeme kararıyla değişince, Özgür Özel ve 91 milletvekili Temmuz 2026\'da YENİ Parti\'yi kurdu.',
+            history: '1960\'lardaki "ortanın solu" çizgisinden bugüne uzanan gelenek. 2024 yerel seçimlerinde birinci parti olan CHP\'nin yönetimi 2026\'da mahkeme kararıyla değişince, Özgür Özel ve 91 milletvekili Temmuz 2026\'da YENİ Parti\'yi kurdu.',
             principles: ['Sosyal Adalet', 'Parlamenter Demokrasi', 'Liyakat', 'Yerel Yönetim', 'Emeğin Hakları'],
             motto: 'Hak, Hukuk, Adalet.',
         },
@@ -117,7 +117,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: 'CKMP ve MHP ile kurumsallaşan hareket, Cumhur İttifakı\'nın ortağıdır. Ekim 2024\'te Bahçeli\'nin çağrısıyla başlayan "Terörsüz Türkiye" sürecinin siyasi öncüsü oldu.',
             principles: ['Türk-İslam Ülküsü', 'Devletin Bekası', 'Dokuz Işık', 'Türk Dünyası Birliği'],
-            motto: 'Tanrı Türk\'ü Korusun ve Yüceltsin!',
+            motto: 'Tanrı Türk\'ü korusun ve yüceltsin!',
         },
         actionPlan: [
             '"Terörsüz Türkiye" sürecini silah bırakma doğrulanana kadar devlet denetiminde tamamlamak.',
@@ -139,7 +139,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: 'Osmanlı\'nın son döneminden bu yana bireysel özgürlük ve serbest teşebbüs etrafında toplanan gelenek. Bugün DEVA Partisi parlamenter sistem ve hukuk reformu vurgusuyla bu çizgiyi temsil ediyor.',
             principles: ['Birey Hakları', 'Serbest Piyasa', 'Hukuk Devleti', 'Bağımsız Kurumlar', 'Mülkiyet Hakkı'],
-            motto: 'Özgürlük, Herkese ve Daima!',
+            motto: 'Özgürlük, herkese ve daima!',
         },
         actionPlan: [
             'Merkez Bankası, TÜİK, SPK ve BDDK\'yı yasal güvenceyle siyasetten bağımsız hale getirmek.',
@@ -161,7 +161,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: '1960\'larda Türkiye İşçi Partisi ile kitleselleşen, sınıf siyaseti ve kamulaştırma odaklı sol gelenek. TİP bugün Meclis\'te temsil ediliyor.',
             principles: ['Eşitlik', 'Kamulaştırma', 'Emeğin Hakları', 'Anti-Emperyalizm', 'Laiklik'],
-            motto: 'Dünyanın Bütün İşçileri Birleşin!',
+            motto: 'Dünyanın bütün işçileri, birleşin!',
         },
         actionPlan: [
             'Enerji, maden ve büyük bankaları kamulaştırıp emekçi denetimine açmak.',
@@ -183,7 +183,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: '1990\'lardan bu yana farklı parti isimleriyle varlığını sürdüren, kimlik taleplerini sol ve ekolojist söylemle birleştiren gelenek. "Terörsüz Türkiye" sürecinin ve 2026\'daki çerçeve yasanın müzakere tarafı oldu.',
             principles: ['Yerinden Yönetim', 'Anadilde Eğitim', 'Eş Başkanlık', 'Kadın Özgürlüğü', 'Ekoloji'],
-            motto: 'Özgür Yaşam, Demokratik Toplum.',
+            motto: 'Özgür yaşam, demokratik toplum.',
         },
         actionPlan: [
             'Avrupa Yerel Yönetimler Özerklik Şartı\'ndaki çekinceleri kaldırıp yerel meclislerin yetkisini artırmak.',
@@ -205,7 +205,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: 'Milli Görüş hareketiyle şekillenen, dini prensipleri siyasetin merkezine koyan akım. Bugün Yeniden Refah ve HÜDA PAR farklı tonlarda bu çizgiyi temsil ediyor.',
             principles: ['İslami Referans', 'Adil Düzen', 'Faizsiz Ekonomi', 'Ümmet Dayanışması'],
-            motto: 'Hakkın Hakimiyeti İçin Çalışmak İbadettir.',
+            motto: 'Hakkın hâkimiyeti için çalışmak ibadettir.',
         },
         actionPlan: [
             'Faizsiz finans sistemini kamu bankacılığının merkezine alıp ağır sanayi hamlesi başlatmak.',
@@ -222,12 +222,12 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         color: '#FF4500',
         critiques: [
             'Batı\'dan kopuşun Rusya ve Çin\'e yeni bir bağımlılık yaratabileceği ileri sürülür.',
-            'Otoriter yönetimlerle yakınlaşmanın demokratik standartları zayıflatacağı eleştirisi yapılır.',
+            'Otoriter yönetimlerle yakınlaşmanın demokratik standartları zayıflatabileceği eleştirisi yapılır.',
         ],
         details: {
             history: 'Aydınlık geleneğinden doğan, 2000\'lerden itibaren Batı karşıtlığı temelinde Avrasya ittifakını öneren stratejik görüş.',
             principles: ['Anti-Atlantikçilik', 'Avrasya İşbirliği', 'Devletçilik', 'Laiklik'],
-            motto: 'Yükselen Asya, Bağımsız Türkiye!',
+            motto: 'Yükselen Asya, bağımsız Türkiye!',
         },
         actionPlan: [
             'NATO\'dan çıkıp ülkedeki yabancı askeri üslerin faaliyetine son vermek.',
@@ -249,7 +249,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: '2000\'lerin başında AB ve ABD karşıtlığıyla kitleselleşen laik milliyetçilik, son yıllarda sığınmacı karşıtlığı ve çözüm sürecine itirazla yeniden yükseldi.',
             principles: ['Tam Bağımsızlık', 'Laik Milliyetçilik', 'Milli Ekonomi', 'Sığınmacı Karşıtlığı'],
-            motto: 'Ne Mutlu Türküm Diyene!',
+            motto: 'Ne mutlu Türk\'üm diyene!',
         },
         actionPlan: [
             'Sığınmacıları uluslararası baskıya rağmen takvime bağlı bir planla ülkelerine göndermek.',
@@ -269,9 +269,9 @@ export const ideologies: Record<IdeologyId, Ideology> = {
             'Geçmiş merkez sağ iktidarlarının darbe ve ekonomik kriz dönemlerindeki performansı eleştiri konusu yapılır.',
         ],
         details: {
-            history: 'Demokrat Parti\'den Adalet Partisi\'ne, oradan İYİ Parti ve 2024\'te kurulan Anahtar Parti\'ye uzanan gelenek. Bugün parlamenter sistem ve çözüm sürecine itiraz ortak paydası.',
+            history: 'Demokrat Parti\'den Adalet Partisi\'ne, oradan İYİ Parti ve 2024\'te kurulan Anahtar Parti\'ye uzanan gelenek. Bugün ortak paydası parlamenter sistem savunusu ve çözüm sürecine itirazdır.',
             principles: ['Hukukun Üstünlüğü', 'Kurumsal Milliyetçilik', 'Serbest Piyasa', 'Parlamenter Sistem'],
-            motto: 'Bizim Yolumuz, Milletin Yoludur.',
+            motto: 'Bizim yolumuz, milletin yoludur.',
         },
         actionPlan: [
             'Güçlendirilmiş parlamenter sisteme dönüp bağımsız düzenleyici kurumları yeniden kurmak.',
@@ -293,7 +293,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: 'Küresel yeşil hareketin Türkiye\'deki uzantısıdır. Zeytinlik, maden ve kömür santrali direnişleriyle görünürlük kazandı; COP31\'in Antalya\'da yapılmasıyla gündemi büyüdü.',
             principles: ['İklim Adaleti', 'Doğa Hakları', 'Sürdürülebilirlik', 'Yerel Demokrasi'],
-            motto: 'Doğa ile Uyum İçinde Bir Gelecek.',
+            motto: 'Doğayla uyum içinde bir gelecek.',
         },
         actionPlan: [
             'Yeni kömür santrallerini yasaklayıp 2053 net sıfır hedefini 2040\'a çekmek.',
@@ -315,7 +315,7 @@ export const ideologies: Record<IdeologyId, Ideology> = {
         details: {
             history: 'Ziya Gökalp ve Nihal Atsız\'ın fikirlerinden beslenen; son yıllarda sığınmacı tartışmaları ve çözüm sürecine itirazla yeniden yükselen laik, etnik vurgulu milliyetçilik.',
             principles: ['Türklük Bilinci', 'Demografik Koruma', 'Türk Dünyası Birliği', 'Laik Devlet'],
-            motto: 'Vatan Ne Türkiye\'dir Türklere, Ne Türkistan; Vatan Büyük ve Müebbet Bir Ülkedir: Turan.',
+            motto: 'Vatan ne Türkiye\'dir Türklere, ne Türkistan; vatan büyük ve müebbet bir ülkedir: Turan!',
         },
         actionPlan: [
             'Demografik koruma yasası çıkarıp yatırımcı vatandaşlığını kaldırmak.',

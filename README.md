@@ -6,14 +6,14 @@ Türkiye siyasetindeki yerini keşfetmeni sağlayan, kaydırmalı (swipe) bir si
 Sorulara sağa (katılıyorum) veya sola (katılmıyorum) kaydırarak cevap verirsin; sonuç ekranında 13 ideolojik akımdan hangisine ve hangi liderlere daha yakın olduğunu görürsün.
 
 ### ✨ Özellikler
-* **Kaydır, tıkla ya da klavye kullan:** Kart kaydırma, Katılıyorum/Katılmıyorum butonları, `←` / `→` tuşları ve `Backspace` ile geri alma.
+* **Kaydır, tıkla ya da klavye kullan:** Kart kaydırma, Katılıyorum/Katılmıyorum butonları, `←` / `→` tuşları, `↓` ile soruyu geçme ve `Backspace` ile geri alma.
 * **İki mod:** 40 soruluk Tam Analiz veya 4 eksene dengeli dağıtılmış 20 soruluk Hızlı Test.
 * **Fikrim yok, geç:** Bilmediğin konuları atlayabilirsin; atlanan sorular hesaplamaya katılmaz.
 * **Kaldığın yerden devam:** İlerleme tarayıcıda saklanır, sayfa yenilense de kaybolmaz.
 * **Ayrıntılı sonuç:** 4 eksen (Ekonomi, Toplumsal, Milliyetçilik, Yönetim), tüm ideolojilerin sıralaması, lider uyumu, "Neden bu sonuç?" açıklaması ve tutarlılık skoru.
 * **Paylaşım:** Sonuç linki cevapları kısa bir kodla taşır; WhatsApp, X gibi platformlarda kişinin kendi sonucunu gösteren önizleme görseli oluşur. Kart PNG olarak da indirilebilir.
 * **Yöntem sayfası:** `/yontem` hesaplamanın nasıl yapıldığını, sınırlamaları ve gizlilik bilgisini açıklar.
-* **Gizlilik:** Cevaplar yalnızca tarayıcıda işlenir.
+* **Gizlilik:** Cevaplar tarayıcıda işlenir ve kaydedilmez. Paylaşılan linkteki kod yalnızca önizleme görselini oluşturmak için sunucuya iletilir.
 
 ### 🧮 Hesaplama nasıl çalışır?
 * Her sorunun 13 ideolojinin her biri için bir tutumu var (-2 kesinlikle katılmaz … +2 kesinlikle katılır). Tutumlar `src/data/questions.ts` içinde.

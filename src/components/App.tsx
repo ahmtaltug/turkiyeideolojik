@@ -106,7 +106,7 @@ export default function App({ initialSharedCode }: AppProps) {
                 <BarChart3 className="w-14 h-14 text-white" aria-hidden="true" />
               </motion.div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-                <span className="gradient-text">Türkiye</span>
+                <span className="gradient-text">Türkiye</span>{' '}
                 <span className="text-white">İdeolojik</span>
               </h1>
               <p className="text-lg md:text-xl text-gray-400 max-w-lg mx-auto leading-relaxed">
@@ -153,7 +153,7 @@ export default function App({ initialSharedCode }: AppProps) {
             <div className="pt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
               {[
                 { icon: BarChart3, title: 'Analiz', text: '13 ideoloji ve 4 eksen üzerinden ayrıntılı eşleşme.' },
-                { icon: RefreshCw, title: 'Kaydır', text: 'Sağa kaydır katıl, sola kaydır katılma. Butonlar ve klavye de çalışır.' },
+                { icon: RefreshCw, title: 'Kaydır', text: 'Katılıyorsan sağa, katılmıyorsan sola kaydır. Butonlar ve klavye de çalışır.' },
                 { icon: Users, title: 'Liderler', text: 'Görüşlerinin hangi siyasi liderlere ve partilere yakın olduğunu gör.' },
               ].map(item => (
                 <div key={item.title} className="glass p-6 rounded-2xl space-y-3">

@@ -20,7 +20,9 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
 );
 
 const formatAxis = (value: number, labels: [string, string]) =>
-    value === 0 ? 'Merkez' : `${value > 0 ? labels[1] : labels[0]} (${value > 0 ? '+' : ''}${value})`;
+    Math.abs(value) < 5
+        ? `Merkez (${value > 0 ? '+' : ''}${value})`
+        : `${value > 0 ? labels[1] : labels[0]} (${value > 0 ? '+' : ''}${value})`;
 
 export default function MethodologyPage() {
     const ideologyIds = Object.keys(ideologies) as IdeologyId[];
@@ -77,7 +79,7 @@ export default function MethodologyPage() {
                     <p>
                         İdeoloji ve lider tutumları; parti programları, seçim beyannameleri, Meclis oylamaları ve liderlerin kamuya
                         açık açıklamaları esas alınarak belirlenmiş <strong className="text-white">yaklaşık tahminlerdir</strong>.
-                        Bir partinin ya da liderin resmî görüşünü temsil etmez.
+                        Bir partinin ya da liderin resmi görüşünü temsil etmez.
                     </p>
                     <p>
                         Güncel olaylara dayanan sorularda kısa bir &ldquo;Bağlam&rdquo; notu verilir. Siyasi gelişmeler hızla
@@ -97,7 +99,7 @@ export default function MethodologyPage() {
 
                 <Section title="Gizlilik">
                     <p>
-                        Cevapların yalnızca tarayıcında işlenir; hesap açma, kayıt ya da çerez yoktur. Yarım kalan testin ve ses
+                        Cevapların tarayıcında işlenir; hesap açma, kayıt ya da çerez yoktur. Yarım kalan testin ve ses
                         tercihin, kaldığın yerden devam edebilmen için yalnızca kendi tarayıcında saklanır.
                     </p>
                     <p>
@@ -131,7 +133,7 @@ export default function MethodologyPage() {
                         {leaders.map(leader => (
                             <li key={leader.name}>
                                 <span className="font-semibold text-white">{leader.name}</span>
-                                <span className="text-gray-500"> ({leader.title})</span>:{' '}
+                                <span className="text-gray-500"> – {leader.title}</span>:{' '}
                                 {(Object.entries(leader.blend) as [IdeologyId, number][])
                                     .sort(([, a], [, b]) => b - a)
                                     .map(([id, w]) => `%${Math.round(w * 100)} ${ideologies[id].name}`)
