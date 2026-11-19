@@ -1,4 +1,4 @@
-import { UserResponses } from './scoring';
+import { UserResponses } from './quiz';
 
 export type QuizMode = 'quick' | 'full';
 

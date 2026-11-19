@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, SkipForward, Undo2, Volume2, VolumeX, X } from 'lucide-react';
 import { questions as allQuestions, Question } from '@/data/questions';
-import { Answer, MIN_ANSWERS, UserResponses } from '@/utils/scoring';
+import { Answer, MIN_ANSWERS, UserResponses } from '@/utils/quiz';
 import { playSwipeSound, vibrate, warmUpAudio } from '@/utils/sound';
 import { QuizMode, saveProgress, clearProgress, loadSoundEnabled, saveSoundEnabled } from '@/utils/storage';
 import SwipeCard, { SwipeDirection } from './SwipeCard';
