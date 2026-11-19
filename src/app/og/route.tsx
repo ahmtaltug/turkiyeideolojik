@@ -118,6 +118,7 @@ export async function GET(request: Request) {
             { name: 'Inter', data: await regularFont, weight: 400, style: 'normal' },
             { name: 'Inter', data: await boldFont, weight: 800, style: 'normal' },
         ],
-        headers: { 'Cache-Control': 'public, max-age=86400, immutable' },
+        // s-maxage lets Vercel's CDN serve repeat requests without running the function again.
+        headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=86400' },
     });
 }

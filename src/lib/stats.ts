@@ -25,9 +25,6 @@ export interface StatsSnapshot {
     byMonth: { month: string; total: number }[];
 }
 
-/** Percentages are only published once at least this many results exist. */
-export const MIN_TOTAL_TO_PUBLISH = 50;
-
 const PREFIX = 'stats:v1';
 const IDEOLOGY_IDS = Object.keys(ideologies) as IdeologyId[];
 

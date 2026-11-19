@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                     </p>
                     <p>
                         Amaç: Sitede hangi sonuçların ne sıklıkla çıktığını <Link href="/istatistik" className="underline underline-offset-4 hover:text-white">herkese açık istatistik sayfasında</Link>{' '}
-                        toplu olarak göstermek. Dağılım, en az 50 sonuç toplanmadan yayımlanmaz.
+                        toplu olarak göstermek.
                     </p>
 
                     <h3 className="font-semibold text-white pt-2">b) Ziyaret istatistikleri</h3>
