@@ -274,7 +274,10 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
 /* ---------- Shareable result encoding ---------- */
 
 /** Bumped whenever questions change, so old links don't decode onto new questions. */
-export const SHARE_VERSION = '2';
+export const SHARE_VERSION = '3';
+
+/** Fewest answers needed for a result. */
+export const MIN_ANSWERS = 5;
 
 /**
  * Encodes responses as a version prefix plus one character per question:
@@ -295,5 +298,5 @@ export const decodeResponses = (code: string): UserResponses | null => {
         if (ch === 'a') responses[questions[i].id] = 'agree';
         else if (ch === 'd') responses[questions[i].id] = 'disagree';
     });
-    return Object.keys(responses).length >= 10 ? responses : null;
+    return Object.keys(responses).length >= MIN_ANSWERS ? responses : null;
 };

@@ -9,7 +9,12 @@ import {
 import { IdeologyId, ideologies } from '@/data/ideologies';
 import { BreakdownItem, IDEOLOGY_AXES, QuizResult } from '@/utils/scoring';
 import { toPng } from 'html-to-image';
+import Link from 'next/link';
+import { CONTENT_DATE } from '@/lib/site';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+
+/** Below this many answers the result is flagged as less reliable. */
+const LOW_CONFIDENCE_BELOW = 15;
 
 interface ResultScreenProps {
     result: QuizResult;
@@ -135,6 +140,12 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                     <div className="h-px flex-1 bg-white/10" />
                                 </motion.div>
 
+                                {answeredCount < LOW_CONFIDENCE_BELOW && (
+                                    <p className="text-xs text-orange-300/90 bg-orange-500/10 border border-orange-500/20 rounded-xl px-3 py-2">
+                                        Yalnızca {answeredCount} soruyu cevapladığın için bu sonuç daha az güvenilir.
+                                    </p>
+                                )}
+
                                 <div className="space-y-4">
                                     <motion.h1
                                         initial={{ y: 20, opacity: 0 }}
@@ -233,7 +244,7 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
 
                         <div className="lg:col-span-4 h-[300px] md:h-[380px] relative">
                             <ResponsiveContainer width="100%" height="100%">
-                                <RadarChart cx="50%" cy="50%" outerRadius="62%" data={radarData}>
+                                <RadarChart cx="50%" cy="50%" outerRadius="60%" data={radarData} margin={{ top: 10, right: 44, bottom: 10, left: 44 }}>
                                     <PolarGrid stroke="#ffffff1a" />
                                     <PolarAngleAxis dataKey="subject" tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 'bold' }} />
                                     <Radar
@@ -421,7 +432,8 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
             </div>
 
             <p className="text-center text-[10px] text-gray-600 uppercase tracking-widest leading-relaxed">
-                Bu sonuç yalnızca verdiğin cevaplara dayalı bir eşleşmedir; bilimsel bir ölçüm değildir.
+                Bu sonuç yalnızca verdiğin cevaplara dayalı bir eşleşmedir; bilimsel bir ölçüm değildir. İçerik {CONTENT_DATE} itibarıyla günceldir.{' '}
+                <Link href="/yontem" className="underline underline-offset-4 hover:text-gray-400">Yöntem ve sınırlamalar</Link>
             </p>
 
             {/* Info modal */}

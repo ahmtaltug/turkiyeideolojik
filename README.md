@@ -8,9 +8,11 @@ Sorulara sağa (katılıyorum) veya sola (katılmıyorum) kaydırarak cevap veri
 ### ✨ Özellikler
 * **Kaydır, tıkla ya da klavye kullan:** Kart kaydırma, Katılıyorum/Katılmıyorum butonları, `←` / `→` tuşları ve `Backspace` ile geri alma.
 * **İki mod:** 40 soruluk Tam Analiz veya 4 eksene dengeli dağıtılmış 20 soruluk Hızlı Test.
+* **Fikrim yok, geç:** Bilmediğin konuları atlayabilirsin; atlanan sorular hesaplamaya katılmaz.
 * **Kaldığın yerden devam:** İlerleme tarayıcıda saklanır, sayfa yenilense de kaybolmaz.
 * **Ayrıntılı sonuç:** 4 eksen (Ekonomi, Toplumsal, Milliyetçilik, Yönetim), tüm ideolojilerin sıralaması, lider uyumu, "Neden bu sonuç?" açıklaması ve tutarlılık skoru.
-* **Paylaşım:** Sonuç linki cevapları URL'de taşır (sunucu yok); kart PNG olarak indirilebilir.
+* **Paylaşım:** Sonuç linki cevapları kısa bir kodla taşır; WhatsApp, X gibi platformlarda kişinin kendi sonucunu gösteren önizleme görseli oluşur. Kart PNG olarak da indirilebilir.
+* **Yöntem sayfası:** `/yontem` hesaplamanın nasıl yapıldığını, sınırlamaları ve gizlilik bilgisini açıklar.
 * **Gizlilik:** Cevaplar yalnızca tarayıcıda işlenir.
 
 ### 🧮 Hesaplama nasıl çalışır?
@@ -31,7 +33,9 @@ npm run build
 ```
 Teknolojiler: Next.js 16, React 19, Tailwind CSS 4, Framer Motion, Recharts.
 
-İsteğe bağlı: `NEXT_PUBLIC_SITE_URL` ortam değişkeni sosyal medya önizlemeleri için sitenin adresini belirler (Vercel'de otomatik).
+`NEXT_PUBLIC_SITE_URL` ortam değişkeni sitenin adresini belirler (önizleme görselleri, sitemap ve robots için). Vercel'de ayarlanmazsa projenin üretim adresi otomatik kullanılır; özel bir alan adı bağlarsan bu değişkeni o adrese ayarla.
+
+İçerik tarihi `src/lib/site.ts` içindeki `CONTENT_DATE` ile gösterilir; içeriği güncellediğinde bunu da güncelle. Sorular değişirse eski paylaşım linklerinin yanlış sonuca eşlenmemesi için `src/utils/scoring.ts` içindeki `SHARE_VERSION` değerini artır.
 
 ### ⚠️ Önemli Not
 Bu uygulama bilgilendirme ve fikir jimnastiği amacıyla geliştirilmiştir. Sonuçlar bilimsel bir kesinlik taşımaz; ideoloji ve lider konumları yaklaşık tahminlerdir.
