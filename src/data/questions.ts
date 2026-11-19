@@ -28,7 +28,7 @@ export const questions: Question[] = [
     /* ---------------- Ekonomi ---------------- */
     {
         id: 1,
-        text: 'Enflasyonla mücadelede yüksek faiz ve sıkı para politikası, ekonomi yavaşlasa bile sürdürülmelidir.',
+        text: 'Enflasyonla mücadelede yüksek faiz politikası sürdürülmelidir.',
         context: 'Yüksek faiz enflasyonu düşürmeye yardım eder ama kredi, yatırım ve büyümeyi yavaşlatır.',
         axes: { ekonomi: 1 },
         stances: { kemalist: -1, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 0, liberal: 2, sosyalist: -2, ozerklikci: -1, islamci: -2, avrasyaci: -2, ulusalci: -1, merkez_sag: 1, yesil: -1, turkculuk: 0 },
@@ -80,7 +80,7 @@ export const questions: Question[] = [
     },
     {
         id: 9,
-        text: 'Tarımda ithalat yerine yerli üretici korunmalı; gerekirse yüksek gümrük vergileri uygulanmalıdır.',
+        text: 'Yerli tarım üreticisini korumak için ithal tarım ürünlerine yüksek gümrük vergisi uygulanmalıdır.',
         axes: { ekonomi: -0.7, milliyetcilik: 0.3 },
         stances: { kemalist: 1, sosyal_demokrat: 1, muhafazakar: 0, ulkucu: 2, liberal: -2, sosyalist: 1, ozerklikci: 1, islamci: 1, avrasyaci: 2, ulusalci: 2, merkez_sag: 0, yesil: 1, turkculuk: 2 },
     },
@@ -88,14 +88,14 @@ export const questions: Question[] = [
     /* ---------------- Toplum ---------------- */
     {
         id: 10,
-        text: 'Diyanet İşleri Başkanlığı\'nın bütçesi ve yetkileri azaltılmalı, din hizmetleri devletten bağımsızlaşmalıdır.',
+        text: 'Diyanet İşleri Başkanlığı\'nın bütçesi ve yetkileri azaltılmalıdır.',
         axes: { toplum: -1 },
         stances: { kemalist: 0, sosyal_demokrat: 1, muhafazakar: -2, ulkucu: -2, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: -2, avrasyaci: -1, ulusalci: -1, merkez_sag: -1, yesil: 2, turkculuk: 0 },
     },
     {
         id: 11,
-        text: '"Türkiye Yüzyılı Maarif Modeli" müfredatı, milli ve manevi değerleri güçlendirdiği için doğru bir adımdır.',
-        context: '2024\'ten itibaren kademeli olarak uygulanan yeni ulusal müfredat.',
+        text: '"Türkiye Yüzyılı Maarif Modeli" müfredatı doğru bir adımdır.',
+        context: '2024\'ten itibaren kademeli olarak uygulanan, milli ve manevi değerlere ağırlık veren yeni ulusal müfredat.',
         axes: { toplum: 1 },
         stances: { kemalist: -2, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: -1, ulusalci: -2, merkez_sag: 0, yesil: -2, turkculuk: -1 },
     },
@@ -127,26 +127,26 @@ export const questions: Question[] = [
     },
     {
         id: 16,
-        text: 'Tarikat ve cemaatlerin eğitimde ve kamu kurumlarındaki etkisi sıkı biçimde denetlenmeli ve sınırlandırılmalıdır.',
+        text: 'Tarikat ve cemaatlerin eğitimdeki ve kamu kurumlarındaki etkisi sınırlandırılmalıdır.',
         axes: { toplum: -1 },
         stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 0, sosyalist: 2, ozerklikci: 1, islamci: -2, avrasyaci: 2, ulusalci: 2, merkez_sag: 1, yesil: 1, turkculuk: 2 },
     },
     {
         id: 17,
-        text: 'Faizsiz bankacılık ve katılım finansı devlet tarafından özel olarak teşvik edilmelidir.',
+        text: 'Katılım bankacılığı (faizsiz bankacılık) devlet tarafından özel olarak teşvik edilmelidir.',
         context: 'Katılım bankacılığı, faiz yerine kâr-zarar ortaklığı gibi yöntemlerle çalışan İslami esaslı bankacılıktır.',
         axes: { toplum: 1 },
         stances: { kemalist: -2, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 1, liberal: -1, sosyalist: -2, ozerklikci: -1, islamci: 2, avrasyaci: -1, ulusalci: -2, merkez_sag: 0, yesil: -1, turkculuk: -1 },
     },
     {
         id: 18,
-        text: 'Sahipsiz köpekler toplanıp barınaklara alınmalı, gerekirse uyutulmalıdır.',
+        text: 'Barınaklarda sahiplenilmeyen sokak köpekleri uyutulabilmelidir.',
         axes: { toplum: 0.5, yonetim: 0.5 },
-        stances: { kemalist: 0, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 1, liberal: -1, sosyalist: -1, ozerklikci: 0, islamci: 1, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: -2, turkculuk: 2 },
+        stances: { kemalist: -1, sosyal_demokrat: -2, muhafazakar: 1, ulkucu: 1, liberal: -1, sosyalist: -1, ozerklikci: 0, islamci: 1, avrasyaci: 1, ulusalci: 2, merkez_sag: 0, yesil: -2, turkculuk: 2 },
     },
     {
         id: 19,
-        text: 'Ekonomik büyümeyi yavaşlatsa bile yeni kömür santrallerine izin verilmemelidir.',
+        text: 'Yeni kömür santrallerine izin verilmemelidir.',
         context: 'Türkiye 2053 net sıfır emisyon hedefi açıkladı; elektriğin önemli bir kısmı hâlâ kömürden üretiliyor.',
         axes: { ekonomi: -0.5, toplum: -0.5 },
         stances: { kemalist: 0, sosyal_demokrat: 1, muhafazakar: -2, ulkucu: -1, liberal: 0, sosyalist: 1, ozerklikci: 1, islamci: -1, avrasyaci: -1, ulusalci: -1, merkez_sag: -1, yesil: 2, turkculuk: -1 },
@@ -155,9 +155,9 @@ export const questions: Question[] = [
     /* ------------- Milliyetçilik & Dış Politika ------------- */
     {
         id: 20,
-        text: 'Sığınmacılar, uluslararası tepkiye rağmen zorunlu ve takvime bağlı bir planla ülkelerine geri gönderilmelidir.',
+        text: 'Sığınmacılar, gönüllü dönüş beklenmeden zorunlu olarak ülkelerine geri gönderilmelidir.',
         axes: { milliyetcilik: 1 },
-        stances: { kemalist: 1, sosyal_demokrat: 0, muhafazakar: -1, ulkucu: 1, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: -2, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: -2, turkculuk: 2 },
+        stances: { kemalist: 1, sosyal_demokrat: -1, muhafazakar: -1, ulkucu: 1, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: -2, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: -2, turkculuk: 2 },
     },
     {
         id: 21,
@@ -181,10 +181,10 @@ export const questions: Question[] = [
     },
     {
         id: 24,
-        text: 'Türk Devletleri Teşkilatı ortak pazar ve ortak savunma birliğine dönüştürülmelidir.',
+        text: 'Türk Devletleri Teşkilatı ortak bir savunma birliğine dönüştürülmelidir.',
         context: 'Üyeleri: Türkiye, Azerbaycan, Kazakistan, Kırgızistan ve Özbekistan.',
         axes: { milliyetcilik: 1 },
-        stances: { kemalist: 1, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 0, avrasyaci: 0, ulusalci: 1, merkez_sag: 1, yesil: -1, turkculuk: 2 },
+        stances: { kemalist: 0, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 0, avrasyaci: 0, ulusalci: 1, merkez_sag: 1, yesil: -1, turkculuk: 2 },
     },
     {
         id: 25,
@@ -201,19 +201,19 @@ export const questions: Question[] = [
     },
     {
         id: 27,
-        text: 'Türkiye, kuzey Suriye\'deki askeri varlığını bölgede güvenlik tam sağlanana kadar sürdürmelidir.',
+        text: 'Türkiye, kuzey Suriye\'deki askeri varlığını sürdürmelidir.',
         axes: { milliyetcilik: 1 },
         stances: { kemalist: 0, sosyal_demokrat: -1, muhafazakar: 2, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: -1, ulusalci: 1, merkez_sag: 1, yesil: -1, turkculuk: 2 },
     },
     {
         id: 28,
-        text: 'Ermenistan ile sınır kapısı açılmalı ve ilişkiler tamamen normalleştirilmelidir.',
+        text: 'Ermenistan ile sınır kapısı açılmalıdır.',
         axes: { milliyetcilik: -1 },
         stances: { kemalist: 0, sosyal_demokrat: 1, muhafazakar: 1, ulkucu: -1, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: 0, avrasyaci: 0, ulusalci: -2, merkez_sag: -1, yesil: 2, turkculuk: -2 },
     },
     {
         id: 29,
-        text: 'Zorunlu askerlik kaldırılmalı, tamamen profesyonel orduya geçilmelidir.',
+        text: 'Zorunlu askerlik kaldırılmalıdır.',
         axes: { milliyetcilik: -1 },
         stances: { kemalist: -2, sosyal_demokrat: 0, muhafazakar: -1, ulkucu: -2, liberal: 2, sosyalist: 0, ozerklikci: 2, islamci: -1, avrasyaci: -2, ulusalci: -2, merkez_sag: -1, yesil: 1, turkculuk: -2 },
     },
@@ -227,7 +227,8 @@ export const questions: Question[] = [
     /* ------------- Yönetim, Hukuk & Çözüm Süreci ------------- */
     {
         id: 31,
-        text: 'Cumhurbaşkanlığı Hükümet Sistemi terk edilmeli, güçlendirilmiş parlamenter sisteme geri dönülmelidir.',
+        text: 'Güçlendirilmiş parlamenter sisteme geri dönülmelidir.',
+        context: 'Türkiye 2018\'den bu yana Cumhurbaşkanlığı Hükümet Sistemi ile yönetiliyor.',
         axes: { yonetim: -1 },
         stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -2, liberal: 2, sosyalist: 1, ozerklikci: 1, islamci: 0, avrasyaci: -1, ulusalci: 1, merkez_sag: 2, yesil: 1, turkculuk: 1 },
     },
@@ -246,7 +247,7 @@ export const questions: Question[] = [
     },
     {
         id: 34,
-        text: '"Terörsüz Türkiye" süreci kapsamında silah bırakan PKK üyelerine yasal dönüş ve topluma kazandırılma imkânı tanınması doğrudur.',
+        text: '"Terörsüz Türkiye" süreci kapsamında silah bırakan PKK üyelerine topluma yasal olarak dönme imkânı tanınmalıdır.',
         context: 'Bu amaçla çıkarılan çerçeve yasa Ağustos 2026\'da TBMM\'den geçti; uygulanması silah bırakmanın doğrulanmasına bağlı.',
         axes: { milliyetcilik: -0.7, yonetim: -0.3 },
         stances: { kemalist: -1, sosyal_demokrat: 1, muhafazakar: 2, ulkucu: 2, liberal: 1, sosyalist: 1, ozerklikci: 2, islamci: 1, avrasyaci: -2, ulusalci: -2, merkez_sag: -2, yesil: 1, turkculuk: -2 },
@@ -260,13 +261,13 @@ export const questions: Question[] = [
     },
     {
         id: 36,
-        text: 'Ulusal güvenlik gerekçesiyle sosyal medyaya erişim engeli ve bant daraltma uygulanabilmelidir.',
+        text: 'Ulusal güvenlik gerekçesiyle sosyal medyaya erişim engeli getirilebilmelidir.',
         axes: { yonetim: 1 },
         stances: { kemalist: -1, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: 1, ulusalci: -1, merkez_sag: -1, yesil: -2, turkculuk: 0 },
     },
     {
         id: 37,
-        text: 'Merkez Bankası, TÜİK, SPK ve BDDK gibi kurumların başkanlarını Cumhurbaşkanı tek başına atayamamalı; bu kurumlar tam bağımsız olmalıdır.',
+        text: 'Merkez Bankası ve TÜİK gibi kurumların başkanları Cumhurbaşkanı tarafından tek başına atanmamalıdır.',
         context: 'Bu kurumların başkanları bugün Cumhurbaşkanı kararıyla atanıyor.',
         axes: { yonetim: -1 },
         stances: { kemalist: 1, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 2, sosyalist: 0, ozerklikci: 1, islamci: -1, avrasyaci: -1, ulusalci: 1, merkez_sag: 2, yesil: 1, turkculuk: 0 },
@@ -286,7 +287,8 @@ export const questions: Question[] = [
     },
     {
         id: 40,
-        text: 'Çocuk istismarı ve terör gibi ağır suçlar için idam cezası geri getirilmelidir.',
+        text: 'Ağır suçlar için idam cezası geri getirilmelidir.',
+        context: 'Özellikle çocuk istismarı ve terör suçlarından sonra sıkça gündeme geliyor.',
         axes: { yonetim: 1, toplum: 0.3 },
         stances: { kemalist: 0, sosyal_demokrat: -2, muhafazakar: 1, ulkucu: 2, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: 1, ulusalci: 1, merkez_sag: 0, yesil: -2, turkculuk: 2 },
     },

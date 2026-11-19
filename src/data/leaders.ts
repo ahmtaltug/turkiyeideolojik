@@ -28,7 +28,7 @@ export const leaders: PoliticalLeader[] = [
         title: 'YENİ Parti Genel Başkanı',
         color: '#E30A17',
         blend: { sosyal_demokrat: 0.8, kemalist: 0.2 },
-        overrides: { 34: 1, 20: 1 },
+        overrides: { 34: 1, 20: 0 },
     },
     {
         name: 'Kemal Kılıçdaroğlu',
@@ -42,7 +42,7 @@ export const leaders: PoliticalLeader[] = [
         title: 'Tutuklu İBB Başkanı',
         color: '#EE1C25',
         blend: { sosyal_demokrat: 0.7, merkez_sag: 0.15, liberal: 0.15 },
-        overrides: { 20: 1 },
+        overrides: { 20: 0 },
     },
     {
         name: 'Mansur Yavaş',

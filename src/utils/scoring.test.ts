@@ -64,6 +64,14 @@ describe('data integrity', () => {
         }
     });
 
+    it('asks one thing per question (no joined demands)', () => {
+        for (const q of questions) {
+            expect(q.text, `#${q.id}`).not.toMatch(/;/);
+            expect(q.text, `#${q.id}`).not.toMatch(/m[ae]l[ıi](dır|dir)?,\s/);
+            expect(q.text, `#${q.id}`).not.toMatch(/m[ae]l[ıi] ve /);
+        }
+    });
+
     it('only asks questions that divide the ideologies', () => {
         for (const q of questions) {
             const values = Object.values(q.stances);
@@ -170,9 +178,9 @@ describe('share encoding', () => {
     });
 
     it('rejects malformed, too-short or old-version codes', () => {
-        expect(decodeResponses('3-xyz')).toBeNull();
-        expect(decodeResponses('3-ad')).toBeNull();
+        expect(decodeResponses('4-xyz')).toBeNull();
+        expect(decodeResponses('4-ad')).toBeNull();
         expect(decodeResponses('a'.repeat(30))).toBeNull(); // v1 links had no prefix
-        expect(decodeResponses('3-' + 'a'.repeat(questions.length + 1))).toBeNull();
+        expect(decodeResponses('4-' + 'a'.repeat(questions.length + 1))).toBeNull();
     });
 });
