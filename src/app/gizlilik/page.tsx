@@ -52,7 +52,7 @@ export default function PrivacyPage() {
                     <p>
                         Sonuç ekranında kutucuğu işaretleyip &ldquo;Sonucumu ekle&rdquo; dersen, tarayıcın sunucuya yalnızca iki bilgi gönderir:
                         sonuç ideolojinin adı ve test türü (Hızlı Test / Tam Analiz). Sunucu bu bilgiyle yalnızca toplam sayaçları
-                        (tüm zamanlar, ay bazında ve test türü bazında) bir artırır. Cevapların, IP adresin, cihaz bilgin, zaman damgası
+                        (ideoloji bazında ve test türü bazında) bir artırır. Cevapların, IP adresin, cihaz bilgin, zaman damgası
                         veya seni tanımlayabilecek başka hiçbir bilgi bu kayıtla birlikte saklanmaz; tek tek sonuçlar tutulmaz.
                     </p>
                     <p>
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                     </p>
                     <p>
                         Amaç: Sitede hangi sonuçların ne sıklıkla çıktığını <Link href="/istatistik" className="underline underline-offset-4 hover:text-white">herkese açık istatistik sayfasında</Link>{' '}
-                        toplu olarak göstermek. Dağılım, en az 50 sonuç toplanmadan yayımlanmaz.
+                        toplu olarak göstermek.
                     </p>
 
                     <h3 className="font-semibold text-white pt-2">b) Ziyaret istatistikleri</h3>

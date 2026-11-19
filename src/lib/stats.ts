@@ -5,7 +5,7 @@ import { ideologies, IdeologyId } from '@/data/ideologies';
  *
  * Privacy by design: the server never stores anything about an individual.
  * A consenting visitor's browser sends only { ideology, mode }; the server
- * increments a few counters (all-time, per month, per mode) and forgets the
+ * increments two counters (per ideology and per mode) and forgets the
  * request. No IP address, cookie, device id, answers or timestamp is saved,
  * so the stored data cannot be linked back to a person.
  */
@@ -21,18 +21,10 @@ export interface StatsSnapshot {
     total: number;
     byIdeology: Record<IdeologyId, number>;
     byMode: Record<StatsMode, number>;
-    /** Month key (YYYY-MM) → total submissions that month, oldest first. */
-    byMonth: { month: string; total: number }[];
 }
-
-/** Percentages are only published once at least this many results exist. */
-export const MIN_TOTAL_TO_PUBLISH = 50;
 
 const PREFIX = 'stats:v1';
 const IDEOLOGY_IDS = Object.keys(ideologies) as IdeologyId[];
-
-export const monthKey = (date: Date) =>
-    `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
 
 /** Accepts only the exact expected shape; anything else is rejected. */
 export const parseSubmission = (body: unknown): StatsSubmission | null => {
@@ -45,18 +37,10 @@ export const parseSubmission = (body: unknown): StatsSubmission | null => {
 };
 
 /** Redis commands that record one submission (counters only). */
-export const incrementCommands = (s: StatsSubmission, now: Date): string[][] => [
+export const incrementCommands = (s: StatsSubmission): string[][] => [
     ['HINCRBY', `${PREFIX}:ideology`, s.ideology, '1'],
-    ['HINCRBY', `${PREFIX}:month:${monthKey(now)}`, s.ideology, '1'],
     ['HINCRBY', `${PREFIX}:mode`, s.mode, '1'],
 ];
-
-/** Last `count` month keys ending with the month of `now`, oldest first. */
-export const recentMonths = (now: Date, count: number) =>
-    Array.from({ length: count }, (_, i) => {
-        const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (count - 1 - i), 1));
-        return monthKey(d);
-    });
 
 const toCounts = (raw: unknown): Record<string, number> => {
     // Upstash returns HGETALL as a flat [field, value, field, value, ...] array.
@@ -69,11 +53,7 @@ const toCounts = (raw: unknown): Record<string, number> => {
     return out;
 };
 
-export const buildSnapshot = (
-    ideologyRaw: unknown,
-    modeRaw: unknown,
-    months: { month: string; raw: unknown }[]
-): StatsSnapshot => {
+export const buildSnapshot = (ideologyRaw: unknown, modeRaw: unknown): StatsSnapshot => {
     const ideologyCounts = toCounts(ideologyRaw);
     const modeCounts = toCounts(modeRaw);
     const byIdeology = Object.fromEntries(IDEOLOGY_IDS.map(id => [id, ideologyCounts[id] ?? 0])) as Record<IdeologyId, number>;
@@ -81,10 +61,6 @@ export const buildSnapshot = (
         total: Object.values(byIdeology).reduce((a, b) => a + b, 0),
         byIdeology,
         byMode: { quick: modeCounts.quick ?? 0, full: modeCounts.full ?? 0 },
-        byMonth: months.map(({ month, raw }) => ({
-            month,
-            total: Object.values(toCounts(raw)).reduce((a, b) => a + b, 0),
-        })),
     };
 };
 
@@ -149,20 +125,14 @@ export const isStatsEnabled = () => store !== null;
 
 export const recordSubmission = async (s: StatsSubmission) => {
     if (!store) throw new Error('Stats store is not configured');
-    await store.pipeline(incrementCommands(s, new Date()));
+    await store.pipeline(incrementCommands(s));
 };
 
-export const readSnapshot = async (monthsBack = 6): Promise<StatsSnapshot | null> => {
+export const readSnapshot = async (): Promise<StatsSnapshot | null> => {
     if (!store) return null;
-    const months = recentMonths(new Date(), monthsBack);
-    const results = await store.pipeline([
+    const [ideologyRaw, modeRaw] = await store.pipeline([
         ['HGETALL', `${PREFIX}:ideology`],
         ['HGETALL', `${PREFIX}:mode`],
-        ...months.map(m => ['HGETALL', `${PREFIX}:month:${m}`]),
     ]);
-    return buildSnapshot(
-        results[0],
-        results[1],
-        months.map((month, i) => ({ month, raw: results[2 + i] }))
-    );
+    return buildSnapshot(ideologyRaw, modeRaw);
 };

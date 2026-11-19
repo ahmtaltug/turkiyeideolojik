@@ -43,6 +43,8 @@ Teknolojiler: Next.js 16, React 19, Tailwind CSS 4, Framer Motion, Recharts.
 2. **Trafik:** Vercel panelinde projenin *Analytics* sekmesinden Web Analytics'i etkinleştir. Çerez kullanmaz; paylaşım kodunun gitmemesi için sayfa adreslerindeki `?s=` parametresi gönderilmeden önce silinir.
 3. **Kötüye kullanıma karşı (önerilir):** *Firewall* bölümünden `/api/istatistik` için bir hız sınırı kuralı ekle (ör. IP başına dakikada 5 istek). Uygulama IP adresi okumadığı için bu koruma Vercel tarafında yapılmalı.
 
+**Ücretsiz planlarda kalmak için:** Vercel Hobby ve Upstash ücretsiz planında limit aşılırsa ücret çıkmaz; ilgili özellik bir süre durur. Upstash'e ya da Vercel'e kredi kartı eklemeyin ve planı yükseltmeyin; böylece otomatik olarak ücretli plana geçilmez. Vercel Hobby planı yalnızca kişisel ve ticari olmayan kullanım içindir; sitede reklam, bağış veya sponsorluk gibi gelir başlarsa Pro plana geçmek gerekir.
+
 Aydınlatma metni `/gizlilik` sayfasındadır; veri sorumlusu bilgileri `src/lib/site.ts` içindeki `DATA_CONTROLLER` alanındadır. Metin KVKK'ya uygun olacak şekilde hazırlanmıştır ancak yayına almadan önce bir hukukçuya gözden geçirtilmesi önerilir.
 
 ### ⚠️ Önemli Not

@@ -2,21 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { ideologies, IdeologyId } from '@/data/ideologies';
-import { isStatsEnabled, MIN_TOTAL_TO_PUBLISH, readSnapshot, StatsSnapshot } from '@/lib/stats';
+import { isStatsEnabled, readSnapshot, StatsSnapshot } from '@/lib/stats';
 
 export const metadata: Metadata = {
     title: 'Anonim İstatistikler | Türkiye İdeolojik',
     description: 'Testi tamamlayıp katkıda bulunmayı seçenlerin sonuçlarının anonim, toplu dağılımı.',
 };
 
-// Refresh the cached page at most once a minute.
-export const revalidate = 60;
+// Refresh the cached page at most every 5 minutes. Each refresh costs two
+// Redis commands, so this keeps usage well inside Upstash's free tier.
+export const revalidate = 300;
 
-const MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-const formatMonth = (key: string) => {
-    const [y, m] = key.split('-').map(Number);
-    return `${MONTHS[m - 1]} ${y}`;
-};
 const pct = (n: number, total: number) => (total === 0 ? 0 : Math.round((n / total) * 1000) / 10);
 const fmt = (n: number) => n.toLocaleString('tr-TR');
 
@@ -38,11 +34,9 @@ async function loadSnapshot(): Promise<StatsSnapshot | null> {
 export default async function StatsPage() {
     const enabled = isStatsEnabled();
     const snapshot = enabled ? await loadSnapshot() : null;
-    const publishable = !!snapshot && snapshot.total >= MIN_TOTAL_TO_PUBLISH;
     const ranking = snapshot
         ? (Object.entries(snapshot.byIdeology) as [IdeologyId, number][]).sort(([, a], [, b]) => b - a)
         : [];
-    const maxMonth = snapshot ? Math.max(1, ...snapshot.byMonth.map(m => m.total)) : 1;
 
     return (
         <main className="min-h-svh flex justify-center p-4 md:p-8">
@@ -87,7 +81,9 @@ export default async function StatsPage() {
                         </div>
 
                         <Card title="İdeoloji dağılımı">
-                            {publishable ? (
+                            {snapshot.total === 0 ? (
+                                <p className="text-sm text-gray-400">Henüz katkı yok. İlk sonucu ekleyen sen olabilirsin.</p>
+                            ) : (
                                 <ol className="space-y-3">
                                     {ranking.map(([id, count]) => (
                                         <li key={id} className="space-y-1">
@@ -101,25 +97,7 @@ export default async function StatsPage() {
                                         </li>
                                     ))}
                                 </ol>
-                            ) : (
-                                <p className="text-sm text-gray-400">
-                                    Dağılım, en az {MIN_TOTAL_TO_PUBLISH} sonuç toplandığında gösterilecek. Şu an: {fmt(snapshot.total)}.
-                                </p>
                             )}
-                        </Card>
-
-                        <Card title="Aylık katkı sayısı">
-                            <ul className="space-y-2">
-                                {snapshot.byMonth.map(m => (
-                                    <li key={m.month} className="flex items-center gap-3 text-sm">
-                                        <span className="w-28 shrink-0 text-gray-400">{formatMonth(m.month)}</span>
-                                        <div className="h-2 flex-1 rounded-full bg-white/5 overflow-hidden">
-                                            <div className="h-full rounded-full bg-sky-500/70" style={{ width: `${(m.total / maxMonth) * 100}%` }} />
-                                        </div>
-                                        <span className="w-14 text-right tabular-nums text-gray-300">{fmt(m.total)}</span>
-                                    </li>
-                                ))}
-                            </ul>
                         </Card>
                     </>
                 )}
@@ -128,7 +106,8 @@ export default async function StatsPage() {
                     <ul className="list-disc pl-5 space-y-2 text-sm text-gray-300 leading-relaxed">
                         <li>Bu bir kamuoyu araştırması değildir. Yalnızca testi çözüp katkıda bulunmayı seçenler sayılır; Türkiye nüfusunu temsil etmez.</li>
                         <li>Aynı kişi testi birden çok kez çözüp katkıda bulunabilir. Kişisel veri tutulmadığı için tekrarlar ayıklanamaz.</li>
-                        <li>Sayılar her dakika güncellenen toplamlardır; tek tek sonuçlar saklanmaz.</li>
+                        <li>Az sayıda katkı varken yüzdeler büyük dalgalanabilir; yorumlarken toplam katkı sayısına da bak.</li>
+                        <li>Sayılar birkaç dakikada bir güncellenen toplamlardır; tek tek sonuçlar saklanmaz.</li>
                     </ul>
                     <p className="text-xs text-gray-500">
                         Verilerin nasıl işlendiği için <Link href="/gizlilik" className="underline underline-offset-4 hover:text-gray-300">Aydınlatma Metni</Link>&apos;ne bakabilirsin.
