@@ -12,7 +12,7 @@ import { toPng } from 'html-to-image';
 import Link from 'next/link';
 import { CONTENT_DATE } from '@/lib/site';
 import { QuizMode } from '@/utils/storage';
-import StatsConsent from './StatsConsent';
+import StatsNotice from './StatsNotice';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 /** Below this many answers the result is flagged as less reliable. */
@@ -25,6 +25,8 @@ interface ResultScreenProps {
     mode?: QuizMode;
     /** Whether anonymous statistics collection is configured on the server. */
     statsEnabled: boolean;
+    /** False when the visitor opted out of anonymous statistics before the test. */
+    statsOptIn: boolean;
     onReset: () => void;
 }
 
@@ -34,7 +36,7 @@ const fadeUp = (delay: number) => ({
     transition: { delay },
 });
 
-export default function ResultScreen({ result, shared, mode, statsEnabled, onReset }: ResultScreenProps) {
+export default function ResultScreen({ result, shared, mode, statsEnabled, statsOptIn, onReset }: ResultScreenProps) {
     const {
         topIdeology: ideology, oppositeIdeology, allScores, axisScores,
         matchPercentage, leaderMatches, agreements, disagreements, oppositeDifferences, consistencyScore, answeredCount,
@@ -305,7 +307,7 @@ export default function ResultScreen({ result, shared, mode, statsEnabled, onRes
                 </button>
             </div>
 
-            {!shared && statsEnabled && mode && <StatsConsent ideology={ideology.id} mode={mode} />}
+            {!shared && statsEnabled && mode && <StatsNotice ideology={ideology.id} mode={mode} contribute={statsOptIn} />}
 
             {/* Analysis grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

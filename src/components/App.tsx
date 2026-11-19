@@ -13,7 +13,7 @@ import {
   encodeResponses,
   pickBalancedQuestions,
 } from '@/utils/scoring';
-import { QuizMode, SavedProgress, clearProgress, loadProgress } from '@/utils/storage';
+import { QuizMode, SavedProgress, clearProgress, loadProgress, loadStatsOptIn, saveStatsOptIn } from '@/utils/storage';
 import { CONTENT_DATE, SHARE_PARAM } from '@/lib/site';
 import Link from 'next/link';
 
@@ -46,11 +46,14 @@ export default function App({ initialSharedCode, statsEnabled }: AppProps) {
     return shared ? { name: 'result', responses: shared, shared: true } : { name: 'home' };
   });
   const [saved, setSaved] = useState<SavedProgress | null>(null);
+  const [statsOptIn, setStatsOptIn] = useState(true);
 
   // Saved progress lives in localStorage, so it is read after hydration.
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    /* eslint-disable react-hooks/set-state-in-effect */
     setSaved(loadProgress());
+    setStatsOptIn(loadStatsOptIn());
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   useEffect(() => {
@@ -152,6 +155,27 @@ export default function App({ initialSharedCode, statsEnabled }: AppProps) {
               </button>
             </div>
 
+            {statsEnabled && (
+              <label className="w-full max-w-md mx-auto flex items-start gap-3 text-left p-4 rounded-2xl border border-white/10 bg-white/[0.03] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={statsOptIn}
+                  onChange={e => {
+                    setStatsOptIn(e.target.checked);
+                    saveStatsOptIn(e.target.checked);
+                  }}
+                  className="mt-0.5 w-4 h-4 shrink-0 accent-sky-500"
+                />
+                <span className="text-xs text-gray-400 leading-relaxed">
+                  <span className="font-semibold text-gray-200">Sonucum anonim istatistiklere eklensin.</span>{' '}
+                  Test bitince yalnızca sonuç ideolojin ve test türün, kimliğinle ilişkilendirilmeden{' '}
+                  <Link href="/istatistik" className="underline underline-offset-4 hover:text-gray-200">toplam sayılara</Link> eklenir;
+                  cevapların, IP adresin ve cihaz bilgin kaydedilmez. İstemiyorsan işareti kaldır.{' '}
+                  <Link href="/gizlilik" className="underline underline-offset-4 hover:text-gray-200">Aydınlatma Metni</Link>
+                </span>
+              </label>
+            )}
+
             <div className="pt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
               {[
                 { icon: BarChart3, title: 'Analiz', text: '13 ideoloji ve 4 eksen üzerinden ayrıntılı eşleşme.' },
@@ -198,6 +222,7 @@ export default function App({ initialSharedCode, statsEnabled }: AppProps) {
             shared={view.shared}
             mode={view.mode}
             statsEnabled={statsEnabled}
+            statsOptIn={statsOptIn}
             onReset={goHome}
           />
         )}

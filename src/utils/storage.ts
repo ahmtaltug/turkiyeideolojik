@@ -35,3 +35,12 @@ export const loadSoundEnabled = (): boolean =>
 
 export const saveSoundEnabled = (enabled: boolean) =>
     safe(() => localStorage.setItem(SOUND_KEY, enabled ? 'on' : 'off'), undefined);
+
+const STATS_OPT_OUT_KEY = 'turkiyeideolojik:stats-opt-out';
+
+/** Results are added to the anonymous statistics unless the visitor opted out. */
+export const loadStatsOptIn = (): boolean =>
+    safe(() => localStorage.getItem(STATS_OPT_OUT_KEY) !== '1', true);
+
+export const saveStatsOptIn = (optIn: boolean) =>
+    safe(() => (optIn ? localStorage.removeItem(STATS_OPT_OUT_KEY) : localStorage.setItem(STATS_OPT_OUT_KEY, '1')), undefined);

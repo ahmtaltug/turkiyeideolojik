@@ -99,9 +99,10 @@ export default function MethodologyPage() {
 
                 <Section title="Gizlilik">
                     <p>
-                        Cevapların tarayıcında işlenir ve kaydedilmez; hesap açma ya da çerez yoktur. Sonucunu{' '}
+                        Cevapların tarayıcında işlenir ve kaydedilmez; hesap açma ya da çerez yoktur. Test bitince{' '}
                         <Link href="/istatistik" className="underline underline-offset-4 hover:text-white">anonim istatistiklere</Link>{' '}
-                        eklemek isteğe bağlıdır ve yalnızca açık rızanla, kimliğinle ilişkilendirilmeden yapılır.
+                        yalnızca sonuç ideolojin ve test türün eklenir, kimliğinle ilişkilendirilmez. İstemiyorsan ana sayfadaki işareti
+                        kaldırarak bunu kapatabilirsin.
                     </p>
                     <p>
                         Ayrıntılar için <Link href="/gizlilik" className="underline underline-offset-4 hover:text-white">Aydınlatma Metni</Link>&apos;ne bakabilirsin.
