@@ -274,7 +274,7 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
 /* ---------- Shareable result encoding ---------- */
 
 /** Bumped whenever questions change, so old links don't decode onto new questions. */
-export const SHARE_VERSION = '3';
+export const SHARE_VERSION = '4';
 
 /** Fewest answers needed for a result. */
 export const MIN_ANSWERS = 5;
