@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -11,14 +12,8 @@ const inter = Inter({
 const description =
   "Kaydırmalı sorularla Türkiye siyasetindeki yerini keşfet: 13 ideoloji, 4 eksen ve lider uyumu. Bilimsel bir ölçüm değildir.";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: "Türkiye İdeolojik - Siyasi Kimlik Testi",
   description,
   applicationName: "Türkiye İdeolojik",
@@ -29,12 +24,14 @@ export const metadata: Metadata = {
     description: "40 soruda Türkiye siyasetindeki yerini öğren.",
     type: "website",
     locale: "tr_TR",
-    siteName: "Türkiye İdeolojik",
+    siteName: SITE_NAME,
+    images: [{ url: "/og", width: 1200, height: 630, alt: "Türkiye İdeolojik" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Türkiye İdeolojik - Siyasi Kimliğini Keşfet",
     description: "Seni en iyi ifade eden ideolojiyi bul.",
+    images: ["/og"],
   },
 };
 

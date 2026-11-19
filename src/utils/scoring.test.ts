@@ -170,9 +170,9 @@ describe('share encoding', () => {
     });
 
     it('rejects malformed, too-short or old-version codes', () => {
-        expect(decodeResponses('2-xyz')).toBeNull();
-        expect(decodeResponses('2-ad')).toBeNull();
+        expect(decodeResponses('3-xyz')).toBeNull();
+        expect(decodeResponses('3-ad')).toBeNull();
         expect(decodeResponses('a'.repeat(30))).toBeNull(); // v1 links had no prefix
-        expect(decodeResponses('2-' + 'a'.repeat(questions.length + 1))).toBeNull();
+        expect(decodeResponses('3-' + 'a'.repeat(questions.length + 1))).toBeNull();
     });
 });

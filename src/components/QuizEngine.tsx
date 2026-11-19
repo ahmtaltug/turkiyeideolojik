@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Check, Undo2, Volume2, VolumeX, X } from 'lucide-react';
+import { ArrowLeft, Check, SkipForward, Undo2, Volume2, VolumeX, X } from 'lucide-react';
 import { questions as allQuestions, Question } from '@/data/questions';
-import { Answer, UserResponses } from '@/utils/scoring';
+import { Answer, MIN_ANSWERS, UserResponses } from '@/utils/scoring';
 import { playSwipeSound, vibrate, warmUpAudio } from '@/utils/sound';
 import { QuizMode, saveProgress, clearProgress, loadSoundEnabled, saveSoundEnabled } from '@/utils/storage';
 import SwipeCard, { SwipeDirection } from './SwipeCard';
@@ -36,6 +36,7 @@ export default function QuizEngine({
     const [responses, setResponses] = useState<UserResponses>(initialResponses);
     const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
     const [soundOn, setSoundOn] = useState(false);
+    const [notice, setNotice] = useState<string | null>(null);
     const finishedRef = useRef(false);
 
     useEffect(() => {
@@ -46,31 +47,43 @@ export default function QuizEngine({
     const current = questions[currentIndex];
     const next = questions[currentIndex + 1];
 
-    const answer = useCallback((direction: SwipeDirection) => {
+    /** Records an answer (or a skip, which removes any earlier answer) and moves on. */
+    const respond = useCallback((choice: SwipeDirection | 'skip') => {
         if (!current || finishedRef.current) return;
-        if (soundOn) playSwipeSound(direction);
-        vibrate();
+        if (choice !== 'skip') {
+            if (soundOn) playSwipeSound(choice);
+            vibrate();
+        }
 
-        const value: Answer = direction === 'right' ? 'agree' : 'disagree';
-        const newResponses = { ...responses, [current.id]: value };
+        const newResponses = { ...responses };
+        if (choice === 'skip') delete newResponses[current.id];
+        else newResponses[current.id] = (choice === 'right' ? 'agree' : 'disagree') as Answer;
         setResponses(newResponses);
-        setExitDirection(direction);
 
         if (currentIndex < questions.length - 1) {
+            setNotice(null);
+            setExitDirection(choice === 'skip' ? null : choice);
             const nextIndex = currentIndex + 1;
             setCurrentIndex(nextIndex);
             saveProgress({ mode, questionIds, currentIndex: nextIndex, responses: newResponses });
-        } else {
-            finishedRef.current = true;
-            clearProgress();
-            // Let the last card fly out before switching screens.
-            setTimeout(() => onFinish(newResponses), 250);
+            return;
         }
+
+        if (Object.keys(newResponses).length < MIN_ANSWERS) {
+            setNotice(`Sonuç için en az ${MIN_ANSWERS} soruyu cevaplaman gerekiyor. Geri dönüp atladığın sorulara cevap verebilirsin.`);
+            return;
+        }
+        finishedRef.current = true;
+        setExitDirection(choice === 'skip' ? null : choice);
+        clearProgress();
+        // Let the last card fly out before switching screens.
+        setTimeout(() => onFinish(newResponses), 250);
     }, [current, currentIndex, mode, onFinish, questionIds, questions.length, responses, soundOn]);
 
     const goBack = useCallback(() => {
         if (currentIndex === 0 || finishedRef.current) return;
         setExitDirection(null);
+        setNotice(null);
         const prevIndex = currentIndex - 1;
         setCurrentIndex(prevIndex);
         saveProgress({ mode, questionIds, currentIndex: prevIndex, responses });
@@ -79,13 +92,14 @@ export default function QuizEngine({
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.metaKey || e.ctrlKey || e.altKey) return;
-            if (e.key === 'ArrowRight') { e.preventDefault(); answer('right'); }
-            else if (e.key === 'ArrowLeft') { e.preventDefault(); answer('left'); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); respond('right'); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); respond('left'); }
+            else if (e.key === 'ArrowDown') { e.preventDefault(); respond('skip'); }
             else if (e.key === 'Backspace' || e.key === 'z') { e.preventDefault(); goBack(); }
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [answer, goBack]);
+    }, [respond, goBack]);
 
     const toggleSound = () => {
         setSoundOn(prev => {
@@ -94,8 +108,7 @@ export default function QuizEngine({
         });
     };
 
-    const answeredCount = Object.keys(responses).length;
-    const progress = (Math.min(answeredCount, questions.length) / questions.length) * 100;
+    const progress = (currentIndex / questions.length) * 100;
     const previousAnswer = current ? responses[current.id] : undefined;
 
     return (
@@ -123,7 +136,7 @@ export default function QuizEngine({
                         role="progressbar"
                         aria-valuemin={0}
                         aria-valuemax={questions.length}
-                        aria-valuenow={answeredCount}
+                        aria-valuenow={currentIndex}
                         aria-label="İlerleme"
                     >
                         <motion.div
@@ -156,7 +169,7 @@ export default function QuizEngine({
                 )}
                 <AnimatePresence custom={exitDirection} initial={false}>
                     {current && (
-                        <SwipeCard key={current.id} text={current.text} onSwipe={answer} />
+                        <SwipeCard key={current.id} text={current.text} onSwipe={respond} />
                     )}
                 </AnimatePresence>
             </div>
@@ -178,10 +191,16 @@ export default function QuizEngine({
                 </p>
             )}
 
+            {notice && (
+                <p role="alert" className="mt-3 mx-2 p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-300 text-xs text-center">
+                    {notice}
+                </p>
+            )}
+
             {/* Answer buttons */}
-            <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-2">
+            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-2">
                 <button
-                    onClick={() => answer('left')}
+                    onClick={() => respond('left')}
                     className="flex items-center justify-center gap-1.5 px-2 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-black uppercase text-xs sm:text-sm sm:tracking-wider hover:bg-red-500/20 active:scale-95 transition-all"
                 >
                     <X className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" /> Katılmıyorum
@@ -196,16 +215,24 @@ export default function QuizEngine({
                     <Undo2 className="w-5 h-5" />
                 </button>
                 <button
-                    onClick={() => answer('right')}
+                    onClick={() => respond('right')}
                     className="flex items-center justify-center gap-1.5 px-2 py-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-400 font-black uppercase text-xs sm:text-sm sm:tracking-wider hover:bg-green-500/20 active:scale-95 transition-all"
                 >
                     Katılıyorum <Check className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 </button>
             </div>
 
-            <p className="mt-4 text-center text-xs text-gray-600 hidden md:block">
+            <button
+                onClick={() => respond('skip')}
+                className="mt-3 mx-auto flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+            >
+                Fikrim yok, geç <SkipForward className="w-3.5 h-3.5" />
+            </button>
+
+            <p className="mt-2 text-center text-xs text-gray-600 hidden md:block">
                 Kartı kaydır ya da klavyede <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">←</kbd>{' '}
                 <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">→</kbd> kullan •{' '}
+                <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">↓</kbd> geç •{' '}
                 <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10">Backspace</kbd> geri al
             </p>
         </motion.div>
