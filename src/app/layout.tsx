@@ -53,10 +53,15 @@ export default function RootLayout({
   return (
     <html lang="tr" className={inter.variable}>
       <body className="antialiased selection:bg-red-500/30 font-sans">
-        <div className="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-red-600/10 blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[120px]" />
-        </div>
+        {/* Plain gradients instead of blur() filters: far cheaper to composite on phones. */}
+        <div
+          className="fixed inset-0 -z-10 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(40% 40% at 10% 10%, rgba(220,38,38,0.12), transparent 70%), radial-gradient(40% 40% at 90% 90%, rgba(37,99,235,0.12), transparent 70%)",
+          }}
+        />
         {children}
       </body>
     </html>

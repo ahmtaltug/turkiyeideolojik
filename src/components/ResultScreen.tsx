@@ -7,7 +7,7 @@ import {
     Quote, Target, Sparkles, Share2, Check, ListOrdered, Zap,
 } from 'lucide-react';
 import { IdeologyId, ideologies } from '@/data/ideologies';
-import { QuizResult } from '@/utils/scoring';
+import { BreakdownItem, IDEOLOGY_AXES, QuizResult } from '@/utils/scoring';
 import { toPng } from 'html-to-image';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import confetti from 'canvas-confetti';
@@ -27,7 +27,7 @@ const fadeUp = (delay: number) => ({
 export default function ResultScreen({ result, shared, onReset }: ResultScreenProps) {
     const {
         topIdeology: ideology, oppositeIdeology, allScores, axisScores,
-        matchPercentage, leaderMatches, breakdown, consistencyScore, answeredCount,
+        matchPercentage, leaderMatches, agreements, disagreements, consistencyScore, answeredCount,
     } = result;
 
     const cardRef = useRef<HTMLDivElement>(null);
@@ -202,7 +202,7 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                             })}
                                         </div>
                                         <div
-                                            className="h-2 w-full bg-white/5 rounded-full overflow-hidden relative border border-white/5"
+                                            className="h-2 w-full bg-white/5 rounded-full relative border border-white/5"
                                             role="meter"
                                             aria-valuemin={-100}
                                             aria-valuemax={100}
@@ -219,6 +219,11 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                                 className="h-full absolute"
                                                 style={{ backgroundColor: ideology.color, boxShadow: `0 0 15px ${ideology.color}40` }}
                                             />
+                                            <div
+                                                title={`${ideologies[ideology.id].name} ortalaması`}
+                                                className="absolute top-1/2 w-2.5 h-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-2 border-white bg-black z-20"
+                                                style={{ left: `${50 + IDEOLOGY_AXES[ideology.id][axis.id] / 2}%` }}
+                                            />
                                         </div>
                                         <div className="pt-2 border-t border-white/10 flex justify-between text-[10px] font-black text-gray-500 uppercase tracking-[0.15em] italic">
                                             <span>{axis.name}</span>
@@ -227,6 +232,11 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                                     </div>
                                 ))}
                             </div>
+
+                            <p className="text-[10px] text-gray-500 -mt-4 flex items-center gap-2">
+                                <span className="inline-block w-2 h-2 rotate-45 border-2 border-white bg-black" />
+                                {ideologies[ideology.id].name} ideolojisinin tipik konumu
+                            </p>
 
                             <div className="flex flex-wrap gap-2">
                                 {ideology.parties.map(p => (
@@ -301,28 +311,10 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                         <Target className="w-5 h-5 text-blue-400" />
                         <h2 className="font-bold text-white uppercase tracking-wider text-sm">Neden Bu Sonuç?</h2>
                     </div>
-                    <div className="space-y-3">
-                        {breakdown.map(item => (
-                            <div key={item.questionText} className="p-3 bg-white/5 rounded-xl space-y-1.5">
-                                <p className="text-[11px] text-gray-400 leading-snug">&ldquo;{item.questionText}&rdquo;</p>
-                                <div className="flex items-center gap-2">
-                                    <span className={`text-[10px] font-black uppercase shrink-0 ${item.answer === 'agree' ? 'text-green-400' : 'text-red-400'}`}>
-                                        {item.answer === 'agree' ? 'Katıldın' : 'Katılmadın'}
-                                    </span>
-                                    <span className="text-[10px] text-gray-600">→</span>
-                                    <span className={`text-[10px] font-black uppercase shrink-0 ${item.direction === 'positive' ? 'text-green-500' : 'text-red-500'}`}>
-                                        {item.direction === 'positive' ? 'Yaklaştırdı' : 'Uzaklaştırdı'}
-                                    </span>
-                                    <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full ${item.direction === 'positive' ? 'bg-green-500' : 'bg-red-500'}`}
-                                            style={{ width: `${item.impact}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <BreakdownList title="Ortak noktalarınız" items={agreements} agree />
+                    {disagreements.length > 0 && (
+                        <BreakdownList title="Ayrıldığın noktalar" items={disagreements} agree={false} />
+                    )}
                 </motion.section>
 
                 <motion.section {...fadeUp(0.2)} className="glass p-6 rounded-[2rem] space-y-4">
@@ -544,5 +536,26 @@ export default function ResultScreen({ result, shared, onReset }: ResultScreenPr
                 )}
             </AnimatePresence>
         </motion.div>
+    );
+}
+
+function BreakdownList({ title, items, agree }: { title: string; items: BreakdownItem[]; agree: boolean }) {
+    return (
+        <div className="space-y-2">
+            <h3 className={`text-[10px] font-black uppercase tracking-widest ${agree ? 'text-green-500' : 'text-red-500'}`}>{title}</h3>
+            {items.map(item => (
+                <div key={item.questionId} className="p-3 bg-white/5 rounded-xl space-y-1.5">
+                    <p className="text-[11px] text-gray-400 leading-snug">&ldquo;{item.questionText}&rdquo;</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">
+                        Sen: <span className={item.answer === 'agree' ? 'text-green-400' : 'text-red-400'}>
+                            {item.answer === 'agree' ? 'Katılıyorum' : 'Katılmıyorum'}
+                        </span>
+                        {' • '}İdeoloji: <span className={item.stance > 0 ? 'text-green-400' : 'text-red-400'}>
+                            {item.stance === 2 ? 'Kesinlikle katılır' : item.stance === 1 ? 'Katılır' : item.stance === -1 ? 'Katılmaz' : 'Kesinlikle katılmaz'}
+                        </span>
+                    </p>
+                </div>
+            ))}
+        </div>
     );
 }

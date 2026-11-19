@@ -47,10 +47,9 @@ export default function SwipeCard({ text, onSwipe }: SwipeCardProps) {
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.9}
             onDragEnd={handleDragEnd}
-            whileDrag={{ scale: 1.03 }}
-            className="absolute inset-0 z-10 bg-[#0d0d0d] border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing touch-pan-y select-none shadow-2xl"
+            className="absolute inset-0 z-10 bg-[#0d0d0d] border border-white/10 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center cursor-grab active:cursor-grabbing touch-pan-y select-none shadow-xl will-change-transform"
         >
-            <p className="text-2xl md:text-3xl font-bold text-white leading-tight" aria-live="polite">
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight" aria-live="polite">
                 {text}
             </p>
 

@@ -1,13 +1,24 @@
 // Tiny synthesized "swipe" click: no external audio file, no network request.
 let ctx: AudioContext | null = null;
 
+const getContext = (): AudioContext | null => {
+    if (typeof window === 'undefined') return null;
+    const AudioCtx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return null;
+    ctx ??= new AudioCtx();
+    if (ctx.state === 'suspended') void ctx.resume();
+    return ctx;
+};
+
+/** Create the AudioContext on first touch so the first swipe doesn't hitch. */
+export const warmUpAudio = () => {
+    try { getContext(); } catch { /* ignore */ }
+};
+
 export const playSwipeSound = (direction: 'left' | 'right') => {
-    if (typeof window === 'undefined') return;
     try {
-        const AudioCtx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        if (!AudioCtx) return;
-        ctx ??= new AudioCtx();
-        if (ctx.state === 'suspended') void ctx.resume();
+        const ctx = getContext();
+        if (!ctx) return;
 
         const now = ctx.currentTime;
         const osc = ctx.createOscillator();

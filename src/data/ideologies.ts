@@ -1,5 +1,3 @@
-import { AxisId } from './questions';
-
 export type IdeologyId =
     | 'kemalist'
     | 'sosyal_demokrat'
@@ -23,8 +21,7 @@ export interface Ideology {
     leaders: string[];
     color: string;
     roast: string;
-    idealAxes: Record<AxisId, number>; // -100 to 100
-    details?: {
+    details: {
         history: string;
         principles: string[];
         motto: string;
@@ -35,265 +32,255 @@ export interface Ideology {
     secondId?: IdeologyId;
 }
 
+// Positions on each axis are derived from the question stances (see utils/scoring.ts),
+// so ideologies and questions can never drift apart.
+// Content reflects Turkish politics as of November 2026.
 export const ideologies: Record<IdeologyId, Ideology> = {
     kemalist: {
         id: 'kemalist',
         name: 'Kemalist',
-        description: 'Atatürk ilkelerine bağlı, laiklik ve cumhuriyet değerlerini savunan modernleşmeci çizgi.',
-        parties: ['CHP'],
-        leaders: ['Mustafa Kemal Atatürk'],
+        description: 'Atatürk ilkelerine, laikliğe, üniter ulus devlete ve güçlü bir kamu sektörüne bağlı cumhuriyetçi çizgi.',
+        parties: ['CHP', 'YENİ Parti'],
+        leaders: ['Mustafa Kemal Atatürk', 'İsmet İnönü', 'Kemal Kılıçdaroğlu'],
         color: '#D40000',
-        roast: "Modernleşmeyi sadece batılı gibi giyinmek sanıp, 100 yıl önceki kazanımların üzerine tek bir taş koymadan başkalarını cahillikle suçlamayı çok seviyorsun.",
-        idealAxes: { ekonomi: -40, toplum: -80, milliyetcilik: 60, yonetim: 40 },
+        roast: 'Modernleşmeyi sadece Batılı gibi giyinmek sanıp, 100 yıl önceki kazanımların üzerine tek taş koymadan herkesi cahillikle suçlamayı çok seviyorsun.',
         details: {
-            history: "Cumhuriyetin kuruluş felsefesidir. 1920'lerden günümüze Türkiye'nin modernleşme sürecinin temelidir.",
-            principles: ["Cumhuriyetçilik", "Milliyetçilik", "Halkçılık", "Devletçilik", "Laiklik", "İnkılapçılık"],
-            motto: "Ne Mutlu Türküm Diyene!"
+            history: 'Cumhuriyetin kuruluş felsefesidir. 2026\'da CHP\'nin kurultayının mahkemece iptal edilip Kılıçdaroğlu\'nun göreve iade edilmesi ve Özgür Özel\'in YENİ Parti\'yi kurmasıyla Kemalist seçmen iki parti arasında bölündü.',
+            principles: ['Cumhuriyetçilik', 'Milliyetçilik', 'Halkçılık', 'Devletçilik', 'Laiklik', 'İnkılapçılık'],
+            motto: 'Yurtta Sulh, Cihanda Sulh.',
         },
         actionPlan: [
-            "Devlet kurumlarında liyakati en katı şekilde uygulayıp mülakatları tamamen tarihe gömmek.",
-            "Tüm stratejik sanayi kollarında ve enerjide yeniden devlet kontrolünü sağlamak.",
-            "Köy Enstitüleri modelini modernize ederek kırsal kalkınma ve nitelikli eğitimi birleştirmek."
-        ]
+            'Tarikat ve cemaatlerin eğitimdeki etkisini sınırlayıp laik ve bilimsel müfredatı yeniden kurmak.',
+            'Enerji, maden ve savunma gibi stratejik sektörlerde kamunun belirleyici rolünü geri getirmek.',
+            'Köy Enstitüleri modelini modernize ederek kırsal kalkınmayı nitelikli eğitimle birleştirmek.',
+        ],
     },
     sosyal_demokrat: {
         id: 'sosyal_demokrat',
         name: 'Sosyal Demokrat',
-        description: 'Sosyal adalet, halkçılık ve liyakati önceleyen, 2024 sonrası yerel yönetim gücüyle yükselen demokratik sol çizgi.',
-        parties: ['CHP'],
-        leaders: ['Mustafa Kemal Atatürk', 'Bülent Ecevit', 'Özgür Özel', 'Ekrem İmamoğlu'],
+        description: 'Sosyal adalet, hukukun üstünlüğü, parlamenter demokrasi ve yerel yönetim deneyimini öne çıkaran demokratik sol.',
+        parties: ['YENİ Parti', 'CHP'],
+        leaders: ['Bülent Ecevit', 'Özgür Özel', 'Ekrem İmamoğlu'],
         color: '#EE1C25',
-        roast: "Her seçim sonrası 'bu sefer tamam' diyorsun ama genel merkezde koltuk kavgası başlayınca Twitter'da taziye mesajı yayınlayan bir hesap gibi kalıyorsun.",
-        idealAxes: { ekonomi: -60, toplum: -70, milliyetcilik: -10, yonetim: -60 },
+        roast: 'Kurultayı kazandın, mahkeme geri aldı, yeni parti kurdun, üye kartını üç kez değiştirdin; sen siyaset izlemiyorsun, dizi izliyorsun.',
         details: {
-            history: "1960'lardan bugüne evrilen, 2024 yerel seçimleriyle Türkiye'nin birinci partisi konumuna gelen siyasi akım.",
-            principles: ["Sosyal Adalet", "Demokratik Yönetim", "Liyakat", "Halkçı Ekonomi"],
-            motto: "Hak, Hukuk, Adalet."
+            history: '1960\'ların "ortanın solu"ndan bugüne uzanan gelenek. 2024 yerel seçimlerinde birinci parti olan CHP\'nin yönetimi 2026\'da mahkeme kararıyla değişince, Özgür Özel ve 91 milletvekili Temmuz 2026\'da YENİ Parti\'yi kurdu.',
+            principles: ['Sosyal Adalet', 'Parlamenter Demokrasi', 'Liyakat', 'Yerel Yönetim', 'Emeğin Hakları'],
+            motto: 'Hak, Hukuk, Adalet.',
         },
         actionPlan: [
-            "Avrupa Birliği ile tam entegrasyon için demokratik reform takvimini derhal başlatmak.",
-            "Sendikal hakları güçlendirip asgari ücreti insani yaşam standartlarına göre üç ayda bir güncellemek.",
-            "Yerel yönetimlerdeki 'Kent Lokantası' gibi sosyal başarıları ulusal çapta bir ağa dönüştürmek."
-        ]
+            'Güçlendirilmiş parlamenter sisteme geçip yargı bağımsızlığını anayasal güvenceye almak.',
+            'Asgari ücret ve en düşük emekli aylığını yılda iki kez gerçek enflasyona göre güncellemek.',
+            'Belediyelerdeki kent lokantası, kreş ve sosyal konut uygulamalarını ulusal ölçeğe taşımak.',
+        ],
     },
     muhafazakar: {
         id: 'muhafazakar',
         name: 'Muhafazakar',
-        description: 'Geleneklere bağlı, kalkınmacı ve dini-milli değerleri sentezleyen iktidar bloku çizgisi.',
-        parties: ['AK Parti', 'Gelecek Partisi'],
+        description: 'Dini-milli değerleri, güçlü liderliği ve büyük kalkınma projelerini merkeze alan iktidar çizgisi.',
+        parties: ['AK Parti'],
         leaders: ['Recep Tayyip Erdoğan'],
         color: '#FFCC00',
-        roast: "Mülakat kalkacak diye sevinirken, aslında mülakatın artık bir 'yaşam tarzı' olduğunu fark edemeyecek kadar optimistsin.",
-        idealAxes: { ekonomi: 60, toplum: 80, milliyetcilik: 60, yonetim: 80 },
+        roast: 'Mülakat kalkacak diye sevinirken, mülakatın artık bir "yaşam tarzı" olduğunu fark edemeyecek kadar iyimsersin.',
         details: {
-            history: "2000'lerden bu yana Türkiye siyasetini domine eden, Yeni Anayasa ve Türkiye Yüzyılı vizyonuna odaklanmış sağ akım.",
-            principles: ["Dini-Milli Değerler", "Hizmet Siyaseti", "Yeni Anayasa", "Güçlü Liderlik"],
-            motto: "Durmak Yok, Yola Devam."
+            history: '2002\'den bu yana iktidarda olan, 2017\'de Cumhurbaşkanlığı Hükümet Sistemi\'ne geçişi sağlayan sağ akım. Bugün yeni anayasa, "Terörsüz Türkiye" süreci ve Türkiye Yüzyılı vizyonuna odaklanıyor.',
+            principles: ['Dini-Milli Değerler', 'Güçlü Liderlik', 'Hizmet Siyaseti', 'Aile', 'Bölgesel Güç'],
+            motto: 'Türkiye Yüzyılı.',
         },
         actionPlan: [
-            "Türkiye Yüzyılı vizyonuyla yerli savunma sanayi kapasitesini %100 yerli üretim seviyesine çekmek.",
-            "Aile yapısını koruma odaklı geniş kapsamlı vergi indirimleri ve konut destekleri sağlamak.",
-            "Büyük kalkınma projelerini (Kanal İstanbul, nükleer vb.) tamamlayarak bölgesel liderliği pekiştirmek."
-        ]
+            'Cumhurbaşkanlığı sistemini koruyan sivil bir yeni anayasayı referanduma götürmek.',
+            '"Aile ve Nüfus On Yılı" kapsamında çok çocuklu ailelere vergi ve konut desteğini genişletmek.',
+            'Savunma sanayisinde yerlilik oranını artırıp Mekke Savunma Anlaşması gibi bölgesel ittifakları derinleştirmek.',
+        ],
     },
     ulkucu: {
         id: 'ulkucu',
         name: 'Ülkücü',
-        description: 'Türk-İslam sentezini ve devletin bekasını merkeze koyan geleneksel milliyetçi akım.',
+        description: 'Türk-İslam sentezini, devletin bekasını ve güçlü merkezi yönetimi önceleyen geleneksel milliyetçi akım.',
         parties: ['MHP', 'BBP'],
-        leaders: ['Alparslan Türkeş', 'Devlet Bahçeli'],
+        leaders: ['Alparslan Türkeş', 'Devlet Bahçeli', 'Mustafa Destici'],
         color: '#004A99',
-        roast: "Dava dava deyip aslında birilerinin her mevsim değişen siyasi manevralarına stepne olmaktan hiç yorulmadın.",
-        idealAxes: { ekonomi: -20, toplum: 60, milliyetcilik: 90, yonetim: 80 },
+        roast: 'Dün "idam" derken bugün "umut hakkı" konuşuyorsun; Genel Başkan\'ın bir sonraki açıklamasını görmeden fikir sahibi olamıyorsun.',
         details: {
-            history: "CKMP ve MHP ile kurumsallaşmış, Türk milliyetçiliğini İslami hassasiyetlerle birleştirmiş bir harekettir.",
-            principles: ["Türk-İslam Ülküsü", "Devletin Bekası", "Dokuz Işık Öğretisi"],
-            motto: "Tanrı Türk'ü Korusun ve Yüceltsin!"
+            history: 'CKMP ve MHP ile kurumsallaşan hareket, Cumhur İttifakı\'nın ortağıdır. Ekim 2024\'te Bahçeli\'nin çağrısıyla başlayan "Terörsüz Türkiye" sürecinin siyasi öncüsü oldu.',
+            principles: ['Türk-İslam Ülküsü', 'Devletin Bekası', 'Dokuz Işık', 'Türk Dünyası Birliği'],
+            motto: 'Tanrı Türk\'ü Korusun ve Yüceltsin!',
         },
         actionPlan: [
-            "Terörün her türlüsüne karşı 'tavizsiz mücadele' doktriniyle sınır ötesi güvenliği kalıcı hale getirmek.",
-            "Türk Devletleri Teşkilatı'nı (TDT) Avrupa Birliği benzeri ortak bir pazara ve orduya dönüştürmek.",
-            "Kamu kurumlarında milli beka odaklı bir kadrolaşma ve denetim mekanizması kurmak."
-        ]
+            '"Terörsüz Türkiye" sürecini silah bırakma doğrulanana kadar devlet denetiminde tamamlamak.',
+            'Türk Devletleri Teşkilatı\'nı ortak pazar ve ortak savunma birliğine dönüştürmek.',
+            'Cumhurbaşkanlığı sistemini koruyarak güçlü ve merkezi devlet yapısını anayasal olarak pekiştirmek.',
+        ],
     },
     liberal: {
         id: 'liberal',
         name: 'Liberal',
-        description: 'Bireysel özgürlükleri, serbest piyasa ekonomisini ve sınırlı devleti savunan görüş.',
-        parties: ['LDP', 'DEVA'],
-        leaders: ['Besim Tibuk', 'Ali Babacan'],
+        description: 'Bireysel özgürlükleri, serbest piyasayı, hukuk devletini ve sınırlı devleti savunan görüş.',
+        parties: ['DEVA Partisi', 'LDP'],
+        leaders: ['Ali Babacan', 'Besim Tibuk'],
         color: '#14B8A6',
-        roast: "Her şey özelleşsin istiyorsun ama sevgilin 'başkasıyla da görüşelim' dese hemen devletçi olup kural koyarsın.",
-        idealAxes: { ekonomi: 90, toplum: -40, milliyetcilik: -60, yonetim: -90 },
+        roast: 'Her şey özelleşsin istiyorsun ama sevgilin "başkasıyla da görüşelim" dese hemen devletçi olup kural koyarsın.',
         details: {
-            history: "Osmanlı'nın son döneminden bu yana bireysel özgürlük ve serbest teşebbüs ilkeleri etrafında toplanan gruptur.",
-            principles: ["Birey Hakları", "Serbest Piyasa", "Hukuk Devleti", "Mülkiyet Hakkı"],
-            motto: "Özgürlük, Herkese ve Daima!"
+            history: 'Osmanlı\'nın son döneminden bu yana bireysel özgürlük ve serbest teşebbüs etrafında toplanan gelenek. Bugün DEVA Partisi parlamenter sistem ve hukuk reformu vurgusuyla bu çizgiyi temsil ediyor.',
+            principles: ['Birey Hakları', 'Serbest Piyasa', 'Hukuk Devleti', 'Bağımsız Kurumlar', 'Mülkiyet Hakkı'],
+            motto: 'Özgürlük, Herkese ve Daima!',
         },
         actionPlan: [
-            "TRT ve devlet bankaları dahil tüm kamu iktisadi teşebbüslerini blok halinde özelleştirip piyasadan çekilmek.",
-            "Bireysel silahlanma haklarını genişletip mülkiyet güvenliğini hane bazında garanti altına almak.",
-            "Merkez Bankası'nı sembolik bir kuruma dönüştürüp para politikasını serbest kur rejimine bırakmak."
-        ]
+            'Merkez Bankası, TÜİK, SPK ve BDDK\'yı yasal güvenceyle siyasetten bağımsız hale getirmek.',
+            'AB üyelik müzakerelerini yeniden canlandırıp Gümrük Birliği\'ni güncellemek.',
+            'Kamu iktisadi teşebbüslerini şeffaf ihalelerle özelleştirip devleti ekonomiden geri çekmek.',
+        ],
     },
     sosyalist: {
         id: 'sosyalist',
         name: 'Sosyalist',
-        description: 'Üretim araçlarının kamulaştırılmasını, sınıfsız toplumu ve emekten yana politikaları savunan sol.',
-        parties: ['TİP', 'TKP', 'Sol Parti'],
+        description: 'Kamu mülkiyetini, emekten yana politikaları, laikliği ve anti-emperyalizmi savunan sol.',
+        parties: ['TİP', 'TKP', 'SOL Parti', 'EMEP'],
         leaders: ['Erkan Baş', 'Deniz Gezmiş'],
         color: '#8B0000',
-        roast: "Kapitalizme karşı tweet atarken kullandığın iPhone şarjı %1 kalınca yaşadığın panik, devrim korkundan büyük.",
-        idealAxes: { ekonomi: -90, toplum: -70, milliyetcilik: -50, yonetim: -20 },
+        roast: 'Kapitalizme karşı tweet atarken iPhone şarjı %1\'e düşünce yaşadığın panik, devrim heyecanından büyük.',
         details: {
-            history: "1960'larda Türkiye İşçi Partisi ile hız kazanan, toplumsal mülkiyet ve sınıf mücadelesi odaklı sol akımdır.",
-            principles: ["Sınıfsız Toplum", "Eşitlik", "Anti-Emperyalizm", "Kamulaştırma"],
-            motto: "Dünyanın Bütün İşçileri Birleşin!"
+            history: '1960\'larda Türkiye İşçi Partisi ile kitleselleşen, sınıf siyaseti ve kamulaştırma odaklı sol gelenek. TİP bugün Meclis\'te temsil ediliyor.',
+            principles: ['Eşitlik', 'Kamulaştırma', 'Emeğin Hakları', 'Anti-Emperyalizm', 'Laiklik'],
+            motto: 'Dünyanın Bütün İşçileri Birleşin!',
         },
         actionPlan: [
-            "Büyük sanayi holdinglerini ve bankaları halk adına kamulaştırıp işçi konseylerine devretmek.",
-            "Haftalık çalışma süresini 30 saate indirip işsizliği iş paylaşımıyla tamamen yok etmek.",
-            "Kira artışlarını tamamen yasaklayıp boş konutları evsizlere tahsis eden bir iskan yasası çıkarmak."
-        ]
+            'Enerji, maden ve büyük bankaları kamulaştırıp emekçi denetimine açmak.',
+            'Garantili Kamu-Özel İşbirliği sözleşmelerini tazminatsız iptal etmek.',
+            'Kira artışlarına kalıcı tavan koyup boş konutları kamusal kiralık konuta dönüştürmek.',
+        ],
     },
     ozerklikci: {
         id: 'ozerklikci',
         name: 'Demokratik Özerklikçi',
         description: 'Kürt siyasi hareketinden beslenen; yerinden yönetim, anadilde eğitim ve kimliklerin anayasal tanınmasını savunan çizgi.',
         parties: ['DEM Parti'],
-        leaders: ['Selahattin Demirtaş', 'Tülay Hatimoğulları', 'Tuncer Bakırhan'],
+        leaders: ['Tuncer Bakırhan', 'Tülay Hatimoğulları', 'Selahattin Demirtaş'],
         color: '#9400D3',
-        roast: "Her toplantıya eş başkan, eş sözcü ve eş moderatör getiriyorsun; kararı kimin vereceğine karar vermek için ayrı bir meclis kuruyorsun.",
-        idealAxes: { ekonomi: -40, toplum: -60, milliyetcilik: -100, yonetim: -40 },
+        roast: 'Her toplantıya eş başkan, eş sözcü ve eş moderatör getiriyorsun; kararı kimin vereceğine karar vermek için ayrı bir meclis kuruyorsun.',
         details: {
-            history: "1990'lardan bu yana farklı parti isimleriyle varlığını sürdüren, etnik kimlik taleplerini sol ve ekolojist söylemle birleştiren gelenektir. 2025'te başlayan çözüm süreci tartışmalarında merkezi bir aktör olmuştur.",
-            principles: ["Yerinden Yönetim", "Anadilde Eğitim", "Eş Başkanlık", "Anayasal Kimlik"],
-            motto: "Özgür Yaşam, Demokratik Toplum."
+            history: '1990\'lardan bu yana farklı parti isimleriyle varlığını sürdüren, kimlik taleplerini sol ve ekolojist söylemle birleştiren gelenek. "Terörsüz Türkiye" sürecinin ve 2026\'daki çerçeve yasanın müzakere tarafı oldu.',
+            principles: ['Yerinden Yönetim', 'Anadilde Eğitim', 'Eş Başkanlık', 'Kadın Özgürlüğü', 'Ekoloji'],
+            motto: 'Özgür Yaşam, Demokratik Toplum.',
         },
         actionPlan: [
-            "Avrupa Yerel Yönetimler Özerklik Şartı'ndaki tüm çekinceleri kaldırıp yerel meclislerin yetkisini artırmak.",
-            "Anayasa'daki vatandaşlık tanımını etnik vurgudan arındırıp 'Türkiye Cumhuriyeti vatandaşlığı' temelinde yeniden yazmak.",
-            "Eğitim, kültür ve yerel güvenlik yetkilerinin bir kısmını seçilmiş bölgesel yönetimlere devretmek."
-        ]
+            'Avrupa Yerel Yönetimler Özerklik Şartı\'ndaki çekinceleri kaldırıp yerel meclislerin yetkisini artırmak.',
+            'Anadilde eğitimi anayasal güvenceye alıp Kürtçeyi yerel kamu hizmetlerinde kullanılır kılmak.',
+            'Çözüm sürecinin hukuki ayağını tamamlayıp siyasi tutukluların serbest bırakılmasını sağlamak.',
+        ],
     },
     islamci: {
         id: 'islamci',
         name: 'İslamcı',
-        description: 'Toplumsal ve siyasal hayatın İslami referanslarla düzenlenmesini savunan düşünce sistemi.',
-        parties: ['Yeniden Refah', 'HÜDA PAR'],
+        description: 'Toplumsal ve siyasal hayatın İslami referanslarla düzenlenmesini savunan, faizsiz ekonomi ve ümmet dayanışmasını öne çıkaran çizgi.',
+        parties: ['Yeniden Refah', 'HÜDA PAR', 'Saadet Partisi'],
         leaders: ['Necmettin Erbakan', 'Fatih Erbakan'],
         color: '#006400',
-        roast: "Ahiret odaklısın ama kripto borsa grafiklerini takip etmekten Farz namazlarına bile vaktin kalmıyor.",
-        idealAxes: { ekonomi: -30, toplum: 100, milliyetcilik: 30, yonetim: 90 },
+        roast: 'Ahiret odaklısın ama kripto grafiklerini takip etmekten farz namazlarına bile vaktin kalmıyor.',
         details: {
-            history: "Milli Görüş hareketiyle şekillenmiş, dini prensipleri siyasetin merkezine koyan akımdır.",
-            principles: ["Şer'i Referans", "Ümmetçilik", "Adil Düzen"],
-            motto: "Hakkın Hakimiyeti İçin Çalışmak İbadettir."
+            history: 'Milli Görüş hareketiyle şekillenen, dini prensipleri siyasetin merkezine koyan akım. Bugün Yeniden Refah ve HÜDA PAR farklı tonlarda bu çizgiyi temsil ediyor.',
+            principles: ['İslami Referans', 'Adil Düzen', 'Faizsiz Ekonomi', 'Ümmet Dayanışması'],
+            motto: 'Hakkın Hakimiyeti İçin Çalışmak İbadettir.',
         },
         actionPlan: [
-            "Adil Düzen sistemiyle ağır sanayi hamlesini başlatıp faizci dünya düzeninden tamamen kopmak.",
-            "D8 Teşkilatı üzerinden İslam Ortak Pazarı ve İslam Dinarı'nı hayata geçirmek.",
-            "Eğitimi ve hukuku fıtrata ve inanca dayalı referanslarla yeniden yapılandırmak."
-        ]
+            'Faizsiz finans sistemini kamu bankacılığının merkezine alıp ağır sanayi hamlesi başlatmak.',
+            'D-8 ve Mekke Savunma Anlaşması üzerinden İslam ülkeleriyle ortak pazar ve savunma birliği kurmak.',
+            'İstanbul Sözleşmesi çizgisini kalıcı olarak reddedip aile hukukunu dini-ahlaki değerlere göre düzenlemek.',
+        ],
     },
     avrasyaci: {
         id: 'avrasyaci',
         name: 'Avrasyacı',
-        description: 'Batı ittifakı yerine Rusya ve Çin ile stratejik işbirliğini savunan anti-emperyalist çizgi.',
+        description: 'Batı ittifakı yerine Rusya, Çin ve Asya ile stratejik işbirliğini savunan, devletçi ve anti-Atlantikçi çizgi.',
         parties: ['Vatan Partisi'],
         leaders: ['Doğu Perinçek'],
         color: '#FF4500',
-        roast: "NATO'ya sövüp Rus doğal gazıyla ısınırken kendini anti-emperyalist devrimci sanman gerçekten çok şirin.",
-        idealAxes: { ekonomi: -80, toplum: 20, milliyetcilik: 70, yonetim: 95 },
+        roast: 'NATO\'ya sövüp Rus doğal gazıyla ısınırken kendini anti-emperyalist devrimci sanman gerçekten çok şirin.',
         details: {
-            history: "Aydınlık hareketi ve sonrasında Batı karşıtlığı temelinde gelişen, Avrasya ittifakını öneren stratejik görüştür.",
-            principles: ["Anti-NATO", "Jeopolitik Değişim", "Otoriter Devlet Yapısı"],
-            motto: "Yükselen Asya, Bağımsız Türkiye!"
+            history: 'Aydınlık geleneğinden doğan, 2000\'lerden itibaren Batı karşıtlığı temelinde Avrasya ittifakını öneren stratejik görüş.',
+            principles: ['Anti-Atlantikçilik', 'Avrasya İşbirliği', 'Devletçilik', 'Laiklik'],
+            motto: 'Yükselen Asya, Bağımsız Türkiye!',
         },
         actionPlan: [
-            "NATO'dan derhal çıkıp Türkiye'deki tüm yabancı askeri üsleri mühürlemek.",
-            "BRICS ve Şanghay İşbirliği Örgütü'ne tam üyelik ile yeni bir küresel ittifak kurmak.",
-            "İçeride ordunun kontrolünde güçlü bir merkezi üretim ve planlama otoritesi oluşturmak."
-        ]
+            'NATO\'dan çıkıp ülkedeki yabancı askeri üslerin faaliyetine son vermek.',
+            'BRICS ve Şanghay İşbirliği Örgütü\'ne tam üyelik başvurusu yapmak.',
+            'Merkezi planlama ve kamu yatırımıyla stratejik üretimi devlet eliyle büyütmek.',
+        ],
     },
     ulusalci: {
         id: 'ulusalci',
         name: 'Ulusalcı',
-        description: 'Tam bağımsızlıkçı, devletçi ve seküler milliyetçiliği savunan laik-ulusal kesim.',
-        parties: ['Vatan Partisi', 'Zafer Partisi'],
-        leaders: ['Doğu Perinçek', 'Ümit Özdağ'],
+        description: 'Tam bağımsızlıkçı, laik, devletçi ve sığınmacı politikalarında sert milliyetçi muhalefet çizgisi.',
+        parties: ['Zafer Partisi', 'Vatan Partisi'],
+        leaders: ['Ümit Özdağ', 'Doğu Perinçek'],
         color: '#B22222',
-        roast: "Her gün yeni bir 'derin devlet komplo teorisi' ile uyanıp akşam TRT belgeseliyle sakinleşen bir yorgun savaşçısın.",
-        idealAxes: { ekonomi: -70, toplum: -50, milliyetcilik: 90, yonetim: 85 },
+        roast: 'Her sabah yeni bir derin devlet teorisiyle uyanıp akşam TRT belgeseliyle sakinleşen yorgun bir savaşçısın.',
         details: {
-            history: "2000'lerin başında AB ve ABD karşıtlığıyla kitleselleşen seküler milliyetçi çizgidir.",
-            principles: ["Tam Bağımsızlık", "Seküler Milliyetçilik", "Milli Ekonomi"],
-            motto: "Türkiye Türklerindir!"
+            history: '2000\'lerin başında AB ve ABD karşıtlığıyla kitleselleşen laik milliyetçilik, son yıllarda sığınmacı karşıtlığı ve çözüm sürecine itirazla yeniden yükseldi.',
+            principles: ['Tam Bağımsızlık', 'Laik Milliyetçilik', 'Milli Ekonomi', 'Sığınmacı Karşıtlığı'],
+            motto: 'Ne Mutlu Türküm Diyene!',
         },
         actionPlan: [
-            "Sığınmacı ve kaçakları hiçbir uluslararası yaptırımı dinlemeden bir yıl içinde sınır dışı etmek.",
-            "Gümrük Birliği'nden gerekirse çıkıp milli ekonomiyi koruyucu bir gümrük duvarı örmek.",
-            "Mavi Vatan sınırlarında tavizsiz bir askeri varlık gösterip enerji kaynaklarını millileştirmek."
-        ]
+            'Sığınmacıları uluslararası baskıya rağmen takvime bağlı bir planla ülkelerine göndermek.',
+            'Yatırımcı vatandaşlığını kaldırıp verilen vatandaşlıkları yeniden incelemek.',
+            '"Terörsüz Türkiye" sürecini durdurup terörle mücadeleyi yalnızca güvenlik politikasıyla yürütmek.',
+        ],
     },
     merkez_sag: {
         id: 'merkez_sag',
         name: 'Merkez Sağ',
-        description: 'Demokratik değerler ile serbest piyasayı birleştiren, ılımlı ve kurumsal milliyetçi çizgi.',
-        parties: ['İYİ Parti', 'Demokrat Parti'],
-        leaders: ['Adnan Menderes', 'Süleyman Demirel', 'Musavat Dervişoğlu'],
+        description: 'Serbest piyasa, parlamenter demokrasi ve kurumsal milliyetçiliği birleştiren ılımlı sağ çizgi.',
+        parties: ['İYİ Parti', 'Anahtar Parti', 'Demokrat Parti'],
+        leaders: ['Adnan Menderes', 'Süleyman Demirel', 'Müsavat Dervişoğlu', 'Yavuz Ağıralioğlu'],
         color: '#4169E1',
-        roast: "Üçüncü yol dedin, dördüncü yol dedin, sonunda navigasyonu bozulan turistler gibi yolun ortasında kaldın.",
-        idealAxes: { ekonomi: 70, toplum: 20, milliyetcilik: 60, yonetim: 20 },
+        roast: 'Üçüncü yol dedin, dördüncü yol dedin, sonunda navigasyonu bozulan turist gibi yolun ortasında kaldın.',
         details: {
-            history: "Demokrat Parti'den İYİ Parti'ye uzanan, 2024 sonrası yeniden yapılanma sürecine giren merkez sağ gelenek.",
-            principles: ["Hukukun Üstünlüğü", "Kurumsal Milliyetçilik", "Serbest Piyasa", "Liyakat"],
-            motto: "Bizim Yolumuz, Milletin Yoludur."
+            history: 'Demokrat Parti\'den Adalet Partisi\'ne, oradan İYİ Parti ve 2024\'te kurulan Anahtar Parti\'ye uzanan gelenek. Bugün parlamenter sistem ve çözüm sürecine itiraz ortak paydası.',
+            principles: ['Hukukun Üstünlüğü', 'Kurumsal Milliyetçilik', 'Serbest Piyasa', 'Parlamenter Sistem'],
+            motto: 'Bizim Yolumuz, Milletin Yoludur.',
         },
         actionPlan: [
-            "Hukuk güvenliğini sağlayarak doğrudan yabancı yatırımı çekmek ve liranın istikrarını korumak.",
-            "Güçlendirilmiş Parlamenter Sistem ile kuvvetler ayrılığını yeniden tesis etmek.",
-            "KOBİ'lere yönelik büyük teşvik paketleri açarak orta sınıfı ekonomik olarak güçlendirmek."
-        ]
+            'Güçlendirilmiş parlamenter sisteme dönüp bağımsız düzenleyici kurumları yeniden kurmak.',
+            'Hukuk güvenliğini sağlayarak doğrudan yabancı yatırımı ve KOBİ\'leri büyütmek.',
+            'Sığınmacı geri dönüşünü düzenli bir takvime bağlayıp sınır güvenliğini güçlendirmek.',
+        ],
     },
     yesil: {
         id: 'yesil',
         name: 'Yeşil / Ekolojist',
-        description: 'Çevre korumacı, sürdürülebilir yaşamı ve ekolojik adaleti savunan siyaset.',
-        parties: ['Yeşiller Partisi', 'DEM Parti (Ekoloji Komisyonu)'],
-        leaders: ['Greta Thunberg (Global)', 'Alper Akyüz'],
+        description: 'İklim adaletini, doğa haklarını ve sürdürülebilir ekonomiyi siyasetin merkezine koyan görüş.',
+        parties: ['Yeşiller Partisi', 'DEM Parti (Ekoloji Meclisi)'],
+        leaders: ['Greta Thunberg (Küresel)'],
         color: '#228B22',
-        roast: "Plastik pipet kullanmıyorsun diye dünya kurtuldu sanıyorsun ama 45 numara ekolojik ayak izin seni ele veriyor.",
-        idealAxes: { ekonomi: -70, toplum: -80, milliyetcilik: -60, yonetim: -80 },
+        roast: 'Plastik pipet kullanmıyorsun diye dünyayı kurtardığını sanıyorsun ama 45 numara ekolojik ayak izin seni ele veriyor.',
         details: {
-            history: "Global yeşil hareketin Türkiye'deki uzantısıdır. Çevre ve sürdürülebilirlik odaklıdır.",
-            principles: ["Ekolojik Adalet", "Doğa Hakları", "Sürdürülebilirlik"],
-            motto: "Doğa ile Uyum İçinde Bir Gelecek."
+            history: 'Küresel yeşil hareketin Türkiye\'deki uzantısıdır. Zeytinlik, maden ve kömür santrali direnişleriyle görünürlük kazandı; COP31\'in Antalya\'da yapılmasıyla gündemi büyüdü.',
+            principles: ['İklim Adaleti', 'Doğa Hakları', 'Sürdürülebilirlik', 'Yerel Demokrasi'],
+            motto: 'Doğa ile Uyum İçinde Bir Gelecek.',
         },
         actionPlan: [
-            "Türkiye'deki tüm kömür ve linyit madenlerini derhal kapatıp %100 rüzgar/güneş hedefine geçmek.",
-            "Şehirleri 'yaya odaklı' hale getirip toplu taşımayı tamamen ücretsiz ve elektrikli yapmak.",
-            "Hayvan hakları anayasası hazırlayarak doğaya yönelik tüm suçları ağır ceza kapsamına almak."
-        ]
+            'Yeni kömür santrallerini yasaklayıp 2053 net sıfır hedefini 2040\'a çekmek.',
+            'Zeytinlik, mera ve ormanları madencilik ve imar baskısına karşı anayasal korumaya almak.',
+            'Şehirlerde toplu taşımayı elektrikli ve ücretsiz hale getirip yaya odaklı planlamaya geçmek.',
+        ],
     },
     turkculuk: {
         id: 'turkculuk',
         name: 'Türkçülük',
-        description: 'Etnik temelli milliyetçilik, sığınmacı karşıtlığı ve seküler Türk kimliğini savunan yeni nesil muhalif çizgi.',
+        description: 'Etnik vurgulu milliyetçilik, sığınmacı karşıtlığı, Türk dünyası birliği ve laik Türk kimliğini savunan çizgi.',
         parties: ['Zafer Partisi', 'İYİ Parti'],
-        leaders: ['Nihal Atsız', 'Ümit Özdağ'],
+        leaders: ['Ziya Gökalp', 'Nihal Atsız', 'Ümit Özdağ'],
         color: '#00BFFF',
-        roast: "Tüm gün Twitter'da sığınmacı kovalayıp kendini Bilge Kağan sanıyorsun ama aslında sadece algoritmanın kölesi olmuş bir ergensin.",
-        idealAxes: { ekonomi: -20, toplum: -20, milliyetcilik: 100, yonetim: 60 },
+        roast: 'Bütün gün sosyal medyada sığınmacı kovalayıp kendini Bilge Kağan sanıyorsun ama aslında algoritmanın kölesi olmuşsun.',
         details: {
-            history: "Ziya Gökalp ve Nihal Atsız'ın fikirlerinden beslenen; son yıllarda sığınmacı tartışmalarıyla yeniden yükselen seküler, etnik vurgulu milliyetçi çizgidir.",
-            principles: ["Türklük Bilinci", "Demografik Koruma", "Seküler Devlet"],
-            motto: "Vatan Ne Türkiye'dir Türklere, Ne Türkistan; Vatan Büyük ve Müebbet Bir Ülkedir: Turan."
+            history: 'Ziya Gökalp ve Nihal Atsız\'ın fikirlerinden beslenen; son yıllarda sığınmacı tartışmaları ve çözüm sürecine itirazla yeniden yükselen laik, etnik vurgulu milliyetçilik.',
+            principles: ['Türklük Bilinci', 'Demografik Koruma', 'Türk Dünyası Birliği', 'Laik Devlet'],
+            motto: 'Vatan Ne Türkiye\'dir Türklere, Ne Türkistan; Vatan Büyük ve Müebbet Bir Ülkedir: Turan.',
         },
         actionPlan: [
-            "Demografik beka yasası çıkararak vatandaşlık verilmiş yabancıları incelemeye alıp iptal etmek.",
-            "Türklük kimliğini anayasada tek birleştirici unsur olarak daha sert ifadelerle tanımlamak.",
-            "Türk dünyasıyla 'Kızılelma' vizyonu çerçevesinde derin bir askeri ve kültürel entegrasyon başlatmak."
-        ]
+            'Demografik koruma yasası çıkarıp yatırımcı vatandaşlığını kaldırmak.',
+            'Türk Devletleri Teşkilatı ile ortak ordu, ortak alfabe ve ortak pazar hedeflemek.',
+            'Anayasadaki "Türk" vatandaşlık tanımını tartışmaya kapalı hale getirmek.',
+        ],
     },
 };

@@ -2,779 +2,282 @@ import { IdeologyId } from './ideologies';
 
 export type AxisId = 'ekonomi' | 'toplum' | 'milliyetcilik' | 'yonetim';
 
+/**
+ * How an ideology would answer a statement:
+ *  2 = kesinlikle katılır, 1 = katılır, 0 = bölünmüş / kayıtsız,
+ * -1 = katılmaz, -2 = kesinlikle katılmaz.
+ */
+export type Stance = -2 | -1 | 0 | 1 | 2;
+
 export interface Question {
     id: number;
     text: string;
-    weights: Partial<Record<IdeologyId, number>>;
-    axisWeights: Record<AxisId, number>;
+    /** Optional one-line background for current-affairs questions. */
+    context?: string;
+    /**
+     * What "Katılıyorum" means on each axis (-1..1). Positive = right-hand label:
+     * ekonomi → serbest piyasa, toplum → muhafazakar, milliyetcilik → milliyetçi,
+     * yonetim → merkeziyetçi/otoriter.
+     */
+    axes: Partial<Record<AxisId, number>>;
+    stances: Record<IdeologyId, Stance>;
 }
 
+// Content reflects Turkish politics as of November 2026.
 export const questions: Question[] = [
+    /* ---------------- Ekonomi ---------------- */
     {
         id: 1,
-        text: 'Stratejik sanayi kuruluşları ve enerji sektörü tamamen devlet kontrolünde olmalıdır.',
-        weights: {
-            kemalist: 5,
-            sosyalist: 10,
-            ulusalci: 8,
-            liberal: -10,
-            merkez_sag: -5,
-            avrasyaci: 6,
-        },
-        axisWeights: {
-            ekonomi: -10,
-            toplum: 0,
-            milliyetcilik: 2,
-            yonetim: 5,
-        }
+        text: 'Enflasyonla mücadelede yüksek faiz ve sıkı para politikası, ekonomi yavaşlasa bile sürdürülmelidir.',
+        context: 'Merkez Bankası politika faizi Ekim 2026 itibarıyla %36, yıllık enflasyon ~%30.',
+        axes: { ekonomi: 1 },
+        stances: { kemalist: -1, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 0, liberal: 2, sosyalist: -2, ozerklikci: -1, islamci: -2, avrasyaci: -2, ulusalci: -1, merkez_sag: 1, yesil: -1, turkculuk: 0 },
     },
     {
         id: 2,
-        text: 'Türkiye, AB üyeliği ve Batı ittifakı ile bağlarını her ne pahasına olursa olsun güçlendirmelidir.',
-        weights: {
-            sosyal_demokrat: 8,
-            liberal: 10,
-            merkez_sag: 6,
-            avrasyaci: -10,
-            ulusalci: -8,
-            ulkucu: -5,
-            kemalist: 2,
-        },
-        axisWeights: {
-            ekonomi: 5,
-            toplum: -2,
-            milliyetcilik: -10,
-            yonetim: -2,
-        }
+        text: 'Asgari ücret yılda en az iki kez, gerçekleşen enflasyona göre güncellenmelidir.',
+        axes: { ekonomi: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -1, ulkucu: 1, liberal: -1, sosyalist: 2, ozerklikci: 2, islamci: 1, avrasyaci: 1, ulusalci: 1, merkez_sag: 0, yesil: 1, turkculuk: 1 },
     },
     {
         id: 3,
-        text: 'Sığınmacılar ve mülteciler, güvenlik riski oluşturdukları gerekçesiyle en kısa sürede ülkelerine gönderilmelidir.',
-        weights: {
-            turkculuk: 10,
-            ulkucu: 7,
-            ulusalci: 10,
-            kemalist: 5,
-            sosyal_demokrat: 3,
-            islamci: -8,
-            muhafazakar: -5,
-            liberal: -3,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: 10,
-            yonetim: 6,
-        }
+        text: 'En düşük emekli aylığı asgari ücretin altında olmamalı; bütçede öncelik emekliye verilmelidir.',
+        axes: { ekonomi: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -1, ulkucu: 0, liberal: -1, sosyalist: 2, ozerklikci: 1, islamci: 2, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: 1, turkculuk: 1 },
     },
     {
         id: 4,
-        text: 'Diyanet İşleri Başkanlığı kaldırılmalı ve din işleri tamamen sivil topluma bırakılmalıdır.',
-        weights: {
-            sosyalist: 10,
-            ozerklikci: 8,
-            yesil: 7,
-            liberal: 6,
-            sosyal_demokrat: 4,
-            muhafazakar: -10,
-            islamci: -10,
-            kemalist: -2,
-        },
-        axisWeights: {
-            ekonomi: 4,
-            toplum: -10,
-            milliyetcilik: -2,
-            yonetim: -5,
-        }
+        text: 'Garantili otoyol, köprü ve şehir hastanesi sözleşmeleri (Kamu-Özel İşbirliği) iptal edilmeli ya da yeniden müzakere edilmelidir.',
+        axes: { ekonomi: -0.6, yonetim: -0.4 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 1, sosyalist: 2, ozerklikci: 2, islamci: 1, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: 2, turkculuk: 1 },
     },
     {
         id: 5,
-        text: 'Anayasa\'nın ilk dört maddesi ve üniter devlet yapısı asla tartışılamaz.',
-        weights: {
-            kemalist: 10,
-            turkculuk: 10,
-            ulkucu: 10,
-            ulusalci: 10,
-            merkez_sag: 6,
-            ozerklikci: -10,
-            liberal: -5,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: 10,
-            yonetim: 8,
-        }
+        text: 'Enerji, maden ve limanlar gibi stratejik sektörler kamu mülkiyetinde olmalı; yapılan özelleştirmeler geri alınmalıdır.',
+        axes: { ekonomi: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 1, muhafazakar: -1, ulkucu: 1, liberal: -2, sosyalist: 2, ozerklikci: 1, islamci: 1, avrasyaci: 2, ulusalci: 2, merkez_sag: -1, yesil: 1, turkculuk: 1 },
     },
     {
         id: 6,
-        text: 'Türkiye, NATO üyeliğinden çıkmalı ve ŞİÖ (Şanghay İşbirliği Örgütü) gibi Avrasya merkezli ittifaklara yönelmelidir.',
-        weights: {
-            avrasyaci: 10,
-            ulusalci: 6,
-            sosyalist: 5,
-            sosyal_demokrat: -8,
-            liberal: -10,
-            kemalist: -3,
-        },
-        axisWeights: {
-            ekonomi: -5,
-            toplum: 2,
-            milliyetcilik: 8,
-            yonetim: 6,
-        }
+        text: 'Büyük servetlere ve yüksek gelire ek vergi getirilmeli, KDV gibi dolaylı vergiler düşürülmelidir.',
+        axes: { ekonomi: -1 },
+        stances: { kemalist: 1, sosyal_demokrat: 2, muhafazakar: -1, ulkucu: 0, liberal: -1, sosyalist: 2, ozerklikci: 2, islamci: 1, avrasyaci: 1, ulusalci: 1, merkez_sag: -1, yesil: 2, turkculuk: 0 },
     },
     {
         id: 7,
-        text: 'Eğitim müfredatı seküler ve bilimsel temelde olmalı, dini referanslar eğitimden tamamen temizlenmelidir.',
-        weights: {
-            kemalist: 10,
-            ulusalci: 10,
-            sosyalist: 8,
-            sosyal_demokrat: 5,
-            muhafazakar: -10,
-            islamci: -10,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -10,
-            milliyetcilik: 2,
-            yonetim: 4,
-        }
+        text: 'Yatırım çekmek için iş gücü piyasası esnetilmeli, kıdem tazminatı bir fona devredilmelidir.',
+        axes: { ekonomi: 1 },
+        stances: { kemalist: -1, sosyal_demokrat: -2, muhafazakar: 1, ulkucu: 0, liberal: 2, sosyalist: -2, ozerklikci: -2, islamci: -1, avrasyaci: -2, ulusalci: -1, merkez_sag: 1, yesil: -1, turkculuk: -1 },
     },
     {
         id: 8,
-        text: 'Serbest piyasa ekonomisi, Türkiye\'nin zenginleşmesi için tek yoldur; devlet ekonomiden elini çekmelidir.',
-        weights: {
-            liberal: 10,
-            merkez_sag: 8,
-            muhafazakar: 5,
-            sosyalist: -10,
-            ulusalci: -6,
-        },
-        axisWeights: {
-            ekonomi: 10,
-            toplum: 0,
-            milliyetcilik: -2,
-            yonetim: -8,
-        }
+        text: 'Konut krizine karşı kira artışlarına kalıcı bir tavan konmalı, devlet büyük ölçekli kiralık sosyal konut üretmelidir.',
+        axes: { ekonomi: -1 },
+        stances: { kemalist: 1, sosyal_demokrat: 2, muhafazakar: 0, ulkucu: 1, liberal: -2, sosyalist: 2, ozerklikci: 2, islamci: 1, avrasyaci: 1, ulusalci: 1, merkez_sag: -1, yesil: 1, turkculuk: 1 },
     },
     {
         id: 9,
-        text: 'Kürt sorununun çözümü için yerel yönetimlere özerklik dahil her türlü siyasi hak tanınmalıdır.',
-        weights: {
-            ozerklikci: 10,
-            yesil: 5,
-            liberal: 3,
-            turkculuk: -10,
-            ulkucu: -10,
-            ulusalci: -10,
-            kemalist: -8,
-            merkez_sag: -5,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: -6,
-        }
+        text: 'Tarımda ithalat yerine yerli üretici korunmalı; gerekirse yüksek gümrük vergileri uygulanmalıdır.',
+        axes: { ekonomi: -0.7, milliyetcilik: 0.3 },
+        stances: { kemalist: 1, sosyal_demokrat: 1, muhafazakar: 0, ulkucu: 2, liberal: -2, sosyalist: 1, ozerklikci: 1, islamci: 1, avrasyaci: 2, ulusalci: 2, merkez_sag: 0, yesil: 1, turkculuk: 2 },
     },
+
+    /* ---------------- Toplum ---------------- */
     {
         id: 10,
-        text: 'Çevreyi korumak için ekonomik büyümeden ve büyük sanayi projelerinden (Kanal İstanbul, Nükleer Santral vb.) vazgeçilebilir.',
-        weights: {
-            yesil: 10,
-            sosyalist: 6,
-            sosyal_demokrat: 4,
-            ozerklikci: 3,
-            merkez_sag: -5,
-            muhafazakar: -5,
-        },
-        axisWeights: {
-            ekonomi: -8,
-            toplum: -4,
-            milliyetcilik: -2,
-            yonetim: -5,
-        }
+        text: 'Diyanet İşleri Başkanlığı\'nın bütçesi ve yetkileri azaltılmalı, din hizmetleri devletten bağımsızlaşmalıdır.',
+        axes: { toplum: -1 },
+        stances: { kemalist: 0, sosyal_demokrat: 1, muhafazakar: -2, ulkucu: -2, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: -2, avrasyaci: -1, ulusalci: -1, merkez_sag: -1, yesil: 2, turkculuk: 0 },
     },
     {
         id: 11,
-        text: 'İşçi hakları, sendikalaşma ve asgari ücretin iyileştirilmesi öncelikli devlet politikası olmalıdır.',
-        weights: {
-            sosyalist: 10,
-            sosyal_demokrat: 8,
-            yesil: 5,
-            kemalist: 4,
-            liberal: -6,
-        },
-        axisWeights: {
-            ekonomi: -10,
-            toplum: -2,
-            milliyetcilik: 0,
-            yonetim: -2,
-        }
+        text: '"Türkiye Yüzyılı Maarif Modeli" müfredatı, milli ve manevi değerleri güçlendirdiği için doğru bir adımdır.',
+        axes: { toplum: 1 },
+        stances: { kemalist: -2, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: -1, ulusalci: -2, merkez_sag: 0, yesil: -2, turkculuk: -1 },
     },
     {
         id: 12,
-        text: 'Toplumsal hayatın her alanında dini değerler ve ahlaki normlar esas alınmalıdır.',
-        weights: {
-            islamci: 10,
-            muhafazakar: 7,
-            kemalist: -10,
-            sosyalist: -8,
-            yesil: -5,
-        },
-        axisWeights: {
-            ekonomi: 2,
-            toplum: 10,
-            milliyetcilik: 5,
-            yonetim: 8,
-        }
+        text: 'İstanbul Sözleşmesi\'ne geri dönülmeli ve kadına yönelik şiddette "haksız tahrik" indirimleri tamamen kaldırılmalıdır.',
+        axes: { toplum: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: -2, avrasyaci: -1, ulusalci: 1, merkez_sag: 1, yesil: 2, turkculuk: 0 },
     },
     {
         id: 13,
-        text: 'Kadın hakları ve toplumsal cinsiyet eşitliği, geleneksel aile yapısının önünde tutulmalıdır.',
-        weights: {
-            yesil: 8,
-            sosyalist: 8,
-            sosyal_demokrat: 8,
-            kemalist: 6,
-            ozerklikci: 6,
-            turkculuk: 4,
-            muhafazakar: -10,
-            islamci: -10,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -10,
-            milliyetcilik: -2,
-            yonetim: -5,
-        }
+        text: 'LGBT+ kimliğini "özendirmek" cezai yaptırıma bağlanmalıdır.',
+        context: 'Yargı paketleri kapsamında "biyolojik cinsiyete aykırılık" düzenlemesi tartışılıyor.',
+        axes: { toplum: 1, yonetim: 0.4 },
+        stances: { kemalist: -1, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: 2, avrasyaci: 1, ulusalci: 0, merkez_sag: 0, yesil: -2, turkculuk: 1 },
     },
     {
         id: 14,
-        text: 'Yabancı sermayenin Türkiye\'ye girişi kolaylaştırılmalı, global şirketler teşvik edilmelidir.',
-        weights: {
-            liberal: 10,
-            merkez_sag: 7,
-            muhafazakar: 4,
-            ulusalci: -8,
-            sosyalist: -8,
-            avrasyaci: -6,
-        },
-        axisWeights: {
-            ekonomi: 10,
-            toplum: -2,
-            milliyetcilik: -10,
-            yonetim: -5,
-        }
+        text: 'Nüfus düşüşüyle mücadele için devlet geleneksel aile modelini öne çıkarmalı, çok çocuklu aileleri güçlü biçimde ödüllendirmelidir.',
+        axes: { toplum: 1 },
+        stances: { kemalist: 0, sosyal_demokrat: -1, muhafazakar: 2, ulkucu: 2, liberal: -1, sosyalist: -1, ozerklikci: -1, islamci: 2, avrasyaci: 1, ulusalci: 1, merkez_sag: 1, yesil: -1, turkculuk: 2 },
     },
     {
         id: 15,
-        text: 'Merkez Bankası faiz kararlarında tamamen serbest olmalı; enflasyonla mücadele için gerekirse yüksek faiz politikası uygulanmalıdır.',
-        weights: {
-            liberal: 10,
-            merkez_sag: 8,
-            sosyal_demokrat: 5,
-            muhafazakar: -5,
-            islamci: -10,
-            sosyalist: -4,
-        },
-        axisWeights: {
-            ekonomi: 8,
-            toplum: 0,
-            milliyetcilik: -2,
-            yonetim: -8,
-        }
+        text: 'Kamu kurumlarında ve okullarda dini kıyafet ve sembollere hiçbir kısıtlama getirilmemelidir.',
+        axes: { toplum: 0.5, yonetim: -0.5 },
+        stances: { kemalist: -1, sosyal_demokrat: 1, muhafazakar: 2, ulkucu: 1, liberal: 2, sosyalist: 0, ozerklikci: 1, islamci: 2, avrasyaci: -1, ulusalci: -2, merkez_sag: 1, yesil: 1, turkculuk: -1 },
     },
     {
         id: 16,
-        text: 'Basın özgürlüğü ve ifade hürriyeti, devlet güvenliği gerekçesiyle dahi olsa kısıtlanamaz.',
-        weights: {
-            liberal: 10,
-            sosyalist: 8,
-            sosyal_demokrat: 8,
-            yesil: 7,
-            muhafazakar: -8,
-            islamci: -8,
-            ulkucu: -6,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -3,
-            milliyetcilik: -5,
-            yonetim: -10,
-        }
+        text: 'Tarikat ve cemaatlerin eğitimde ve kamu kurumlarındaki etkisi sıkı biçimde denetlenmeli ve sınırlandırılmalıdır.',
+        axes: { toplum: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 0, sosyalist: 2, ozerklikci: 1, islamci: -2, avrasyaci: 2, ulusalci: 2, merkez_sag: 1, yesil: 1, turkculuk: 2 },
     },
     {
         id: 17,
-        text: 'Zorunlu askerlik kaldırılmalı, tamamen profesyonel orduya geçilmelidir.',
-        weights: {
-            liberal: 10,
-            yesil: 8,
-            ozerklikci: 7,
-            sosyal_demokrat: 4,
-            turkculuk: -10,
-            ulkucu: -10,
-            ulusalci: -10,
-            kemalist: -6,
-        },
-        axisWeights: {
-            ekonomi: 4,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: -8,
-        }
+        text: 'Faizsiz bankacılık ve katılım finansı devlet tarafından özel olarak teşvik edilmelidir.',
+        axes: { toplum: 1 },
+        stances: { kemalist: -2, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 1, liberal: -1, sosyalist: -2, ozerklikci: -1, islamci: 2, avrasyaci: -1, ulusalci: -2, merkez_sag: 0, yesil: -1, turkculuk: -1 },
     },
     {
         id: 18,
-        text: 'Eğitimde din dersleri tamamen seçmeli olmalı, devlet eliyle dini eğitim verilmemelidir.',
-        weights: {
-            kemalist: 10,
-            sosyalist: 10,
-            liberal: 8,
-            sosyal_demokrat: 7,
-            muhafazakar: -10,
-            islamci: -10,
-            ulkucu: -5,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -10,
-            milliyetcilik: 0,
-            yonetim: -4,
-        }
+        text: 'Sahipsiz köpekler toplanıp barınaklara alınmalı, gerekirse uyutulmalıdır.',
+        axes: { toplum: 0.5, yonetim: 0.5 },
+        stances: { kemalist: 0, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 1, liberal: -1, sosyalist: -1, ozerklikci: 0, islamci: 1, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: -2, turkculuk: 2 },
     },
     {
         id: 19,
-        text: 'Üniversitelerin idari ve akademik özerkliği dokunulmaz olmalıdır; Rektörler atanmamalı, seçilmelidir.',
-        weights: {
-            liberal: 8,
-            sosyalist: 8,
-            sosyal_demokrat: 8,
-            yesil: 6,
-            kemalist: 5,
-            muhafazakar: -8,
-            islamci: -8,
-            ulkucu: -6,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -2,
-            milliyetcilik: -2,
-            yonetim: -10,
-        }
+        text: 'Yeni kömür santrallerine ve zeytinlik, mera, orman alanlarında madenciliğe, büyümeyi yavaşlatsa bile izin verilmemelidir.',
+        context: 'Türkiye Kasım 2026\'da Antalya\'da COP31 İklim Zirvesi\'ne ev sahipliği yapıyor.',
+        axes: { ekonomi: -0.5, toplum: -0.5 },
+        stances: { kemalist: 0, sosyal_demokrat: 1, muhafazakar: -2, ulkucu: -1, liberal: 0, sosyalist: 1, ozerklikci: 1, islamci: -1, avrasyaci: -1, ulusalci: -1, merkez_sag: -1, yesil: 2, turkculuk: -1 },
     },
+
+    /* ------------- Milliyetçilik & Dış Politika ------------- */
     {
         id: 20,
-        text: 'Merkez Bankası tamamen bağımsız olmalı, siyasetçiler para politikasına asla müdahale etmemelidir.',
-        weights: {
-            liberal: 10,
-            merkez_sag: 8,
-            sosyal_demokrat: 5,
-            muhafazakar: -8,
-            islamci: -6,
-            sosyalist: -5,
-        },
-        axisWeights: {
-            ekonomi: 10,
-            toplum: -2,
-            milliyetcilik: -4,
-            yonetim: -8,
-        }
+        text: 'Sığınmacılar, uluslararası tepkiye rağmen zorunlu ve takvime bağlı bir planla ülkelerine geri gönderilmelidir.',
+        axes: { milliyetcilik: 1 },
+        stances: { kemalist: 1, sosyal_demokrat: 0, muhafazakar: -1, ulkucu: 1, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: -2, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: -2, turkculuk: 2 },
     },
     {
         id: 21,
-        text: 'İstanbul Sözleşmesi\'ne geri dönülmeli ve LGBT+ hakları yasal güvence altına alınmalıdır.',
-        weights: {
-            yesil: 10,
-            sosyalist: 9,
-            sosyal_demokrat: 9,
-            ozerklikci: 7,
-            kemalist: 4,
-            muhafazakar: -10,
-            islamci: -10,
-            ulkucu: -8,
-            turkculuk: -4,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -10,
-            milliyetcilik: -4,
-            yonetim: -6,
-        }
+        text: 'Türkiye, AB üyeliğini yeniden dış politikanın ana hedefi yapmalı ve gereken demokratik reformları yapmalıdır.',
+        axes: { milliyetcilik: -1, yonetim: -0.3 },
+        stances: { kemalist: 0, sosyal_demokrat: 2, muhafazakar: -1, ulkucu: -2, liberal: 2, sosyalist: -1, ozerklikci: 1, islamci: -2, avrasyaci: -2, ulusalci: -2, merkez_sag: 1, yesil: 1, turkculuk: -2 },
     },
     {
         id: 22,
-        text: 'Tarikat ve cemaatlerin devlet kadrolarındaki etkinliği Türkiye için bir ulusal güvenlik tehdididir.',
-        weights: {
-            kemalist: 10,
-            ulusalci: 10,
-            turkculuk: 8,
-            sosyalist: 8,
-            avrasyaci: 6,
-            muhafazakar: -10,
-            islamci: -10,
-            merkez_sag: -4,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: -10,
-            milliyetcilik: 6,
-            yonetim: 5,
-        }
+        text: 'Türkiye NATO\'dan ayrılmalı ve Rusya-Çin eksenindeki BRICS ve Şanghay İşbirliği Örgütü\'ne yönelmelidir.',
+        axes: { milliyetcilik: 0.7, ekonomi: -0.3 },
+        stances: { kemalist: -1, sosyal_demokrat: -2, muhafazakar: -1, ulkucu: -1, liberal: -2, sosyalist: 1, ozerklikci: -1, islamci: 0, avrasyaci: 2, ulusalci: 1, merkez_sag: -2, yesil: -1, turkculuk: -2 },
     },
     {
         id: 23,
-        text: 'Seçilmiş yerel yöneticilerin (Belediye Başkanı vb.) yerine kayyum atanması hukuk dışıdır ve kabul edilemez.',
-        weights: {
-            ozerklikci: 10,
-            sosyalist: 8,
-            sosyal_demokrat: 8,
-            liberal: 7,
-            yesil: 6,
-            kemalist: 2,
-            ulkucu: -10,
-            ulusalci: -10,
-            avrasyaci: -8,
-            turkculuk: -6,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -8,
-            yonetim: -10,
-        }
+        text: 'Suudi Arabistan ve Pakistan ile imzalanan Mekke Ortak Savunma Anlaşması Türkiye\'nin çıkarına uygundur.',
+        context: 'Anlaşma Kasım 2026\'da TBMM\'de kabul edildi; bir tarafa saldırı tümüne yapılmış sayılıyor.',
+        axes: { toplum: 0.5, milliyetcilik: 0.5 },
+        stances: { kemalist: -1, sosyal_demokrat: -1, muhafazakar: 2, ulkucu: 1, liberal: -1, sosyalist: -2, ozerklikci: -1, islamci: 2, avrasyaci: -1, ulusalci: -1, merkez_sag: 0, yesil: -1, turkculuk: -1 },
     },
     {
         id: 24,
-        text: 'Devlet sanatı ve sanatçıyı doğrudan finanse etmemeli, kültür piyasası kendi dinamiklerine bırakılmalıdır.',
-        weights: {
-            liberal: 10,
-            merkez_sag: 3,
-            sosyalist: -10,
-            kemalist: -8,
-            ulusalci: -6,
-        },
-        axisWeights: {
-            ekonomi: 8,
-            toplum: -2,
-            milliyetcilik: -4,
-            yonetim: -6,
-        }
+        text: 'Türk Devletleri Teşkilatı ortak pazar ve ortak savunma birliğine dönüştürülmelidir.',
+        axes: { milliyetcilik: 1 },
+        stances: { kemalist: 1, sosyal_demokrat: -1, muhafazakar: 1, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 0, avrasyaci: 0, ulusalci: 1, merkez_sag: 1, yesil: -1, turkculuk: 2 },
     },
     {
         id: 25,
-        text: 'Türkiye\'nin bekası için gerekirse bazı temel hak ve özgürlükler askıya alınabilir.',
-        weights: {
-            avrasyaci: 10,
-            ulkucu: 9,
-            ulusalci: 8,
-            turkculuk: 6,
-            muhafazakar: 5,
-            kemalist: 2,
-            liberal: -10,
-            sosyalist: -8,
-            yesil: -8,
-            sosyal_demokrat: -8,
-        },
-        axisWeights: {
-            ekonomi: -2,
-            toplum: 0,
-            milliyetcilik: 8,
-            yonetim: 10,
-        }
+        text: 'Anadilde eğitim hakkı tanınmalı, Kürtçe yerel kamu hizmetlerinde ikinci resmi dil olarak kullanılabilmelidir.',
+        axes: { milliyetcilik: -1 },
+        stances: { kemalist: -2, sosyal_demokrat: 0, muhafazakar: -1, ulkucu: -2, liberal: 1, sosyalist: 2, ozerklikci: 2, islamci: 1, avrasyaci: -2, ulusalci: -2, merkez_sag: -2, yesil: 1, turkculuk: -2 },
     },
     {
         id: 26,
-        text: 'Miras vergisi ve servet vergisi gibi uygulamalarla sosyal adaletsizlik azaltılmalıdır.',
-        weights: {
-            sosyalist: 10,
-            sosyal_demokrat: 7,
-            yesil: 5,
-            liberal: -10,
-            merkez_sag: -6,
-            muhafazakar: -4,
-        },
-        axisWeights: {
-            ekonomi: -10,
-            toplum: -2,
-            milliyetcilik: 0,
-            yonetim: 4,
-        }
+        text: 'Yeni anayasa yapılsa bile vatandaşlık tanımındaki "Türk" ifadesi ve ilk dört madde kesinlikle değiştirilmemelidir.',
+        axes: { milliyetcilik: 1 },
+        stances: { kemalist: 2, sosyal_demokrat: 1, muhafazakar: 0, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: -1, avrasyaci: 2, ulusalci: 2, merkez_sag: 2, yesil: -1, turkculuk: 2 },
     },
     {
         id: 27,
-        text: 'Düşük gelirli vatandaşlara sosyal yardım yapmak, uzay araştırmaları veya büyük savunma sanayii yatırımlarından daha önceliklidir.',
-        weights: {
-            sosyalist: 10,
-            sosyal_demokrat: 8,
-            yesil: 6,
-            ozerklikci: 4,
-            ulusalci: -8,
-            avrasyaci: -8,
-            turkculuk: -6,
-            kemalist: -4,
-        },
-        axisWeights: {
-            ekonomi: -8,
-            toplum: 0,
-            milliyetcilik: -8,
-            yonetim: -4,
-        }
+        text: 'Türkiye, Suriye\'deki yeni yönetimle güvenlik tam sağlanana kadar kuzey Suriye\'deki askeri varlığını sürdürmelidir.',
+        axes: { milliyetcilik: 1 },
+        stances: { kemalist: 0, sosyal_demokrat: -1, muhafazakar: 2, ulkucu: 2, liberal: -1, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: -1, ulusalci: 1, merkez_sag: 1, yesil: -1, turkculuk: 2 },
     },
     {
         id: 28,
-        text: 'Kamu kurumlarına personel alımında liyakat tek kriter olmalı, mülakat sistemi tamamen kaldırılmalıdır.',
-        weights: {
-            kemalist: 8,
-            liberal: 8,
-            sosyal_demokrat: 8,
-            ulkucu: 4,
-            turkculuk: 4,
-            merkez_sag: 4,
-            muhafazakar: -10,
-            islamci: -8,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: 2,
-            yonetim: -10,
-        }
+        text: 'Ermenistan sınırı açılmalı ve iki ülke arasındaki diplomatik ilişkiler tamamen normalleştirilmelidir.',
+        axes: { milliyetcilik: -1 },
+        stances: { kemalist: 0, sosyal_demokrat: 1, muhafazakar: 1, ulkucu: -1, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: 0, avrasyaci: 0, ulusalci: -2, merkez_sag: -1, yesil: 2, turkculuk: -2 },
     },
     {
         id: 29,
-        text: 'Hayvanlar üzerinde deney yapılması tamamen yasaklanmalı ve vegan yaşam biçimi teşvik edilmelidir.',
-        weights: {
-            yesil: 10,
-            sosyalist: 4,
-            liberal: -2,
-            muhafazakar: -6,
-            islamci: -6,
-        },
-        axisWeights: {
-            ekonomi: -4,
-            toplum: -6,
-            milliyetcilik: -2,
-            yonetim: -2,
-        }
+        text: 'Zorunlu askerlik kaldırılmalı, tamamen profesyonel orduya geçilmelidir.',
+        axes: { milliyetcilik: -1 },
+        stances: { kemalist: -2, sosyal_demokrat: 0, muhafazakar: -1, ulkucu: -2, liberal: 2, sosyalist: 0, ozerklikci: 2, islamci: -1, avrasyaci: -2, ulusalci: -2, merkez_sag: -1, yesil: 1, turkculuk: -2 },
     },
     {
         id: 30,
-        text: 'Türkçe dışındaki diller (Kürtçe, Arapça vb.) kamu hizmetlerinde ve eğitimde resmi olarak kullanılabilmelidir.',
-        weights: {
-            ozerklikci: 10,
-            liberal: 5,
-            yesil: 4,
-            turkculuk: -10,
-            ulusalci: -10,
-            ulkucu: -10,
-            kemalist: -8,
-            avrasyaci: -6,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: -6,
-        }
+        text: 'Konut veya arazi alan yabancılara verilen "yatırımcı vatandaşlığı" tamamen kaldırılmalıdır.',
+        axes: { milliyetcilik: 1 },
+        stances: { kemalist: 2, sosyal_demokrat: 1, muhafazakar: -2, ulkucu: 0, liberal: -2, sosyalist: 1, ozerklikci: 0, islamci: -1, avrasyaci: 1, ulusalci: 2, merkez_sag: 1, yesil: 0, turkculuk: 2 },
     },
+
+    /* ------------- Yönetim, Hukuk & Çözüm Süreci ------------- */
     {
         id: 31,
-        text: 'Sahipsiz sokak köpekleri, toplum güvenliği için gerekirse uyutulmalı veya kapalı barınaklara hapsedilmelidir.',
-        weights: {
-            muhafazakar: 10,
-            ulkucu: 8,
-            turkculuk: 6,
-            merkez_sag: 5,
-            yesil: -10,
-            sosyalist: -8,
-            sosyal_demokrat: -6,
-        },
-        axisWeights: {
-            ekonomi: 2,
-            toplum: 8,
-            milliyetcilik: 4,
-            yonetim: 6,
-        }
+        text: 'Cumhurbaşkanlığı Hükümet Sistemi terk edilmeli, güçlendirilmiş parlamenter sisteme geri dönülmelidir.',
+        axes: { yonetim: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -2, liberal: 2, sosyalist: 1, ozerklikci: 1, islamci: 0, avrasyaci: -1, ulusalci: 1, merkez_sag: 2, yesil: 1, turkculuk: 1 },
     },
     {
         id: 32,
-        text: 'Siyasetteki "normalleşme" veya "yumuşama" adımları Türkiye demokrasisi için olumludur; sert kutuplaşmadan vazgeçilmelidir.',
-        weights: {
-            sosyal_demokrat: 10,
-            muhafazakar: 8,
-            merkez_sag: 8,
-            liberal: 6,
-            ulusalci: -10,
-            turkculuk: -8,
-            avrasyaci: -6,
-            sosyalist: -4,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -6,
-            yonetim: -8,
-        }
+        text: 'Seçilmiş belediye başkanlarının tutuklanması ve yerlerine kayyum atanması kabul edilemez.',
+        axes: { yonetim: -1 },
+        stances: { kemalist: 2, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -2, liberal: 2, sosyalist: 2, ozerklikci: 2, islamci: -1, avrasyaci: -1, ulusalci: 0, merkez_sag: 1, yesil: 2, turkculuk: -1 },
     },
     {
         id: 33,
-        text: 'Mevcut Cumhurbaşkanlığı Hükümet Sistemi revize edilmeli, güçlendirilmiş parlamenter sisteme geri dönülmelidir.',
-        weights: {
-            sosyal_demokrat: 10,
-            merkez_sag: 9,
-            liberal: 8,
-            ozerklikci: 7,
-            yesil: 6,
-            muhafazakar: -10,
-            ulkucu: -10,
-            avrasyaci: -8,
-        },
-        axisWeights: {
-            ekonomi: -2,
-            toplum: 0,
-            milliyetcilik: -5,
-            yonetim: -10,
-        }
+        text: 'Ekrem İmamoğlu\'na yönelik davalar ve CHP kurultay davası, bağımsız yargının olağan işleyişidir.',
+        context: 'İmamoğlu\'nun diploma iptali Kasım 2026\'da kesinleşti; istinaf CHP kurultayını "mutlak butlan"la iptal etti.',
+        axes: { yonetim: 1 },
+        stances: { kemalist: -2, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: 0, avrasyaci: 1, ulusalci: -1, merkez_sag: -1, yesil: -2, turkculuk: 0 },
     },
     {
         id: 34,
-        text: 'En düşük emekli maaşı, asgari ücretten düşük olmamalıdır; bütçe önceliği emeklilere ve dar gelirliye verilmelidir.',
-        weights: {
-            sosyal_demokrat: 10,
-            sosyalist: 10,
-            muhafazakar: 4,
-            liberal: -8,
-            merkez_sag: 2,
-        },
-        axisWeights: {
-            ekonomi: -10,
-            toplum: -2,
-            milliyetcilik: 0,
-            yonetim: 2,
-        }
+        text: '"Terörsüz Türkiye" süreci kapsamında silah bırakan PKK üyelerine yasal dönüş ve topluma kazandırılma imkânı tanınması doğrudur.',
+        context: 'Çerçeve yasa Ağustos 2026\'da TBMM\'den geçti; uygulama silah bırakmanın doğrulanmasına bağlı.',
+        axes: { milliyetcilik: -0.7, yonetim: -0.3 },
+        stances: { kemalist: -1, sosyal_demokrat: 1, muhafazakar: 2, ulkucu: 2, liberal: 1, sosyalist: 1, ozerklikci: 2, islamci: 1, avrasyaci: -2, ulusalci: -2, merkez_sag: -2, yesil: 1, turkculuk: -2 },
     },
     {
         id: 35,
-        text: 'Eğitimde "Türkiye Yüzyılı Maarif Modeli" gibi yeni müfredat düzenlemeleri milli ve manevi değerleri korumak için gereklidir.',
-        weights: {
-            muhafazakar: 10,
-            islamci: 10,
-            ulkucu: 6,
-            kemalist: -10,
-            ulusalci: -10,
-            sosyalist: -8,
-            sosyal_demokrat: -8,
-            liberal: -5,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 10,
-            milliyetcilik: 2,
-            yonetim: 8,
-        }
+        text: 'Abdullah Öcalan\'ın cezaevi koşulları iyileştirilmeli ve "umut hakkı" tartışmaya açılmalıdır.',
+        axes: { milliyetcilik: -1 },
+        stances: { kemalist: -2, sosyal_demokrat: -1, muhafazakar: -1, ulkucu: 0, liberal: 0, sosyalist: 1, ozerklikci: 2, islamci: 0, avrasyaci: -2, ulusalci: -2, merkez_sag: -2, yesil: 0, turkculuk: -2 },
     },
     {
         id: 36,
-        text: 'Terörün bitmesi için gerekirse Abdullah Öcalan TBMM\'de konuşmalı ve örgütün lağvedildiğini ilan etmelidir.',
-        weights: {
-            ulkucu: 10,
-            muhafazakar: 9,
-            ozerklikci: 8,
-            merkez_sag: -10,
-            turkculuk: -10,
-            ulusalci: -10,
-            kemalist: -8,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: 5,
-        }
+        text: 'Ulusal güvenlik gerekçesiyle sosyal medya erişim engelleri, bant daraltma ve yayın kuruluşlarına kayyum atanması gereklidir.',
+        axes: { yonetim: 1 },
+        stances: { kemalist: -1, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: 1, ulusalci: -1, merkez_sag: -1, yesil: -2, turkculuk: 0 },
     },
     {
         id: 37,
-        text: 'Belirli bir süre hapis yatan mahkumlar için "Umut Hakkı" yasallaşmalı; örgüt silah bıraktığı takdirde lider kadrosuna bu hak tanınmalıdır.',
-        weights: {
-            ozerklikci: 10,
-            liberal: 8,
-            muhafazakar: 6,
-            ulkucu: 6,
-            turkculuk: -10,
-            ulusalci: -10,
-            kemalist: -8,
-            sosyalist: 5,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: -8,
-        }
+        text: 'Merkez Bankası, TÜİK, SPK ve BDDK gibi kurumların başkanlarını Cumhurbaşkanı tek başına atayamamalı; bu kurumlar tam bağımsız olmalıdır.',
+        context: 'Yatırım fonu soruşturması 2026 sonbaharında BDDK ve SPK yönetimlerine uzandı.',
+        axes: { yonetim: -1 },
+        stances: { kemalist: 1, sosyal_demokrat: 2, muhafazakar: -2, ulkucu: -1, liberal: 2, sosyalist: 0, ozerklikci: 1, islamci: -1, avrasyaci: -1, ulusalci: 1, merkez_sag: 2, yesil: 1, turkculuk: 0 },
     },
     {
         id: 38,
-        text: 'Türkiye\'nin bekası için iktidar ve ana muhalefetin terörle mücadele ve Kürt meselesinde ortak bir strateji izlemesi zorunludur.',
-        weights: {
-            sosyal_demokrat: 10,
-            muhafazakar: 8,
-            merkez_sag: 8,
-            ulkucu: 6,
-            ulusalci: -8,
-            turkculuk: -6,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: 2,
-            yonetim: 5,
-        }
+        text: 'Yerel yönetimlere daha fazla yetki ve bütçe verilmeli, valiler de seçimle göreve gelmelidir.',
+        axes: { yonetim: -0.7, milliyetcilik: -0.3 },
+        stances: { kemalist: -1, sosyal_demokrat: 1, muhafazakar: -1, ulkucu: -2, liberal: 2, sosyalist: 1, ozerklikci: 2, islamci: 0, avrasyaci: -2, ulusalci: -2, merkez_sag: -1, yesil: 1, turkculuk: -2 },
     },
     {
         id: 39,
-        text: 'Kürt sorunu sadece asayiş politikalarıyla değil, meclis çatısı altında tam bir siyasi temsil ve uzlaşma ile çözülmelidir.',
-        weights: {
-            sosyal_demokrat: 10,
-            ozerklikci: 10,
-            liberal: 8,
-            yesil: 8,
-            muhafazakar: 5,
-            ulkucu: 4,
-            turkculuk: -10,
-            ulusalci: -10,
-        },
-        axisWeights: {
-            ekonomi: 0,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: -8,
-        }
+        text: 'Yeni bir anayasa yapılacaksa Cumhurbaşkanlığı Hükümet Sistemi korunmalıdır.',
+        context: 'AK Parti\'nin yeni anayasa taslağı çalışması sürüyor; seçimler 2028\'de bekleniyor.',
+        axes: { yonetim: 1 },
+        stances: { kemalist: -2, sosyal_demokrat: -2, muhafazakar: 2, ulkucu: 2, liberal: -2, sosyalist: -1, ozerklikci: 0, islamci: 1, avrasyaci: 1, ulusalci: -1, merkez_sag: -2, yesil: -1, turkculuk: 0 },
     },
     {
         id: 40,
-        text: 'Türkiye, Suriye\'deki güvenliği için gerekirse oradaki Kürt gruplarla (SDG/PYD) doğrudan siyasi masaya oturup anlaşmalıdır.',
-        weights: {
-            ozerklikci: 10,
-            liberal: 8,
-            sosyal_demokrat: 5,
-            muhafazakar: 2,
-            turkculuk: -10,
-            ulkucu: -10,
-            ulusalci: -10,
-            avrasyaci: -6,
-        },
-        axisWeights: {
-            ekonomi: 2,
-            toplum: 0,
-            milliyetcilik: -10,
-            yonetim: -5,
-        }
+        text: 'Çocuk istismarı ve terör gibi ağır suçlar için idam cezası geri getirilmelidir.',
+        axes: { yonetim: 1, toplum: 0.3 },
+        stances: { kemalist: 0, sosyal_demokrat: -2, muhafazakar: 1, ulkucu: 2, liberal: -2, sosyalist: -2, ozerklikci: -2, islamci: 1, avrasyaci: 1, ulusalci: 1, merkez_sag: 0, yesil: -2, turkculuk: 2 },
     },
 ];
-
-
-
-

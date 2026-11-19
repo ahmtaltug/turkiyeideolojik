@@ -13,6 +13,14 @@ Sorulara sağa (katılıyorum) veya sola (katılmıyorum) kaydırarak cevap veri
 * **Paylaşım:** Sonuç linki cevapları URL'de taşır (sunucu yok); kart PNG olarak indirilebilir.
 * **Gizlilik:** Cevaplar yalnızca tarayıcıda işlenir.
 
+### 🧮 Hesaplama nasıl çalışır?
+* Her sorunun 13 ideolojinin her biri için bir tutumu var (-2 kesinlikle katılmaz … +2 kesinlikle katılır). Tutumlar `src/data/questions.ts` içinde.
+* Uyum yüzdesi, o ideolojiye sahip birinin senin verdiğin cevapların aynısını verme olasılığından hesaplanır. Bir ideolojinin temel çizgisine (±2) ters düşmek, hafif bir ayrılıktan çok daha fazla uzaklaştırır.
+* Eksen konumları ve ideolojilerin tipik konumları aynı tutumlardan türetilir; liderler ideoloji karışımı ve konu bazlı istisnalarla tanımlanır (`src/data/leaders.ts`).
+* Testler, her ideolojiyi taklit eden simüle katılımcıların doğru ideolojiye eşleştiğini kontrol eder.
+
+İçerik Kasım 2026 Türkiye siyasetine göre güncellenmiştir.
+
 ### 🛠️ Geliştirme
 ```bash
 npm install
