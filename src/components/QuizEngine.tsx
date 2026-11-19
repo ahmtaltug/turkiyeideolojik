@@ -35,7 +35,7 @@ export default function QuizEngine({
     const [currentIndex, setCurrentIndex] = useState(Math.min(initialIndex, questions.length - 1));
     const [responses, setResponses] = useState<UserResponses>(initialResponses);
     const [exitDirection, setExitDirection] = useState<SwipeDirection | null>(null);
-    const [soundOn, setSoundOn] = useState(true);
+    const [soundOn, setSoundOn] = useState(false);
     const finishedRef = useRef(false);
 
     useEffect(() => {

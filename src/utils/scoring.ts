@@ -48,6 +48,8 @@ export interface QuizResult {
     agreements: BreakdownItem[];
     /** Strongest issues where the user departs from the top ideology. */
     disagreements: BreakdownItem[];
+    /** Issues where the user is furthest from the most distant ideology. */
+    oppositeDifferences: BreakdownItem[];
     consistencyScore: number;
     answeredCount: number;
 }
@@ -243,6 +245,17 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
     const agreements = items.filter(i => Math.sign(i.stance) === answerValue(i.answer)).slice(0, 3);
     const disagreements = items.filter(i => Math.sign(i.stance) !== answerValue(i.answer)).slice(0, 3);
 
+    const oppositeDifferences = answered
+        .map(({ question, answer }) => ({
+            questionId: question.id,
+            questionText: question.text,
+            answer,
+            stance: question.stances[oppositeId],
+        }))
+        .filter(i => i.stance !== 0 && Math.sign(i.stance) !== answerValue(i.answer))
+        .sort((a, b) => Math.abs(b.stance) - Math.abs(a.stance))
+        .slice(0, 3);
+
     return {
         topIdeology,
         oppositeIdeology: ideologies[oppositeId],
@@ -252,6 +265,7 @@ export const calculateScores = (responses: UserResponses): QuizResult => {
         leaderMatches,
         agreements,
         disagreements,
+        oppositeDifferences,
         consistencyScore,
         answeredCount: answered.length,
     };

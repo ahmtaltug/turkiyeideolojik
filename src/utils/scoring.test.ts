@@ -80,6 +80,10 @@ describe('data integrity', () => {
         }
     });
 
+    it('lists neutral criticisms for every ideology', () => {
+        for (const id of IDS) expect(ideologies[id].critiques.length).toBeGreaterThanOrEqual(2);
+    });
+
     it('gives every leader blend weights that sum to 1', () => {
         for (const l of leaders) {
             const sum = Object.values(l.blend).reduce((a, b) => a + (b ?? 0), 0);
